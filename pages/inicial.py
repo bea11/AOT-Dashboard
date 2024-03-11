@@ -62,39 +62,32 @@ layout = html.Div([
         html.Div(id='output-data-upload'),
        
     ]),
+    dcc.Store(id='store-data', storage_type='local'),
     html.Br(),
 ])
 
 
-def parse_contents(contents, filename):
-    content_type, content_string = contents.split(',')
-
-    decoded = base64.b64decode(content_string)
-    try:
-        if 'fits' in filename:
-            with open(filename, 'wb') as f:
-                f.write(decoded)
-            sys = aotpy.read_system_from_fits(filename)
-            atm = len(sys.atmosphere_params)
-            return atm
-    except Exception as e:
-        print(e)
-        return None
-
-
-@callback(Output('output-data-upload', 'children'),
-          Output('store', 'data'),  
-          Input('upload-data', 'contents'),
-          State('upload-data', 'filename'))
-def update_output(contents, filename):
+@callback(
+    Output('store-data', 'data'),
+    Input('upload-data', 'contents'),
+    State('upload-data', 'filename')
+)
+def store_uploaded_file(contents, filename):
     if contents is not None:
-        atm = parse_contents(contents, filename)
-        if atm is not None:
-            
-            return f'Successfully read {atm} atmosphere parameters from {filename}', atm
-        else:
-            return 'Failed to read file', None
-    return dash.no_update, None
+        return contents
+
+
+@dash.callback(
+    Output('output-data-upload', 'children'),
+    Input('upload-data', 'filename')
+)
+def display_uploaded_filename(filename):
+    if filename is not None:
+        return html.Div([
+            html.H6(f"Uploaded FITS file: {filename}")
+        ])
+    else:
+        return html.Div()
         
 #mais funções: sys.wavefront_sensors
         # len(sys.atmosphere_sensors)
