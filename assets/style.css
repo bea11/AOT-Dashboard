@@ -1,0 +1,29 @@
+body {
+    background-color: #243343;
+    color: white;
+}
+
+.custom-select {
+    background-color: #1C2634;
+    color: white;
+}
+
+.custom-select:focus {
+    background-color: #243343;
+    color: white;
+}
+
+
+.tree-view ul {
+    list-style-type: none;
+    margin-left: 25vw;
+    text-indent: -1em;
+}
+
+.tree-view li:before {
+    content: "▸ ";
+}
+
+.tree-view li {
+    margin-bottom: 0.5em;
+}
