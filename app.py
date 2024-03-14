@@ -8,8 +8,8 @@ import datetime
 from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
 
 
-app = dash.Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
-server = app.server
+app = dash.Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+#server = app.server
 
 #estilo
 SIDEBAR_STYLE = {

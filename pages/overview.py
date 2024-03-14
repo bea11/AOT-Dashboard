@@ -1,10 +1,10 @@
 import dash
 from dash import dcc
-from dash import html
+from dash import html, register_page
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 
-dash.register_page(__name__, suppress_callback_exceptions=True)
+dash.register_page(__name__, path='/overview')
 
 layout = html.Div([
    html.H1("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '12vw'}),
