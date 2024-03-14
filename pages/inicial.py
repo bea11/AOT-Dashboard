@@ -17,9 +17,6 @@ import pandas as pd
 import gzip
 import base64
 
-#from anytree import Node, RenderTree, find_by_attr
-#from treelib import Tree
-
 
 dash.register_page(__name__, path='/')
 
@@ -68,7 +65,7 @@ layout = html.Div([
     dcc.Store(id='store-atmosphere-params'),
 ])
 
-
+#tentar perceptivel
 def source_to_dict(source):
     return {
         'uid': source.uid,
@@ -103,7 +100,7 @@ def store_uploaded_file(contents):
         #mode
         system_mode = sys.ao_mode
         #sources list
-        sources = [source_to_dict(source) for source in sys.sources]  # Convert to dictionaries.
+        sources = [source_to_dict(source) for source in sys.sources]  #dicionario
 
         return atmosphere_params, '', date_beginning, date_end, config, ratio, system_name, system_mode, sources
     else:
