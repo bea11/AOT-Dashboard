@@ -126,7 +126,7 @@ layout = html.Div([
            html.Div([
                 html.Div(id='output_container'),
                 html.Div('Sources', style={'margin-left':'12vw'}),
-                html.Div(id='source-list-dynamic', style={
+                html.Div(id='source_divs', style={
                     'width': "15vw",
                     'height': '100px',
                     'overflowY': 'scroll',
@@ -139,11 +139,7 @@ layout = html.Div([
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Wavefront Sensors', style={'margin-left':'7vw'}),
-                html.Div([
-                    html.Div('A0', id='A0', className='option', n_clicks=0, style=option_STYLE),
-                    html.Div('Shack-Hartmann', id='SH', className='option', n_clicks=0, style=option_STYLE),
-                    html.Div('Pyramid', id='PD', className='option', n_clicks=0, style=option_STYLE),
-            ], style={
+                html.Div(id='sensor_divs', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
@@ -156,11 +152,7 @@ layout = html.Div([
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Wavefront Correctors', style={'margin-left':'7vw'}),
-                html.Div([
-                    html.Div('B0', id='B0', className='option', n_clicks=0, style=option_STYLE),
-                    html.Div('B1', id='B1', className='option', n_clicks=0, style=option_STYLE),
-                    html.Div('B2', id='B2', className='option', n_clicks=0, style=option_STYLE),
-            ], style={
+                html.Div(id='corrector_divs', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
@@ -173,10 +165,7 @@ layout = html.Div([
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Atmosphere Parameters ', style={'margin-left':'7vw'}),
-                html.Div([
-                    html.Div('D0', id='B0', className='option', n_clicks=0, style=option_STYLE),
-                    html.Div('D1', id='B1', className='option', n_clicks=0, style=option_STYLE),
-            ], style={
+                html.Div(id='atm_divs', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
@@ -186,7 +175,9 @@ layout = html.Div([
             }),
         ]),
 
-            dbc.Select(id="aotpy_loops",
+        html.Div([
+            html.Div('Loops', style={'margin-left':'15vw'}),
+            dbc.Select(id='loop_divs',
                         options=[
                             {'label': 'Loops', 'value': 'loops'},
                             {'label': 'C0', 'value': 'C0'},
@@ -194,7 +185,10 @@ layout = html.Div([
                             {'label': 'C2', 'value': 'C2'}],
                         value='loops',
                         className='custom-select',
-                        style={'width': "15vw",'color': 'white',  'margin-left': '5vw', 'height':'50px' }),
+                        style={'width': "15vw",'color': 'white',  'margin-left': '15vw', 'height':'50px' }),
+        
+        ]),
+        
         ], style={'display': 'flex', 'justifyContent': 'flex-start', 'flexWrap': 'wrap'}),
     ], style={'position': 'absolute', 'bottom': '7vw', 'width': '100%'}),
 
@@ -202,25 +196,7 @@ layout = html.Div([
     html.Div(id='output-atmosphere-params'),
 ])
 
-#@callback(
-#    Output('output_container', 'children'),
-#    [Input('source', 'n_clicks'),
-#     Input('A0', 'n_clicks'),
-#     Input('A1', 'n_clicks'),
-#     Input('A2', 'n_clicks')],
-#    [State('source', 'id'),
- #    State('A0', 'id'),
- #    State('A1', 'id'),
- #    State('A2', 'id')]
-#)
-#def on_option_click(source, A0, A1, A2, source_id, A0_id, A1_id, A2_id):
-#    ctx = dash.callback_context
-#    if not ctx.triggered:
-#        return ''
-#    else:
-#        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-      #  return f'You selected: {button_id}'
-        
+
 
 @callback(
     Output('beginning-date', 'children'),
@@ -228,8 +204,8 @@ layout = html.Div([
 )
 def display_beginning_date(data):
     if data is not None:
-        # Extract the beginning date from the data.
-        beginning_date = data[2]
+        
+        beginning_date = data['date_beginning']
         return f'{beginning_date}'
     else:
         return ''
@@ -240,8 +216,8 @@ def display_beginning_date(data):
 )
 def display_end_date(data):
     if data is not None:
-        # Extract the end date from the data.
-        end_date = data[3]
+        
+        end_date = data['date_end']
         return f'{end_date}'
     else:
         return ''
@@ -252,8 +228,8 @@ def display_end_date(data):
 )
 def display_end_date(data):
     if data is not None:
-        # Extract the end date from the data.
-        config = data[4]
+        
+        config = data['config']
         return f'{config}'
     else:
         return ''
@@ -264,8 +240,8 @@ def display_end_date(data):
 )
 def display_end_date(data):
     if data is not None:
-        # Extract the end date from the data.
-        ratio = data[5]
+        
+        ratio = data['ratio']
         return f'{ratio}'
     else:
         return ''
@@ -276,8 +252,8 @@ def display_end_date(data):
 )
 def display_end_date(data):
     if data is not None:
-        # Extract the end date from the data.
-        system_name = data[6]
+        
+        system_name = data['system_name']
         return f'{system_name}'
     else:
         return ''
@@ -288,52 +264,72 @@ def display_end_date(data):
 )
 def display_end_date(data):
     if data is not None:
-        # Extract the end date from the data.
-        system_mode = data[7]
+        
+        system_mode = data['system_mode']
         return f'{system_mode}'
     else:
         return ''
 
 
 @callback(
-    Output('source-list-dynamic', 'children'),
+    Output('source_divs', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
 def display_sources(data):
-    if data is not None:
-        # Extract the sources from the data.
-        sources = data[8]
-        # Create a list of html.Div elements for each source.
+    if data is not None:       
+        sources = data['sources']
+        #lista
         source_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sources]
         return source_divs
     else:
         return []
+    
 
-#def display_atmosphere_params(atmosphere_params):
-#    ctx = dash.callback_context
-#    if not ctx.triggered:
-#        return dash.no_update
-
-    # Get the id of the input that triggered the callback.
-#    trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-    # Only return the atmosphere parameters when 'store-atmosphere-params' is the trigger.
-#    if trigger_id == 'store-atmosphere-params' and atmosphere_params is not None:
-#        return html.Div([
-#            html.P(f"Atmosphere params: {atmosphere_params}")
-#        ])
-#    else:
-#        return dash.no_update
-
-#@callback(
-#    Output('output-atmosphere-params', 'children'),
-#    [Input('store-atmosphere-params', 'data')]
-#)
-#def display_atmosphere_params(atmosphere_params):
-#    if atmosphere_params is not None:
-#        return html.Div([
-#            html.P(f"Atmosphere params: {atmosphere_params}")
-#        ])
-#    else:
-#        return dash.no_update
+@callback(
+    Output('loop_divs', 'options'),
+    [Input('store-atmosphere-params', 'data')]
+)
+def update_loop_options(data):
+    if data is not None:
+        loops = data['loops']
+        loop_options = [{'label': loop['uid'], 'value': loop['uid']} for loop in loops]
+        return loop_options
+    else:
+        return []
+    
+@callback(
+    Output('sensor_divs', 'children'),
+    [Input('store-atmosphere-params', 'data')]
+)
+def display_sensor(data):
+    if data is not None:
+        sensors = data['wavefront_sensors']
+        sensor_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sensors]
+        return sensor_divs
+    else:
+        return []
+    
+@callback(
+    Output('corrector_divs', 'children'),
+    [Input('store-atmosphere-params', 'data')]
+)
+def display_corrector(data):
+    if data is not None:
+        correctors = data['wavefront_correctors']
+        corrector_divs = [html.Div(corrector['uid'], id=corrector['uid'], className='option', n_clicks=0, style=option_STYLE) for corrector in correctors]
+        return corrector_divs
+    else:
+        return []
+    
+@callback(
+    Output('atm_divs', 'children'),
+    [Input('store-atmosphere-params', 'data')]
+)
+def display_corrector(data):
+    if data is not None:
+        atmosphere = data['atmosphere_params']
+        atm_divs = [html.Div(atm['uid'], id=atm['uid'], className='option', n_clicks=0, style=option_STYLE) for atm in atmosphere]
+        return atm_divs
+    else:
+        return []
     
