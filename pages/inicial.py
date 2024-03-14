@@ -18,6 +18,7 @@ import gzip
 import base64
 
 
+
 dash.register_page(__name__, path='/')
 
 #estilo
@@ -65,7 +66,7 @@ layout = html.Div([
     dcc.Store(id='store-atmosphere-params'),
 ])
 
-#tentar perceptivel
+#tentar extrair dicionário
 def source_to_dict(source):
     return {
         'uid': source.uid,
@@ -75,6 +76,27 @@ def source_to_dict(source):
         'azimuth_offset': source.azimuth_offset,
         'width': source.width
     }
+#so quero extrair os nomes dos loops que existem, depois extraio todas as propriedades
+def loop_to_dict(loop):
+    return {
+        'uid': loop.uid,
+    }
+#legenda: Unique identifier of the object, which allows unambiguous referencing.
+def wavefront_sensors_to_dict(wavefront_sensor):
+    return {
+        'uid': wavefront_sensor.uid,
+    }
+
+def wavefront_correctors_to_dict(wavefront_corrector):
+    return {
+        'uid': wavefront_corrector.uid,
+    }
+
+def atmosphere_params_to_dict(atmosphere_param):
+    return {
+        'uid': atmosphere_param.uid,
+    }
+
 
 @callback(
     Output('store-atmosphere-params', 'data'),
@@ -100,9 +122,29 @@ def store_uploaded_file(contents):
         #mode
         system_mode = sys.ao_mode
         #sources list
-        sources = [source_to_dict(source) for source in sys.sources]  #dicionario
-
-        return atmosphere_params, '', date_beginning, date_end, config, ratio, system_name, system_mode, sources
+        sources = [source_to_dict(source) for source in sys.sources]  # dicionário
+        #loops
+        loops = [loop_to_dict(loop) for loop in sys.loops]
+        #wavefront sensors
+        sensors = [wavefront_sensors_to_dict(wavefront_sensor) for wavefront_sensor in sys.wavefront_sensors]
+        #wavefront corrector
+        correctors = [wavefront_correctors_to_dict(wavefront_corrector) for wavefront_corrector in sys.wavefront_correctors]
+        #atmospheric parameters
+        atmosphere = [atmosphere_params_to_dict(atmosphere_param) for atmosphere_param in sys.atmosphere_params]
+        return {
+            'atmosphere_params': atmosphere_params,
+            'date_beginning': date_beginning,
+            'date_end': date_end,
+            'config': config,
+            'ratio': ratio,
+            'system_name': system_name,
+            'system_mode': system_mode,
+            'sources': sources,
+            'loops': loops,
+            'wavefront_sensors': sensors,
+            'wavefront_correctors': correctors,
+            'atmosphere_params': atmosphere
+        }
     else:
         raise PreventUpdate
 
@@ -113,7 +155,7 @@ def store_uploaded_file(contents):
 def display_uploaded_filename(filename):
     if filename is not None:
         return html.Div([
-            html.H6(f"Uploaded FITS file: {filename}")
+            html.H6(f"Uploaded FITS file: {filename}", style={'textAlign': 'left', 'marginLeft': '20vw', 'marginTop': '6vw'})
         ])
     else:
         return html.Div()
