@@ -29,8 +29,9 @@ sidebar = dbc.Nav(
     [
         dbc.NavLink("Home", href="/", active="exact"),
         dbc.NavLink("Analise", href="/analise", active="exact"),
-        dbc.NavLink("Overview", href="/overview", active="exact"),
-        dbc.NavLink("Sensor", href="/sensor", active="exact"),
+        dbc.NavLink("Pixels", href="/pixels", active="exact"),
+        dbc.NavLink("Measurements", href="/measurements", active="exact"),
+        dbc.NavLink("Commands", href="/commands", active="exact"),
       
     ],
     vertical=True,

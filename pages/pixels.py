@@ -9,12 +9,24 @@ import aotpy
 import gzip
 
 
-dash.register_page(__name__, path='/sensor')
+dash.register_page(__name__, path='/pixels')
 
 layout = html.Div([
-    html.H1("Shack-Hartmann", style={'text-align': 'left', 'margin-left': '12vw', 'marginBottom' : '0px'}),
 
+
+    html.H1("Pixels", style={'text-align': 'left', 'margin-left': '12vw', 'marginBottom' : '0px'}),
+
+
+    html.Div([
+    html.Button('Properties', id='button-1', n_clicks=0, style={'background-color': '#1C2634', 'color': 'white', 'text-align': 'center'},),
+    html.Button('Statistics', id='button-2', n_clicks=0, style={'background-color': '#1C2634', 'color': 'white', 'text-align': 'center'},),
+    dcc.Store(id='store'),
+    html.Div(id='output')
+], style={'position': 'absolute', 'left': '160px','display': 'flex', 'justify-content': 'space-between', 'top': '50px', 'width': '20px', 'height': '25px'}),
+  
+  
    #1 quadrante
+    dcc.Store(id='1-quadrante-content', data=[
     html.Div([
         html.P("Properties", style={'text-align': 'left', 'margin-left': '1vw'}),
         
@@ -106,7 +118,7 @@ layout = html.Div([
 
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '580px', 'top': '80px', 'width': '230px', 'height': '390px'}),
-
+]),
     #2 quadrante 
     #imagem
     html.Div([
@@ -218,5 +230,61 @@ layout = html.Div([
     'height': '300px'  
 }),
 
+dcc.Store(id='5-quadrante-content', data=[
+    #5quadrante
+     html.Div([
+    html.P("oi", style={'text-align': 'left','margin-left': '1vw'}),
+    html.Div([  
+        html.Div( 
+            style={
+                'background-color': 'grey',
+                'width': '200px',  
+                'height': '200px'  
+            }
+        ),
+        
+    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
+    
+], style={
+    'background-color': '#1C2634',  # Cor rectangulo
+    'position': 'absolute',
+    'left': '160px',
+    'top': '80px',
+    'width': '400px',  
+    'height': '390px',  
+}),
+])
+
+
 ], style={'position': 'relative'})
     
+@callback(
+    Output('store', 'data'),
+    [Input('button-1', 'n_clicks'), Input('button-2', 'n_clicks')],
+    [dash.dependencies.State('store', 'data')]
+)
+def update_store(n1, n2, data):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        button_id = 'No clicks yet'
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    return button_id
+
+@callback(
+    Output('output', 'children'),
+    [Input('button-1', 'n_clicks_timestamp'), Input('button-2', 'n_clicks_timestamp')],
+    [State('1-quadrante-content', 'data'), State('5-quadrante-content', 'data')]
+)
+def update_output(n_clicks_timestamp1, n_clicks_timestamp2, content1, content2):
+    if n_clicks_timestamp1 is None and n_clicks_timestamp2 is None:
+        return content1
+    if n_clicks_timestamp1 is None:
+        n_clicks_timestamp1 = 0
+    if n_clicks_timestamp2 is None:
+        n_clicks_timestamp2 = 0
+
+    if n_clicks_timestamp1 > n_clicks_timestamp2:
+        return content1
+    else:
+        return content2
