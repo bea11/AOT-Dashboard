@@ -26,7 +26,7 @@ layout = html.Div([
     #primeiros2
     html.Div([
             html.Div([
-                html.Div('System Name:', style={'margin-top': '4vw'}),
+                html.Div('System Name:', style={'margin-top': '2vw'}),
                 html.A(id='system_name', style={
                     'display': 'inline-block',
                     'width': '150px',
@@ -34,7 +34,7 @@ layout = html.Div([
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
-                html.Div('Mode:', style={'margin-top': '2vw'}),
+                html.Div('Mode:', style={'margin-top': '1vw'}),
                 html.A(id='system_mode', style={
                     'display': 'inline-block',
                     'width': '150px',
@@ -43,13 +43,13 @@ layout = html.Div([
                     'margin-top': '0vw'
                 }),
 
-            ], style={'position': 'absolute', 'margin-left': '14vw', 'margin-top': '1vw'}),
+            ], style={'position': 'absolute', 'margin-left': '12vw'}),
 
 ]),
     #segundos2
     html.Div([
             html.Div([
-                html.Div('Beginning date:', style={'margin-top': '4vw'}),
+                html.Div('Beginning date:', style={'margin-top': '2vw'}),
                 html.A(id='beginning-date', style={
                     'display': 'inline-block',
                     'width': '150px',
@@ -57,7 +57,7 @@ layout = html.Div([
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
-                html.Div('End date:', style={'margin-top': '2vw'}),
+                html.Div('End date:', style={'margin-top': '1vw'}),
                 html.A(id='end-date', style={
                     'display': 'inline-block',
                     'width': '150px',
@@ -66,13 +66,13 @@ layout = html.Div([
                     'margin-top': '0vw'
                 }),
 
-            ], style={'position': 'absolute', 'margin-left': '28vw', 'margin-top': '1vw'}),
+            ], style={'position': 'absolute', 'margin-left': '26vw'}),
 
 ]),
 #terceiros2
     html.Div([
             html.Div([
-                html.Div('Strehl Ratio:', style={'margin-top': '4vw'}),
+                html.Div('Strehl Ratio:', style={'margin-top': '2vw'}),
                 html.A(id='ratio', style={
                     'display': 'inline-block',
                     'width': '150px',
@@ -80,7 +80,7 @@ layout = html.Div([
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
-                html.Div('Strehl Wavelength:', style={'margin-top': '2vw'}),
+                html.Div('Strehl Wavelength:', style={'margin-top': '1vw'}),
                 html.A(id = 'wavelength', style={
                     'display': 'inline-block',
                     'width': '150px',
@@ -89,14 +89,14 @@ layout = html.Div([
                     'margin-top': '0vw'
                 }),
 
-            ], style={'position': 'absolute', 'margin-left': '42vw', 'margin-top': '1vw'}),
+            ], style={'position': 'absolute', 'margin-left': '40vw'}),
 
 ]),
 
 #quartos2
     html.Div([
             html.Div([
-                html.Div('Config:', style={'margin-top': '4vw'}),
+                html.Div('Config:', style={'margin-top': '2vw'}),
                 html.A(id='config', style={
                     'display': 'inline-block',
                     'width': '150px',
@@ -106,7 +106,7 @@ layout = html.Div([
                 }),
                
 
-            ], style={'position': 'absolute', 'margin-left': '56vw', 'margin-top': '1vw'}),
+            ], style={'position': 'absolute', 'margin-left': '54vw'}),
 
 
     #importante quando quero variar entre estados
@@ -116,12 +116,11 @@ layout = html.Div([
 
 
 
-
-
     #esquema AO
     html.Div([
-        html.H2("AO System", style={'text-align': 'center', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF', 'margin-bottom': '5vw'}),
+        html.H3("AO System", style={'text-align': 'center', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF', 'margin-bottom': '1vw'}),
 
+#SOURCES
         html.Div([
            html.Div([
                 html.Div(id='output_container'),
@@ -135,69 +134,112 @@ layout = html.Div([
                     'margin-left': '12vw'
             }),
         ]),
-
+#WAVEFRONT SENSORS
         html.Div([
                 html.Div(id='output_container'),
-                html.Div('Wavefront Sensors', style={'margin-left':'7vw'}),
+                html.Div('Wavefront Sensors', style={'margin-left':'2vw'}),
                 html.Div(id='sensor_divs', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
-                'margin-left': '7vw'
+                'margin-left': '2vw'
             }),
         ]),
-        
+#WAVEFRONT CORRECTORS        
         html.Div([
                 html.Div(id='output_container'),
-                html.Div('Wavefront Correctors', style={'margin-left':'7vw'}),
+                html.Div('Wavefront Correctors', style={'margin-left':'2vw'}),
                 html.Div(id='corrector_divs', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
-                'margin-left': '7vw'
+                'margin-left': '2vw'
             }),
         ]),
-
+#LOOPS
         html.Div([
                 html.Div(id='output_container'),
-                html.Div('Atmosphere Parameters ', style={'margin-left':'7vw'}),
+                html.Div('Loops ', style={'margin-left':'2vw'}),
+                html.Div(id='loop_divs', style={
+                'width': "15vw",
+                'height': '100px',
+                'overflowY': 'scroll',
+                'backgroundColor': '#1C2634',
+                'color': 'white',
+                'margin-left': '2vw'
+            }),
+        ]),
+#ATMOSPHERE PARAMETERS
+        html.Div([
+                html.Div(id='output_container'),
+                html.Div('Atmosphere Parameters ', style={'margin-left':'2vw'}),
                 html.Div(id='atm_divs', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
-                'margin-left': '7vw'
+                'margin-left': '2vw'
             }),
         ]),
 
-        html.Div([
-            html.Div('Loops', style={'margin-left':'15vw'}),
-            dbc.Select(id='loop_divs',
-                        options=[
-                            {'label': 'Loops', 'value': 'loops'},
-                            {'label': 'C0', 'value': 'C0'},
-                            {'label': 'C1', 'value': 'C1'},
-                            {'label': 'C2', 'value': 'C2'}],
-                        value='loops',
-                        className='custom-select',
-                        style={'width': "15vw",'color': 'white',  'margin-left': '15vw', 'height':'50px' }),
-        
-        ]),
         
         ], style={'display': 'flex', 'justifyContent': 'flex-start', 'flexWrap': 'wrap'}),
-    ], style={'position': 'absolute', 'bottom': '7vw', 'width': '100%'}),
+    ], style={'position': 'absolute', 'top': '270px', 'width': '100%'}),
+
+
+#3parte
+html.Div([
+        html.P("Images", style={'text-align': 'left', 'margin-left': '1vw'}),
+        html.Div([
+    
+        # Primeiro
+        html.Div([
+            html.Div([
+                html.Label("Name: ", style={'color': 'white'}),
+                html.Label("Dimensions: ", style={'color': 'white'}),
+                html.Label("Type: ", style={'color': 'white'}),
+                html.Label("Unit: ", style={'color': 'white'}),
+                html.Label("Metadata ", style={'color': 'white'}),
+    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
+                dbc.Button('AA', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'})
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+       # Segundo
+        html.Div([
+            html.Div([
+                html.Label("Name: ", style={'color': 'white'}),
+                html.Label("Dimensions: ", style={'color': 'white'}),
+                html.Label("Type: ", style={'color': 'white'}),
+                html.Label("Unit: ", style={'color': 'white'}),
+                html.Label("Metadata ", style={'color': 'white'}),
+    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
+                dbc.Button('BB', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'})
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '10vw'}),
+       # Terceiro
+        html.Div([
+            html.Div([
+                html.Label("Name: ", style={'color': 'white'}),
+                html.Label("Dimensions: ", style={'color': 'white'}),
+                html.Label("Type: ", style={'color': 'white'}),
+                html.Label("Unit: ", style={'color': 'white'}),
+                html.Label("Metadata ", style={'color': 'white'}),
+    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
+        dbc.Button('CC', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'})
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '10vw'}),
+    
+    ], style={'display': 'flex'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '460px', 'width': '1100px', 'height': '160px'}),
 
     dcc.Store(id='store-atmosphere-params'),
     html.Div(id='output-atmosphere-params'),
 ])
 
 
-
+#returnar dados todos
 @callback(
     Output('beginning-date', 'children'),
     [Input('store-atmosphere-params', 'data')]
@@ -286,14 +328,15 @@ def display_sources(data):
     
 
 @callback(
-    Output('loop_divs', 'options'),
+    Output('loop_divs', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def update_loop_options(data):
-    if data is not None:
+def display_sources(data):
+    if data is not None:       
         loops = data['loops']
-        loop_options = [{'label': loop['uid'], 'value': loop['uid']} for loop in loops]
-        return loop_options
+        #lista
+        loop_divs = [html.Div(loop['uid'], id=loop['uid'], className='option', n_clicks=0, style=option_STYLE) for loop in loops]
+        return loop_divs
     else:
         return []
     

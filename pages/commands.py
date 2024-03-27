@@ -146,7 +146,7 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-   html.Div([  # Container for the checkboxes
+   html.Div([  # checkbox
     html.Label([
         "flat_field",
         dbc.Checkbox(id='checkbox-1', className='custom-checkbox')
@@ -160,14 +160,15 @@ layout = html.Div([
         dbc.Checkbox(id='checkbox-3', className='custom-checkbox')
     ], style={'display': 'flex', 'align-items': 'center'})
 ], style={'display': 'flex', 'justify-content': 'space-between', 'position': 'absolute', 'bottom': '0', 'width': '100%'}),
+
 ], style={
     'display': 'flex',  
-    'justify-content': 'space-between',  # Space automatic
+    'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
     'left': '830px', 
     'top': '50px', 
-    'width': '430px', 
+    'width': '480px', 
     'height': '420px'
 }),
   
@@ -175,18 +176,18 @@ layout = html.Div([
   html.Div([
     html.P("Data", style={'text-align': 'left','margin-left': '1vw'}),
     html.Div([  
-        html.Div(  # Placeholder for the graph
+        html.Div(  
             style={
                 'background-color': 'grey',
-                'width': '200px',  
+                'width': '300px',  
                 'height': '200px'  
             }
         ),
-        html.Div('x-axis', style={'color': 'white'}),  # x-axis label
+        html.Div('Seconds', style={'color': 'white'}),  # x
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-    html.Div('y-axis', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y-axis label
+    html.Div('Actuator index', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y
 ], style={
-    'background-color': '#1C2634',  # Corectangulo
+    'background-color': '#1C2634',  
     'position': 'absolute',
     'left': '160px',
     'top': '480px',
@@ -199,16 +200,16 @@ layout = html.Div([
     html.Div([
     html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
     html.Div([  
-        html.Div(  # Placeholder for the graph
+        html.Div(  
             style={
-                'background-color': 'grey',
-                'width': '200px',  
+                'background-color': '#243343',
+                'width': '500px',  
                 'height': '200px'  
             }
         ),
-        html.Div('x-axis', style={'color': 'white'}),  # x-axis label
+        html.Div('Time', style={'color': 'white'}),  # x
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-    html.Div('y-axis', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y-axis label
+    html.Div('AAA', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',

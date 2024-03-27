@@ -67,7 +67,7 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '60px', 'width': '400px', 'height': '390px'}),
     
    #1 quadrante 
     html.Div([
@@ -105,12 +105,12 @@ layout = html.Div([
 
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '580px', 'top': '80px', 'width': '230px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '580px', 'top': '60px', 'width': '230px', 'height': '390px'}),
 
-    #2 quadrante 
+    #2 quadrante -> 1 imagem
     #imagem
     html.Div([
-    dbc.Select(
+        dbc.Select(
         id="aotpy_scale",
         options=[
             {'label': 'Scale', 'value': 'loops'},
@@ -120,9 +120,9 @@ layout = html.Div([
         ],
         value='loops',
         className='custom-select',
-        style={'width': "10vw",'color': 'white', 'height':'35px' }
+        style={'width': "10vw",'color': 'white', 'height':'32px' }
     ),
-    dbc.Select(
+        dbc.Select(
         id="aotpy_color",
         options=[
             {'label': 'Color', 'value': 'loops'},
@@ -132,9 +132,9 @@ layout = html.Div([
         ],
         value='loops',
         className='custom-select',
-        style={'width': "10vw",'color': 'white', 'height':'35px' }
+        style={'width': "10vw",'color': 'white', 'height':'32px' }
     ),
-    dbc.Select(
+        dbc.Select(
         id="aotpy_interval",
         options=[
             {'label': 'Interval', 'value': 'loops'},
@@ -144,52 +144,142 @@ layout = html.Div([
         ],
         value='loops',
         className='custom-select',
-        style={'width': "10vw",'color': 'white', 'height':'35px' }
+        style={'width': "10vw",'color': 'white', 'height':'32px' }
     ),
-   html.Div([  # Container for the checkboxes
-    html.Label([
-        "flat_field",
-        dbc.Checkbox(id='checkbox-1', className='custom-checkbox')
+
+    html.Div([  #checkbox
+        html.Label([
+            "flat_field",
+            dbc.Checkbox(id='checkbox-1', className='custom-checkbox')
     ], style={'display': 'flex', 'align-items': 'center'}),
-    html.Label([
-        "dark",
-        dbc.Checkbox(id='checkbox-2', className='custom-checkbox')
+    
+        html.Label([
+            "dark",
+            dbc.Checkbox(id='checkbox-2', className='custom-checkbox')
     ], style={'display': 'flex', 'align-items': 'center'}),
-    html.Label([
-        "sky_background",
-        dbc.Checkbox(id='checkbox-3', className='custom-checkbox')
+    
+        html.Label([
+            "sky_background",
+            dbc.Checkbox(id='checkbox-3', className='custom-checkbox')
     ], style={'display': 'flex', 'align-items': 'center'})
+
 ], style={'display': 'flex', 'justify-content': 'space-between', 'position': 'absolute', 'bottom': '0', 'width': '100%'}),
 ], style={
     'display': 'flex',  
-    'justify-content': 'space-between',  # Space automatic
+    'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
     'left': '830px', 
-    'top': '50px', 
-    'width': '430px', 
-    'height': '420px'
+    'top': '30px', 
+    'width': '480px', 
+    'height': '210px'
+}),
+
+#2 quadrante -> 2 imagem
+    #imagem
+    html.Div([
+        dbc.Select(
+        id="aotpy_scale",
+        options=[
+            {'label': 'Scale', 'value': 'loops'},
+            {'label': 'C0', 'value': 'C0'},
+            {'label': 'C1', 'value': 'C1'},
+            {'label': 'C2', 'value': 'C2'}
+        ],
+        value='loops',
+        className='custom-select',
+        style={'width': "10vw",'color': 'white', 'height':'32px' }
+    ),
+    
+        dbc.Select(
+        id="aotpy_color",
+        options=[
+            {'label': 'Color', 'value': 'loops'},
+            {'label': 'C0', 'value': 'C0'},
+            {'label': 'C1', 'value': 'C1'},
+            {'label': 'C2', 'value': 'C2'}
+        ],
+        value='loops',
+        className='custom-select',
+        style={'width': "10vw",'color': 'white', 'height':'32px' }
+    ),
+    
+        dbc.Select(
+        id="aotpy_interval",
+        options=[
+            {'label': 'Interval', 'value': 'loops'},
+            {'label': 'D0', 'value': 'C0'},
+            {'label': 'D1', 'value': 'C1'},
+            {'label': 'D2', 'value': 'C2'}
+        ],
+        value='loops',
+        className='custom-select',
+        style={'width': "10vw",'color': 'white', 'height':'32px' }
+    ),
+    
+    html.Div([  #checkbox
+        html.Label([
+            "flat_field",
+            dbc.Checkbox(id='checkbox-1', className='custom-checkbox')
+    ], style={'display': 'flex', 'align-items': 'center'}),
+    
+        html.Label([
+            "dark",
+            dbc.Checkbox(id='checkbox-2', className='custom-checkbox')
+    ], style={'display': 'flex', 'align-items': 'center'}),
+    
+        html.Label([
+            "sky_background",
+            dbc.Checkbox(id='checkbox-3', className='custom-checkbox')
+    ], style={'display': 'flex', 'align-items': 'center'})
+
+], style={'display': 'flex', 'justify-content': 'space-between', 'position': 'absolute', 'bottom': '0', 'width': '100%'}),
+], style={
+    'display': 'flex',  
+    'justify-content': 'space-between',  
+    'background-color': '#1C2634', 
+    'position': 'absolute', 
+    'left': '830px', 
+    'top': '260px', 
+    'width': '480px', 
+    'height': '210px'
 }),
   
-  #3 quadrante
-  html.Div([
-    html.P("Data", style={'text-align': 'left','margin-left': '1vw'}),
-    html.Div([  
-        html.Div(  # Placeholder for the graph
-            style={
-                'background-color': 'grey',
-                'width': '200px',  
-                'height': '200px'  
+  #3 quadrante ->1 cube
+    html.Div([
+        html.Div([
+            html.P("Data 1", style={'text-align': 'left','margin-left': '1vw'}),
+            html.Div([  
+                html.Div(  
+                    style={
+                    'background-color': 'grey',
+                    'width': '300px',  
+                    'height': '100px'  
             }
         ),
-        html.Div('x-axis', style={'color': 'white'}),  # x-axis label
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-    html.Div('y-axis', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y-axis label
+
+]),
+ #3 quadrante ->2 cube
+        html.Div([
+            html.P("Data 2", style={'text-align': 'left','margin-left': '1vw'}),
+            html.Div([  
+                html.Div(  
+                    style={
+                    'background-color': 'grey',
+                    'width': '300px',  
+                    'height': '100px'  
+            }
+        ),
+        html.Div('Seconds', style={'color': 'white'}), #x
+    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
+        html.Div('Subaperture index', style={'color': 'white', 'position': 'absolute', 'top': '30%', 'left': '0'})  #y
+]),
 ], style={
-    'background-color': '#1C2634',  # Corectangulo
+    'background-color': '#1C2634',  # Cor ectangulo
     'position': 'absolute',
     'left': '160px',
-    'top': '480px',
+    'top': '470px',
     'width': '600px',  
     'height': '300px'  
 }),
@@ -197,25 +287,25 @@ layout = html.Div([
  
     #4 quadrante
     html.Div([
-    html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
-    html.Div([  
-        html.Div(  # Placeholder for the graph
-            style={
-                'background-color': 'grey',
-                'width': '200px',  
-                'height': '200px'  
+        html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
+        html.Div([  
+            html.Div( 
+                style={
+                    'background-color': '#243343',
+                    'width': '300px',  
+                    'height': '180px'  
             }
         ),
-        html.Div('x-axis', style={'color': 'white'}),  # x-axis label
+        html.Div('Time', style={'color': 'white'}),  # x-
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-    html.Div('y-axis', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y-axis label
+        html.Div('Intensity', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
     'left': '780px',
     'top': '480px',
     'width': '600px',  
-    'height': '300px'  
+    'height': '280px'  
 }),
 
 ], style={'position': 'relative'})
