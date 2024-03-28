@@ -206,18 +206,22 @@ html.Div([
                 html.Label("Unit: ", style={'color': 'white'}),
                 html.Label("Metadata ", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
-                dbc.Button('AA', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'})
+                dcc.Link(
+                    dbc.Button('Pixels', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
+                    href='/pixels'),
 ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
        # Segundo
         html.Div([
             html.Div([
-                html.Label("Name: ", style={'color': 'white'}),
+                html.Label("Name:", style={'color': 'white'}),
                 html.Label("Dimensions: ", style={'color': 'white'}),
                 html.Label("Type: ", style={'color': 'white'}),
                 html.Label("Unit: ", style={'color': 'white'}),
                 html.Label("Metadata ", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
-                dbc.Button('BB', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'})
+                dcc.Link(
+                    dbc.Button('Measurements', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
+                    href='/measurements'),
 ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '10vw'}),
        # Terceiro
         html.Div([
@@ -228,7 +232,9 @@ html.Div([
                 html.Label("Unit: ", style={'color': 'white'}),
                 html.Label("Metadata ", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
-        dbc.Button('CC', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'})
+            dcc.Link(
+                dbc.Button('Commands', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
+                href='/commands'),
 ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '10vw'}),
     
     ], style={'display': 'flex'}),
