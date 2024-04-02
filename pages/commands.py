@@ -146,20 +146,7 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-   html.Div([  # checkbox
-    html.Label([
-        "flat_field",
-        dbc.Checkbox(id='checkbox-1', className='custom-checkbox')
-    ], style={'display': 'flex', 'align-items': 'center'}),
-    html.Label([
-        "dark",
-        dbc.Checkbox(id='checkbox-2', className='custom-checkbox')
-    ], style={'display': 'flex', 'align-items': 'center'}),
-    html.Label([
-        "sky_background",
-        dbc.Checkbox(id='checkbox-3', className='custom-checkbox')
-    ], style={'display': 'flex', 'align-items': 'center'})
-], style={'display': 'flex', 'justify-content': 'space-between', 'position': 'absolute', 'bottom': '0', 'width': '100%'}),
+
 
 ], style={
     'display': 'flex',  

@@ -235,8 +235,9 @@ layout = html.Div([
     'height': '250px'  
 }),
 
+#5quadrante
     dcc.Store(id='5-quadrante-content', data=[
-    #5quadrante
+    
         html.Div([
         html.P("Statistics", style={'text-align': 'left','margin-left': '1vw'}),
         html.P("For the Image: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),

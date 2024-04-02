@@ -125,7 +125,7 @@ layout = html.Div([
            html.Div([
                 html.Div(id='output_container'),
                 html.Div('Sources', style={'margin-left':'12vw'}),
-                html.Div(id='source_divs', style={
+                html.Div(id='source_divs1', style={
                     'width': "15vw",
                     'height': '100px',
                     'overflowY': 'scroll',
@@ -134,11 +134,26 @@ layout = html.Div([
                     'margin-left': '12vw'
             }),
         ]),
+
+#ATMOSPHERE PARAMETERS
+        html.Div([
+                html.Div(id='output_container'),
+                html.Div('Atmosphere Parameters ', style={'margin-left':'2vw'}),
+                html.Div(id='atm_divs', style={
+                'width': "15vw",
+                'height': '100px',
+                'overflowY': 'scroll',
+                'backgroundColor': '#1C2634',
+                'color': 'white',
+                'margin-left': '2vw'
+            }),
+        ]),
+
 #WAVEFRONT SENSORS
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Wavefront Sensors', style={'margin-left':'2vw'}),
-                html.Div(id='sensor_divs', style={
+                html.Div(id='sensor_divs1', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
@@ -151,7 +166,7 @@ layout = html.Div([
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Wavefront Correctors', style={'margin-left':'2vw'}),
-                html.Div(id='corrector_divs', style={
+                html.Div(id='corrector_divs1', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
@@ -164,20 +179,7 @@ layout = html.Div([
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Loops ', style={'margin-left':'2vw'}),
-                html.Div(id='loop_divs', style={
-                'width': "15vw",
-                'height': '100px',
-                'overflowY': 'scroll',
-                'backgroundColor': '#1C2634',
-                'color': 'white',
-                'margin-left': '2vw'
-            }),
-        ]),
-#ATMOSPHERE PARAMETERS
-        html.Div([
-                html.Div(id='output_container'),
-                html.Div('Atmosphere Parameters ', style={'margin-left':'2vw'}),
-                html.Div(id='atm_divs', style={
+                html.Div(id='loop_divs1', style={
                 'width': "15vw",
                 'height': '100px',
                 'overflowY': 'scroll',
@@ -194,48 +196,50 @@ layout = html.Div([
 
 #3parte
 html.Div([
-        html.P("Images", style={'text-align': 'left', 'margin-left': '1vw'}),
         html.Div([
     
         # Primeiro
         html.Div([
             html.Div([
-                html.Label("Name: ", style={'color': 'white'}),
+                html.P("Pixels", style={'text-align': 'left'}),
+                html.Label(id='source_divs2', style={'color': 'white'}),
                 html.Label("Dimensions: ", style={'color': 'white'}),
                 html.Label("Type: ", style={'color': 'white'}),
                 html.Label("Unit: ", style={'color': 'white'}),
                 html.Label("Metadata ", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
-                dcc.Link(
-                    dbc.Button('Pixels', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
-                    href='/pixels'),
+ #               dcc.Link(
+ #                   dbc.Button('Pixels', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
+ #                   href='/pixels'),
 ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
        # Segundo
         html.Div([
             html.Div([
-                html.Label("Name:", style={'color': 'white'}),
+                html.P("Measurements", style={'text-align': 'left'}),
+                html.Label(id='sensor_divs2', style={'color': 'white'}),
                 html.Label("Dimensions: ", style={'color': 'white'}),
                 html.Label("Type: ", style={'color': 'white'}),
                 html.Label("Unit: ", style={'color': 'white'}),
                 html.Label("Metadata ", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
-                dcc.Link(
-                    dbc.Button('Measurements', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
-                    href='/measurements'),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '10vw'}),
+#                dcc.Link(
+#                    dbc.Button('Measurements', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
+#                    href='/measurements'),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '20vw'}),
        # Terceiro
         html.Div([
             html.Div([
-                html.Label("Name: ", style={'color': 'white'}),
-                html.Label("Dimensions: ", style={'color': 'white'}),
+                html.P("Commands", style={'text-align': 'left'}),
+                html.Label(id='loop_divs2', style={'color': 'white'}),
+                html.Label(id='corrector_divs2', style={'color': 'white'}),
                 html.Label("Type: ", style={'color': 'white'}),
                 html.Label("Unit: ", style={'color': 'white'}),
                 html.Label("Metadata ", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
-            dcc.Link(
-                dbc.Button('Commands', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
-                href='/commands'),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '10vw'}),
+    #        dcc.Link(
+    #            dbc.Button('Commands', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
+     #           href='/commands'),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '20vw'}),
     
     ], style={'display': 'flex'}),
 ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '460px', 'width': '1100px', 'height': '160px'}),
@@ -318,12 +322,13 @@ def display_end_date(data):
     else:
         return ''
 
+#SOURCES
 
 @callback(
-    Output('source_divs', 'children'),
+    Output('source_divs1', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_sources(data):
+def display_sources1(data):
     if data is not None:       
         sources = data['sources']
         #lista
@@ -332,12 +337,26 @@ def display_sources(data):
     else:
         return []
     
-
 @callback(
-    Output('loop_divs', 'children'),
+    Output('source_divs2', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_sources(data):
+def display_sources2(data):
+    if data is not None:       
+        sources = data['sources']
+        #lista
+        source_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sources]
+        return source_divs
+    else:
+        return []
+
+#LOOPS
+
+@callback(
+    Output('loop_divs1', 'children'),
+    [Input('store-atmosphere-params', 'data')]
+)
+def display_loop1(data):
     if data is not None:       
         loops = data['loops']
         #lista
@@ -347,10 +366,24 @@ def display_sources(data):
         return []
     
 @callback(
-    Output('sensor_divs', 'children'),
+    Output('loop_divs2', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_sensor(data):
+def display_loop2(data):
+    if data is not None:       
+        loops = data['loops']
+        #lista
+        loop_divs = [html.Div(loop['uid'], id=loop['uid'], className='option', n_clicks=0, style=option_STYLE) for loop in loops]
+        return loop_divs
+    else:
+        return []   
+
+#WAVEFRONT SENSORS
+@callback(
+    Output('sensor_divs1', 'children'),
+    [Input('store-atmosphere-params', 'data')]
+)
+def display_sensor1(data):
     if data is not None:
         sensors = data['wavefront_sensors']
         sensor_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sensors]
@@ -358,11 +391,37 @@ def display_sensor(data):
     else:
         return []
     
-@callback(
-    Output('corrector_divs', 'children'),
+callback(
+    Output('sensor_divs2', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_corrector(data):
+def display_sensor2(data):
+    if data is not None:
+        sensors = data['wavefront_sensors']
+        sensor_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sensors]
+        return sensor_divs
+    else:
+        return []
+
+#WAVEFRONT CORRECTORS
+
+@callback(
+    Output('corrector_divs1', 'children'),
+    [Input('store-atmosphere-params', 'data')]
+)
+def display_corrector1(data):
+    if data is not None:
+        correctors = data['wavefront_correctors']
+        corrector_divs = [html.Div(corrector['uid'], id=corrector['uid'], className='option', n_clicks=0, style=option_STYLE) for corrector in correctors]
+        return corrector_divs
+    else:
+        return []
+
+@callback(
+    Output('corrector_divs2', 'children'),
+    [Input('store-atmosphere-params', 'data')]
+)
+def display_corrector2(data):
     if data is not None:
         correctors = data['wavefront_correctors']
         corrector_divs = [html.Div(corrector['uid'], id=corrector['uid'], className='option', n_clicks=0, style=option_STYLE) for corrector in correctors]
