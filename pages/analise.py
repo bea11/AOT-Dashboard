@@ -4,6 +4,7 @@ from dash import html, register_page, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import callback
+import json
 
 #import plotly.graph_objects as go
 
@@ -25,17 +26,9 @@ layout = html.Div([
 #nomes/blocos -Juntar os 2
     #primeiros2
     html.Div([
-            html.Div([
+            
                 html.Div('System Name:', style={'margin-top': '2vw'}),
                 html.A(id='system_name', style={
-                    'display': 'inline-block',
-                    'width': '150px',
-                    'height': '50px',
-                    'background-color': '#1C2634',
-                    'margin-top': '0vw'
-                }),
-                html.Div('Mode:', style={'margin-top': '1vw'}),
-                html.A(id='system_mode', style={
                     'display': 'inline-block',
                     'width': '150px',
                     'height': '50px',
@@ -45,9 +38,19 @@ layout = html.Div([
 
             ], style={'position': 'absolute', 'margin-left': '12vw'}),
 
-]),
+html.Div([
+                html.Div('Mode:', style={'margin-top': '2vw'}),
+                html.A(id='system_mode', style={
+                    'display': 'inline-block',
+                    'width': '150px',
+                    'height': '50px',
+                    'background-color': '#1C2634',
+                    'margin-top': '0vw'
+                }),
+                 ], style={'position': 'absolute', 'margin-left': '26vw'}),
+
     #segundos2
-    html.Div([
+    
             html.Div([
                 html.Div('Beginning date:', style={'margin-top': '2vw'}),
                 html.A(id='beginning-date', style={
@@ -57,7 +60,13 @@ layout = html.Div([
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
-                html.Div('End date:', style={'margin-top': '1vw'}),
+
+            ], style={'position': 'absolute', 'margin-left': '40vw'}),
+
+
+
+    html.Div([
+                html.Div('End date:', style={'margin-top': '2vw'}),
                 html.A(id='end-date', style={
                     'display': 'inline-block',
                     'width': '150px',
@@ -65,10 +74,7 @@ layout = html.Div([
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
-
-            ], style={'position': 'absolute', 'margin-left': '26vw'}),
-
-]),
+                 ], style={'position': 'absolute', 'margin-left': '54vw'}),
 #terceiros2
     html.Div([
             html.Div([
@@ -80,16 +86,16 @@ layout = html.Div([
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
-                html.Div('Strehl Wavelength:', style={'margin-top': '1vw'}),
-                html.A(id = 'wavelength', style={
-                    'display': 'inline-block',
-                    'width': '150px',
-                    'height': '50px',
-                    'background-color': '#1C2634',
-                    'margin-top': '0vw'
-                }),
+                #html.Div('Strehl Wavelength:', style={'margin-top': '1vw'}),
+                #html.A(id = 'wavelength', style={
+                #    'display': 'inline-block',
+                #    'width': '150px',
+                #    'height': '50px',
+                #    'background-color': '#1C2634',
+                #    'margin-top': '0vw'
+                #}),
 
-            ], style={'position': 'absolute', 'margin-left': '40vw'}),
+            ], style={'position': 'absolute', 'margin-left': '68vw'}),
 
 ]),
 
@@ -106,7 +112,7 @@ layout = html.Div([
                 }),
                
 
-            ], style={'position': 'absolute', 'margin-left': '54vw'}),
+            ], style={'position': 'absolute', 'margin-left': '82vw'}),
 
 
     #importante quando quero variar entre estados
@@ -125,13 +131,26 @@ layout = html.Div([
            html.Div([
                 html.Div(id='output_container'),
                 html.Div('Sources', style={'margin-left':'12vw'}),
-                html.Div(id='source_divs1', style={
-                    'width': "15vw",
-                    'height': '100px',
+                html.Div(id='source_divs1',n_clicks=0, style={
+                    'width': "12vw",
+                    'height': '90px',
                     'overflowY': 'scroll',
                     'backgroundColor': '#1C2634',
                     'color': 'white',
                     'margin-left': '12vw'
+            }),
+        ]),
+
+#Main Telescope
+           html.Div([
+                html.Div(id='output_container'),
+                html.Div('Main Telescope', style={'margin-left':'2vw'}),
+                html.Div('AAA', style={
+                    'width': "10vw",
+                    'height': '50px',
+                    'backgroundColor': '#1C2634',
+                    'color': 'white',
+                    'margin-left': '2vw'
             }),
         ]),
 
@@ -140,8 +159,8 @@ layout = html.Div([
                 html.Div(id='output_container'),
                 html.Div('Atmosphere Parameters ', style={'margin-left':'2vw'}),
                 html.Div(id='atm_divs', style={
-                'width': "15vw",
-                'height': '100px',
+                'width': "12vw",
+                'height': '90px',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
@@ -154,34 +173,36 @@ layout = html.Div([
                 html.Div(id='output_container'),
                 html.Div('Wavefront Sensors', style={'margin-left':'2vw'}),
                 html.Div(id='sensor_divs1', style={
-                'width': "15vw",
-                'height': '100px',
+                'width': "12vw",
+                'height': '90px',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
                 'margin-left': '2vw'
             }),
         ]),
+
+#LOOPS
+        html.Div([
+                html.Div(id='output_container'),
+                html.Div('Loops ', style={'margin-left':'2vw'}),
+                html.Div(id='loop_divs', style={
+                'width': "12vw",
+                'height': '90px',
+                'overflowY': 'scroll',
+                'backgroundColor': '#1C2634',
+                'color': 'white',
+                'margin-left': '2vw'
+            }),
+        ]),
+
 #WAVEFRONT CORRECTORS        
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Wavefront Correctors', style={'margin-left':'2vw'}),
                 html.Div(id='corrector_divs1', style={
-                'width': "15vw",
-                'height': '100px',
-                'overflowY': 'scroll',
-                'backgroundColor': '#1C2634',
-                'color': 'white',
-                'margin-left': '2vw'
-            }),
-        ]),
-#LOOPS
-        html.Div([
-                html.Div(id='output_container'),
-                html.Div('Loops ', style={'margin-left':'2vw'}),
-                html.Div(id='loop_divs1', style={
-                'width': "15vw",
-                'height': '100px',
+                'width': "12vw",
+                'height': '90px',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
@@ -201,7 +222,7 @@ html.Div([
         # Primeiro
         html.Div([
             html.Div([
-                html.P("Pixels", style={'text-align': 'left'}),
+                html.P("Teste", style={'text-align': 'left'}),
                 html.Label(id='source_divs2', style={'color': 'white'}),
                 html.Label("Dimensions: ", style={'color': 'white'}),
                 html.Label("Type: ", style={'color': 'white'}),
@@ -218,9 +239,7 @@ html.Div([
                 html.P("Measurements", style={'text-align': 'left'}),
                 html.Label(id='sensor_divs2', style={'color': 'white'}),
                 html.Label("Dimensions: ", style={'color': 'white'}),
-                html.Label("Type: ", style={'color': 'white'}),
-                html.Label("Unit: ", style={'color': 'white'}),
-                html.Label("Metadata ", style={'color': 'white'}),
+                
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
 #                dcc.Link(
 #                    dbc.Button('Measurements', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
@@ -230,11 +249,8 @@ html.Div([
         html.Div([
             html.Div([
                 html.P("Commands", style={'text-align': 'left'}),
-                html.Label(id='loop_divs2', style={'color': 'white'}),
-                html.Label(id='corrector_divs2', style={'color': 'white'}),
-                html.Label("Type: ", style={'color': 'white'}),
-                html.Label("Unit: ", style={'color': 'white'}),
-                html.Label("Metadata ", style={'color': 'white'}),
+                html.Label(id='loop_wc_divs', style={'color': 'white'}),
+                html.Label("mas", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
     #        dcc.Link(
     #            dbc.Button('Commands', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
@@ -278,7 +294,7 @@ def display_end_date(data):
     Output('config', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_end_date(data):
+def display_config_data(data):
     if data is not None:
         
         config = data['config']
@@ -290,7 +306,7 @@ def display_end_date(data):
     Output('ratio', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_end_date(data):
+def display_ratio_data(data):
     if data is not None:
         
         ratio = data['ratio']
@@ -302,7 +318,7 @@ def display_end_date(data):
     Output('system_name', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_end_date(data):
+def display_name_data(data):
     if data is not None:
         
         system_name = data['system_name']
@@ -314,13 +330,26 @@ def display_end_date(data):
     Output('system_mode', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_end_date(data):
+def display_mode_data(data):
     if data is not None:
         
         system_mode = data['system_mode']
         return f'{system_mode}'
     else:
         return ''
+
+#Main Telescope
+#@callback(
+#    Output('main_telescope1', 'children'),
+#    [Input('store-atmosphere-params', 'data')]
+#)
+#def display_main_data(data):
+#    if data is not None:
+#        main_telescope = data
+#        main_telescope_dict = html.Div(main_telescope['uid'], id=main_telescope['uid'], className='option', n_clicks=0, style=option_STYLE)
+#        return [main_telescope_dict]
+#    else:
+#        return []
 
 #SOURCES
 
@@ -337,26 +366,14 @@ def display_sources1(data):
     else:
         return []
     
-@callback(
-    Output('source_divs2', 'children'),
-    [Input('store-atmosphere-params', 'data')]
-)
-def display_sources2(data):
-    if data is not None:       
-        sources = data['sources']
-        #lista
-        source_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sources]
-        return source_divs
-    else:
-        return []
 
 #LOOPS
 
 @callback(
-    Output('loop_divs1', 'children'),
+    Output('loop_divs', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_loop1(data):
+def display_loop(data):
     if data is not None:       
         loops = data['loops']
         #lista
@@ -366,17 +383,24 @@ def display_loop1(data):
         return []
     
 @callback(
-    Output('loop_divs2', 'children'),
+    Output('loop_wc_divs', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
-def display_loop2(data):
+def display_loop_wc(data):
     if data is not None:       
         loops = data['loops']
-        #lista
-        loop_divs = [html.Div(loop['uid'], id=loop['uid'], className='option', n_clicks=0, style=option_STYLE) for loop in loops]
-        return loop_divs
+        wavefront_correctors = data['wavefront_correctors']
+        
+        # Dic
+        loop_corrector_mapping = {loop['uid']: loop['WavefrontCorrector'] for loop in loops}
+        
+       
+        loop_wc_divs = [html.Div(loop_corrector_mapping[loop['uid']], id=f"wavefront-corrector-{loop['uid']}", className='wavefront-corrector') for loop in loops]
+        
+        return loop_wc_divs
     else:
-        return []   
+        return []
+  
 
 #WAVEFRONT SENSORS
 @callback(
@@ -391,7 +415,7 @@ def display_sensor1(data):
     else:
         return []
     
-callback(
+@callback(
     Output('sensor_divs2', 'children'),
     [Input('store-atmosphere-params', 'data')]
 )
@@ -417,17 +441,17 @@ def display_corrector1(data):
     else:
         return []
 
-@callback(
-    Output('corrector_divs2', 'children'),
-    [Input('store-atmosphere-params', 'data')]
-)
-def display_corrector2(data):
-    if data is not None:
-        correctors = data['wavefront_correctors']
-        corrector_divs = [html.Div(corrector['uid'], id=corrector['uid'], className='option', n_clicks=0, style=option_STYLE) for corrector in correctors]
-        return corrector_divs
-    else:
-        return []
+#@callback(
+#    Output('corrector_divs2', 'children'),
+#    [Input('store-atmosphere-params', 'data')]
+#)
+#def display_corrector2(data):
+#    if data is not None:
+#        correctors = data['wavefront_correctors']
+#        corrector_divs = [html.Div(corrector['uid'], id=corrector['uid'], className='option', n_clicks=0, style=option_STYLE) for corrector in correctors]
+#        return corrector_divs
+#    else:
+#        return []
     
 @callback(
     Output('atm_divs', 'children'),

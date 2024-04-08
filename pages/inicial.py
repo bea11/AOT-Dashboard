@@ -76,12 +76,41 @@ def source_to_dict(source):
         'azimuth_offset': source.azimuth_offset,
         'width': source.width
     }
-#so quero extrair os nomes dos loops que existem, depois extraio todas as propriedades
+#LOOP
 def loop_to_dict(loop):
     return {
         'uid': loop.uid,
+        'WavefrontCorrector': loop.commanded_corrector.uid,  
     }
+
+def create_dict(sys):
+    d = {}
+    for wfc in sys.wavefront_correctors:
+        d[wfc.uid] = []
+        for loop in sys.loops:
+            if loop.commanded_corrector is wfc:
+                d[wfc.uid].append(loop.uid)
+    loops = [loop_to_dict(loop) for loop in sys.loops]
+    return d, loops
+
+#exemplo sugerido:
+#def create_dict(sys):
+#    d = {}
+#    for wfc in sys.wavefront_correctors:
+#        d[wfc.uid] = []
+#        for loop in sys.loops:
+#            if loop.commanded_corrector is wfc:
+#                d[wfc.uid].append(loop.uid)
+#    return d
+
 #legenda: Unique identifier of the object, which allows unambiguous referencing.
+
+#def telescope_to_dict(telescope):
+#    return {
+#        'uid': telescope.uid,
+#    }
+
+
 def wavefront_sensors_to_dict(wavefront_sensor):
     return {
         'uid': wavefront_sensor.uid,
@@ -121,6 +150,8 @@ def store_uploaded_file(contents):
         system_name = sys.name
         #mode
         system_mode = sys.ao_mode
+        #main telescope
+        #main_telescope = telescope_to_dict(sys.main_telescope)
         #sources list
         sources = [source_to_dict(source) for source in sys.sources]  # dicionário
         #loops
@@ -139,6 +170,7 @@ def store_uploaded_file(contents):
             'ratio': ratio,
             'system_name': system_name,
             'system_mode': system_mode,
+            #'main_telescope': main_telescope,
             'sources': sources,
             'loops': loops,
             'wavefront_sensors': sensors,
