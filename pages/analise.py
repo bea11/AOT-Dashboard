@@ -186,7 +186,7 @@ html.Div([
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Loops ', style={'margin-left':'2vw'}),
-                html.Div(id='loop_divs', style={
+                html.Button(id='loop_divs', style={
                 'width': "12vw",
                 'height': '90px',
                 'overflowY': 'scroll',
@@ -249,7 +249,7 @@ html.Div([
         html.Div([
             html.Div([
                 html.P("Commands", style={'text-align': 'left'}),
-                html.Label(id='loop_wc_divs', style={'color': 'white'}),
+                html.Label(id='wavefront_correctors_loop_divs', style={'color': 'white'}),
                 html.Label("mas", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
     #        dcc.Link(
@@ -260,18 +260,19 @@ html.Div([
     ], style={'display': 'flex'}),
 ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '460px', 'width': '1100px', 'height': '160px'}),
 
-    dcc.Store(id='store-atmosphere-params'),
+    dcc.Store(id='store-atmosphere-params', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
 ])
 
-
+#dcc.Store(id='store-atmosphere-params', storage_type='local'),
 #returnar dados todos
 @callback(
     Output('beginning-date', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+    Input('url', 'pathname')]
 )
-def display_beginning_date(data):
-    if data is not None:
+def display_beginning_date(data, pathname):
+    if pathname == '/analise' and data is not None:
         
         beginning_date = data['date_beginning']
         return f'{beginning_date}'
@@ -280,10 +281,11 @@ def display_beginning_date(data):
     
 @callback(
     Output('end-date', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+    Input('url', 'pathname')]
 )
-def display_end_date(data):
-    if data is not None:
+def display_end_date(data, pathname):  
+    if pathname == '/analise' and data is not None:
         
         end_date = data['date_end']
         return f'{end_date}'
@@ -292,10 +294,11 @@ def display_end_date(data):
     
 @callback(
     Output('config', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+    Input('url', 'pathname')]
 )
-def display_config_data(data):
-    if data is not None:
+def display_config_data(data, pathname):  
+    if pathname == '/analise' and data is not None:
         
         config = data['config']
         return f'{config}'
@@ -304,10 +307,11 @@ def display_config_data(data):
     
 @callback(
     Output('ratio', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_ratio_data(data):
-    if data is not None:
+def display_ratio_data(data, pathname):  
+    if pathname == '/analise' and data is not None:
         
         ratio = data['ratio']
         return f'{ratio}'
@@ -316,10 +320,11 @@ def display_ratio_data(data):
 
 @callback(
     Output('system_name', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_name_data(data):
-    if data is not None:
+def display_name_data(data, pathname):  
+    if pathname == '/analise' and data is not None:
         
         system_name = data['system_name']
         return f'{system_name}'
@@ -328,10 +333,11 @@ def display_name_data(data):
 
 @callback(
     Output('system_mode', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_mode_data(data):
-    if data is not None:
+def display_mode_data(data, pathname):
+    if pathname == '/analise' and data is not None:
         
         system_mode = data['system_mode']
         return f'{system_mode}'
@@ -355,10 +361,11 @@ def display_mode_data(data):
 
 @callback(
     Output('source_divs1', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_sources1(data):
-    if data is not None:       
+def display_sources1(data, pathname):
+    if pathname == '/analise' and data is not None:       
         sources = data['sources']
         #lista
         source_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sources]
@@ -371,44 +378,47 @@ def display_sources1(data):
 
 @callback(
     Output('loop_divs', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_loop(data):
-    if data is not None:       
-        loops = data['loops']
+def display_loop(data, pathname):
+    if pathname == '/analise' and data is not None:       
+        loops2 = data['loops2']
         #lista
-        loop_divs = [html.Div(loop['uid'], id=loop['uid'], className='option', n_clicks=0, style=option_STYLE) for loop in loops]
+        loop_divs = [html.Div(loop['uid'], id=loop['uid'], className='option', n_clicks=0, style=option_STYLE) for loop in loops2]
         return loop_divs
     else:
         return []
     
 @callback(
-    Output('loop_wc_divs', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    Output('wavefront_correctors_loop_divs', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('loop_divs', 'n_clicks'),
+     Input('url', 'pathname')]
 )
-def display_loop_wc(data):
-    if data is not None:       
-        loops = data['loops']
-        wavefront_correctors = data['wavefront_correctors']
-        
-        # Dic
-        loop_corrector_mapping = {loop['uid']: loop['WavefrontCorrector'] for loop in loops}
-        
-       
-        loop_wc_divs = [html.Div(loop_corrector_mapping[loop['uid']], id=f"wavefront-corrector-{loop['uid']}", className='wavefront-corrector') for loop in loops]
-        
-        return loop_wc_divs
-    else:
+def update_wavefront_correctors(data, n_clicks, pathname):
+      if pathname == '/analise':
+        if n_clicks is not None and n_clicks > 0 and data is not None and 'd' in data:
+            d = data['d']  # d dic
+
+        # Testes para conseguir demonstrar o id do loop clicado
+            clicked_loop_id = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+
+            if clicked_loop_id in d:
+                wavefront_correctors = d[clicked_loop_id]
+                wavefront_correctors_divs = [html.Div(wfc, id=wfc, className='option', n_clicks=0, style=option_STYLE) for wfc in wavefront_correctors]
+                return wavefront_correctors_divs
         return []
   
 
 #WAVEFRONT SENSORS
 @callback(
     Output('sensor_divs1', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_sensor1(data):
-    if data is not None:
+def display_sensor1(data, pathname):
+    if pathname == '/analise' and data is not None:
         sensors = data['wavefront_sensors']
         sensor_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sensors]
         return sensor_divs
@@ -417,10 +427,11 @@ def display_sensor1(data):
     
 @callback(
     Output('sensor_divs2', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_sensor2(data):
-    if data is not None:
+def display_sensor2(data, pathname):
+    if pathname == '/analise' and data is not None:
         sensors = data['wavefront_sensors']
         sensor_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sensors]
         return sensor_divs
@@ -431,10 +442,11 @@ def display_sensor2(data):
 
 @callback(
     Output('corrector_divs1', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_corrector1(data):
-    if data is not None:
+def display_corrector1(data, pathname):
+    if pathname == '/analise' and data is not None:
         correctors = data['wavefront_correctors']
         corrector_divs = [html.Div(corrector['uid'], id=corrector['uid'], className='option', n_clicks=0, style=option_STYLE) for corrector in correctors]
         return corrector_divs
@@ -455,10 +467,11 @@ def display_corrector1(data):
     
 @callback(
     Output('atm_divs', 'children'),
-    [Input('store-atmosphere-params', 'data')]
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
 )
-def display_corrector(data):
-    if data is not None:
+def display_atm(data, pathname):
+    if pathname == '/analise' and data is not None:
         atmosphere = data['atmosphere_params']
         atm_divs = [html.Div(atm['uid'], id=atm['uid'], className='option', n_clicks=0, style=option_STYLE) for atm in atmosphere]
         return atm_divs

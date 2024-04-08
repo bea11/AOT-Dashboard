@@ -59,11 +59,12 @@ layout = html.Div([
             style=DRAG_STYLE,
             multiple=False,
         ),
-        html.Div(id='output-data-upload'),
+       
        
        
     ]),
     dcc.Store(id='store-atmosphere-params'),
+     html.Div(id='output-data-upload'),
 ])
 
 #tentar extrair dicionário
@@ -79,19 +80,16 @@ def source_to_dict(source):
 #LOOP
 def loop_to_dict(loop):
     return {
-        'uid': loop.uid,
-        'WavefrontCorrector': loop.commanded_corrector.uid,  
+        'uid': loop.uid, 
     }
 
 def create_dict(sys):
     d = {}
-    for wfc in sys.wavefront_correctors:
-        d[wfc.uid] = []
-        for loop in sys.loops:
-            if loop.commanded_corrector is wfc:
-                d[wfc.uid].append(loop.uid)
-    loops = [loop_to_dict(loop) for loop in sys.loops]
-    return d, loops
+    for loop in sys.loops:
+        if loop.uid not in d:
+            d[loop.uid] = []
+        d[loop.uid].append(loop.commanded_corrector.uid)
+    return d
 
 #exemplo sugerido:
 #def create_dict(sys):
@@ -155,7 +153,9 @@ def store_uploaded_file(contents):
         #sources list
         sources = [source_to_dict(source) for source in sys.sources]  # dicionário
         #loops
-        loops = [loop_to_dict(loop) for loop in sys.loops]
+        loops2 = [loop_to_dict(loop) for loop in sys.loops]
+        copia_loops2 = loops2.copy()
+        d, copia_loops2 = create_dict(sys)
         #wavefront sensors
         sensors = [wavefront_sensors_to_dict(wavefront_sensor) for wavefront_sensor in sys.wavefront_sensors]
         #wavefront corrector
@@ -171,8 +171,10 @@ def store_uploaded_file(contents):
             'system_name': system_name,
             'system_mode': system_mode,
             #'main_telescope': main_telescope,
+            'loops2': loops2,
+            'd': d, 
             'sources': sources,
-            'loops': loops,
+            
             'wavefront_sensors': sensors,
             'wavefront_correctors': correctors,
             'atmosphere_params': atmosphere
