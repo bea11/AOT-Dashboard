@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import callback
 import json
+from dash.dependencies import Input, Output, State, ALL
 
 #import plotly.graph_objects as go
 
@@ -186,7 +187,7 @@ html.Div([
         html.Div([
                 html.Div(id='output_container'),
                 html.Div('Loops ', style={'margin-left':'2vw'}),
-                html.Button(id='loop_divs', style={
+                html.Div(id='loop_divs', style={
                 'width': "12vw",
                 'height': '90px',
                 'overflowY': 'scroll',
@@ -222,12 +223,10 @@ html.Div([
         # Primeiro
         html.Div([
             html.Div([
-                html.P("Teste", style={'text-align': 'left'}),
-                html.Label(id='source_divs2', style={'color': 'white'}),
+                html.P("1 Tabela hierarquia", style={'text-align': 'left'}),
                 html.Label("Dimensions: ", style={'color': 'white'}),
                 html.Label("Type: ", style={'color': 'white'}),
-                html.Label("Unit: ", style={'color': 'white'}),
-                html.Label("Metadata ", style={'color': 'white'}),
+              
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
  #               dcc.Link(
  #                   dbc.Button('Pixels', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
@@ -236,8 +235,8 @@ html.Div([
        # Segundo
         html.Div([
             html.Div([
-                html.P("Measurements", style={'text-align': 'left'}),
-                html.Label(id='sensor_divs2', style={'color': 'white'}),
+                html.P("2 Tabela hierarquia", style={'text-align': 'left'}),
+                html.Label(id='sensor_source_div', style={'color': 'white'}),
                 html.Label("Dimensions: ", style={'color': 'white'}),
                 
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
@@ -248,8 +247,8 @@ html.Div([
        # Terceiro
         html.Div([
             html.Div([
-                html.P("Commands", style={'text-align': 'left'}),
-                html.Label(id='wavefront_correctors_loop_divs', style={'color': 'white'}),
+                html.P("3 Tabela hierarquia", style={'text-align': 'left'}),
+                html.Label( id='loop_corrector_div', style={'color': 'white'}),
                 html.Label("mas", style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
     #        dcc.Link(
@@ -368,11 +367,44 @@ def display_sources1(data, pathname):
     if pathname == '/analise' and data is not None:       
         sources = data['sources']
         #lista
-        source_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sources]
+        source_divs = [html.Button(source['uid'], id={'type': 'source-button', 'index': source['uid']}, className='option', n_clicks=0, style=option_STYLE) for source in sources]
         return source_divs
     else:
         return []
+
+
+#WAVEFRONT SENSORS
+@callback(
+    Output('sensor_divs1', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_sensor1(data, pathname):
+    if pathname == '/analise' and data is not None:
+        sensors = data['wavefront_sensors']
+        sensor_divs = [html.Div(sensor['uid'], id=sensor['uid'], className='option', n_clicks=0, style=option_STYLE) for sensor in sensors]
+        return sensor_divs
+    else:
+        return []
+
     
+@callback(
+    Output('sensor_source_div', 'children'),
+    [Input({'type': 'source-button', 'index': ALL}, 'n_clicks')],
+    [State('store-atmosphere-params', 'data')]
+)
+def update_wavefront_corrector(n_clicks, data):
+    ctx = dash.callback_context
+    if not ctx.triggered or data is None:
+        return None
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        source_id = json.loads(button_id)['index']
+        sensor_sources = data['other_sensor_sources']
+        associated_sensors = [sensor for sensor, sources in sensor_sources.items() if source_id in sources]
+        return associated_sensors
+      
+  
 
 #LOOPS
 
@@ -384,59 +416,28 @@ def display_sources1(data, pathname):
 def display_loop(data, pathname):
     if pathname == '/analise' and data is not None:       
         loops2 = data['loops2']
-        #lista
-        loop_divs = [html.Div(loop['uid'], id=loop['uid'], className='option', n_clicks=0, style=option_STYLE) for loop in loops2]
-        return loop_divs
+        loop_buttons = [html.Button(loop['uid'], id={'type': 'loop-button', 'index': loop['uid']}, className='option', n_clicks=0, style=option_STYLE) for loop in loops2]
+        return loop_buttons
     else:
         return []
-    
+
 @callback(
-    Output('wavefront_correctors_loop_divs', 'children'),
-    [Input('store-atmosphere-params', 'data'),
-     Input('loop_divs', 'n_clicks'),
-     Input('url', 'pathname')]
+    Output('loop_corrector_div', 'children'),
+    [Input({'type': 'loop-button', 'index': ALL}, 'n_clicks')],
+    [State('store-atmosphere-params', 'data')]
 )
-def update_wavefront_correctors(data, n_clicks, pathname):
-      if pathname == '/analise':
-        if n_clicks is not None and n_clicks > 0 and data is not None and 'd' in data:
-            d = data['d']  # d dic
-
-        # Testes para conseguir demonstrar o id do loop clicado
-            clicked_loop_id = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
-
-            if clicked_loop_id in d:
-                wavefront_correctors = d[clicked_loop_id]
-                wavefront_correctors_divs = [html.Div(wfc, id=wfc, className='option', n_clicks=0, style=option_STYLE) for wfc in wavefront_correctors]
-                return wavefront_correctors_divs
-        return []
-  
-
-#WAVEFRONT SENSORS
-@callback(
-    Output('sensor_divs1', 'children'),
-    [Input('store-atmosphere-params', 'data'),
-     Input('url', 'pathname')]
-)
-def display_sensor1(data, pathname):
-    if pathname == '/analise' and data is not None:
-        sensors = data['wavefront_sensors']
-        sensor_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sensors]
-        return sensor_divs
+def update_corrector(n_clicks, data):
+    ctx = dash.callback_context
+    if not ctx.triggered or data is None:
+        return None
     else:
-        return []
-    
-@callback(
-    Output('sensor_divs2', 'children'),
-    [Input('store-atmosphere-params', 'data'),
-     Input('url', 'pathname')]
-)
-def display_sensor2(data, pathname):
-    if pathname == '/analise' and data is not None:
-        sensors = data['wavefront_sensors']
-        sensor_divs = [html.Div(source['uid'], id=source['uid'], className='option', n_clicks=0, style=option_STYLE) for source in sensors]
-        return sensor_divs
-    else:
-        return []
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        loop_id = json.loads(button_id)['index']
+        corrector = data['other_WC_lopps'][loop_id]
+        return corrector
+
+
+
 
 #WAVEFRONT CORRECTORS
 

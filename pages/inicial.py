@@ -77,42 +77,44 @@ def source_to_dict(source):
         'azimuth_offset': source.azimuth_offset,
         'width': source.width
     }
+
+#WAVEFRONT SENSORS
+def wavefront_sensors_to_dict(wavefront_sensor):
+    return {
+        'uid': wavefront_sensor.uid,
+    }
+
+def create_dict_ws(sys):
+    e = {}
+    for wavefront_sensor in sys.wavefront_sensors:
+        if wavefront_sensor.uid not in e:
+            e[wavefront_sensor.uid] = []
+        e[wavefront_sensor.uid].append(wavefront_sensor.source.uid)
+    print(f"In create_dict, e is {e} and its type is {type(e)}")
+    return e
+
 #LOOP
 def loop_to_dict(loop):
     return {
         'uid': loop.uid, 
     }
 
-def create_dict(sys):
+def create_dict_lp(sys):
     d = {}
     for loop in sys.loops:
+        #print(f"loop: {loop}, type: {type(loop)}")
         if loop.uid not in d:
             d[loop.uid] = []
         d[loop.uid].append(loop.commanded_corrector.uid)
+    #print(f"d: {d}, type: {type(d)}")
     return d
 
-#exemplo sugerido:
-#def create_dict(sys):
-#    d = {}
-#    for wfc in sys.wavefront_correctors:
-#        d[wfc.uid] = []
-#        for loop in sys.loops:
-#            if loop.commanded_corrector is wfc:
-#                d[wfc.uid].append(loop.uid)
-#    return d
-
-#legenda: Unique identifier of the object, which allows unambiguous referencing.
 
 #def telescope_to_dict(telescope):
 #    return {
 #        'uid': telescope.uid,
 #    }
 
-
-def wavefront_sensors_to_dict(wavefront_sensor):
-    return {
-        'uid': wavefront_sensor.uid,
-    }
 
 def wavefront_correctors_to_dict(wavefront_corrector):
     return {
@@ -152,14 +154,20 @@ def store_uploaded_file(contents):
         #main_telescope = telescope_to_dict(sys.main_telescope)
         #sources list
         sources = [source_to_dict(source) for source in sys.sources]  # dicionário
+
+        #wavefront sensors
+        sensors = [wavefront_sensors_to_dict(wavefront_sensor) for wavefront_sensor in sys.wavefront_sensors] 
+        other_sensor_sources = create_dict_ws(sys)
+        #testes: print(f"other_WC_lopps: {other_sensor_sources}, type: {type(other_sensor_sources)}")
         #loops
         loops2 = [loop_to_dict(loop) for loop in sys.loops]
-        copia_loops2 = loops2.copy()
-        d, copia_loops2 = create_dict(sys)
-        #wavefront sensors
-        sensors = [wavefront_sensors_to_dict(wavefront_sensor) for wavefront_sensor in sys.wavefront_sensors]
+        #copia_loops2 = loops2.copy()
+        other_WC_lopps = create_dict_lp(sys)
+        #print(f"other_WC_lopps:{other_WC_lopps}, type:{type(other_WC_lopps)}")
+        
         #wavefront corrector
         correctors = [wavefront_correctors_to_dict(wavefront_corrector) for wavefront_corrector in sys.wavefront_correctors]
+       
         #atmospheric parameters
         atmosphere = [atmosphere_params_to_dict(atmosphere_param) for atmosphere_param in sys.atmosphere_params]
         return {
@@ -172,10 +180,11 @@ def store_uploaded_file(contents):
             'system_mode': system_mode,
             #'main_telescope': main_telescope,
             'loops2': loops2,
-            'd': d, 
+            'other_WC_lopps': other_WC_lopps, 
             'sources': sources,
             
             'wavefront_sensors': sensors,
+            'other_sensor_sources': other_sensor_sources,
             'wavefront_correctors': correctors,
             'atmosphere_params': atmosphere
         }
@@ -193,7 +202,9 @@ def display_uploaded_filename(filename):
         ])
     else:
         return html.Div()
-        
+    
+
+
 
 #mais funções: sys.wavefront_sensors
         # len(sys.atmosphere_sensors)
