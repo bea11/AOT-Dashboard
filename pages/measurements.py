@@ -11,6 +11,15 @@ import gzip
 
 dash.register_page(__name__, path='/measurements')
 
+option_STYLE = {
+    'width': '100%',
+    'background-color': '#1C2634',
+    'color': 'white',
+    'cursor': 'pointer',
+    'border': '1px solid #243343',
+}
+
+
 layout = html.Div([
     html.H1("Measurements", style={'text-align': 'left', 'margin-left': '12vw', 'marginBottom' : '0px'}),
 
@@ -30,7 +39,7 @@ layout = html.Div([
             
             html.Div([
                 html.Label("Name of sensor: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='sensor_name', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
             html.Div([
@@ -55,12 +64,12 @@ layout = html.Div([
 
             html.Div([
                 html.Label("Number of valid subapertures: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='valid_subapertures', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Subapertures Size: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='subapertures_size', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
@@ -69,8 +78,8 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
    
             html.Div([
-                html.Label("Float: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Wavelength: ", style={'color': 'white'}),
+                html.Div(id='wavelength', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
@@ -283,6 +292,8 @@ layout = html.Div([
     'width': '600px',  
     'height': '280px'  
 }),
+    dcc.Store(id='store-atmosphere-params', storage_type='local'),
+    html.Div(id='output-atmosphere-params'),
 
 ], style={'position': 'relative'})
 
@@ -318,3 +329,60 @@ def update_output3(n_clicks_timestamp3, n_clicks_timestamp4, content3, content4)
         return content3
     else:
         return content4
+    
+
+#Name of wavefront sensor
+@callback(
+    Output('sensor_name', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_sensor1(data, pathname):
+    if pathname == '/analise' and data is not None:
+        sensors = data['wavefront_sensors']
+        sensor_divs = [html.Div(sensor, id=sensor, className='option', n_clicks=0, style=option_STYLE) for sensor in sensors]
+        return sensor_divs
+    else:
+        return []
+    
+#Valid subapertures of wavefront sensor
+@callback(
+    Output('valid_subapertures', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_subapertures(data, pathname):
+    if pathname == '/analise' and data is not None:
+        n_subapertures = data['n_subapertures']
+        sensor_divs = [html.Div(sensor, id=sensor, className='option', n_clicks=0, style=option_STYLE) for sensor in n_subapertures]
+        return sensor_divs
+    else:
+        return []
+    
+#Size subapertures of wavefront sensor
+@callback(
+    Output('subapertures_size', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_subapertures(data, pathname):
+    if pathname == '/analise' and data is not None:
+        size_subapertures = data['subapertures_size']
+        sensor_divs = [html.Div(sensor, id=sensor, className='option', n_clicks=0, style=option_STYLE) for sensor in size_subapertures]
+        return sensor_divs
+    else:
+        return []
+    
+#Wavelength of wavefront sensor
+@callback(
+    Output('wavelength', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_wavelength(data, pathname):
+    if pathname == '/analise' and data is not None:
+        wave = data['wavelength']
+        sensor_divs = [html.Div(sensor, id=sensor, className='option', n_clicks=0, style=option_STYLE) for sensor in wave]
+        return sensor_divs
+    else:
+        return []

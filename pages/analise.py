@@ -4,12 +4,14 @@ from dash import html, register_page, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import callback
+
 import json
 from dash.dependencies import Input, Output, State, ALL
 
 #import plotly.graph_objects as go
 
 dash.register_page(__name__, path='/analise')
+
 
 #para editar cada quadro do AOT:
 option_STYLE = {
@@ -146,7 +148,7 @@ html.Div([
            html.Div([
                 html.Div(id='output_container'),
                 html.Div('Main Telescope', style={'margin-left':'2vw'}),
-                html.Div('AAA', style={
+                html.Div(id='main_telescope', style={
                     'width': "10vw",
                     'height': '50px',
                     'backgroundColor': '#1C2634',
@@ -213,7 +215,7 @@ html.Div([
 
         
         ], style={'display': 'flex', 'justifyContent': 'flex-start', 'flexWrap': 'wrap'}),
-    ], style={'position': 'absolute', 'top': '270px', 'width': '100%'}),
+    ], style={'position': 'absolute', 'top': '220px', 'width': '100%'}),
 
 
 #3parte
@@ -221,46 +223,67 @@ html.Div([
         html.Div([
     
         # Primeiro
-        html.Div([
+
+ html.Div([
             html.Div([
-                html.P("1 Tabela hierarquia", style={'text-align': 'left'}),
-                html.Label("Dimensions: ", style={'color': 'white'}),
-                html.Label("Type: ", style={'color': 'white'}),
-              
-    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
- #               dcc.Link(
- #                   dbc.Button('Pixels', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
- #                   href='/pixels'),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-       # Segundo
-        html.Div([
-            html.Div([
-                html.P("2 Tabela hierarquia", style={'text-align': 'left'}),
-                html.Label(id='sensor_source_div', style={'color': 'white'}),
-                html.Label("Dimensions: ", style={'color': 'white'}),
+                html.Label('Corresponding Wavefront Sensor', id='sensor_source_div', style={'color': 'white'}),
+                html.Div([
+                #    html.Label('Measurements: ', style={'color': 'white'}),
+                #    dcc.Link(
+                #        dbc.Button(id='image_name_ws', style={'background-color':'#1C2634', 'color': 'white','width': '7vw'}),
+                #        href='/measurements'
+                #            )
+            ], style={'display': 'flex', 'flex-direction': 'row', 'align-items': 'center'}),
+
+                #html.Div([
+                 #   html.Label('Detector: ', style={'color': 'white'}),
+                    #dcc.Link(
+                     #   dbc.Button(id='detector_name_ws', style={'background-color':'#1C2634', 'color': 'white','width': '7vw'}),
+                     #   href='/pixels'
+                  #          )
+            #], style={'display': 'flex', 'flex-direction': 'row', 'align-items': 'center'}),
                 
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
 #                dcc.Link(
 #                    dbc.Button('Measurements', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
 #                    href='/measurements'),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '20vw'}),
-       # Terceiro
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '1vw', 'width': '20vw'}),
+
+       # Segundo
+       
+        
         html.Div([
             html.Div([
-                html.P("3 Tabela hierarquia", style={'text-align': 'left'}),
-                html.Label( id='loop_corrector_div', style={'color': 'white'}),
-                html.Label("mas", style={'color': 'white'}),
+                html.Label('Corresponding loops: ', style={'color': 'white'}),
+                html.Div(id='verified_loop_container'),
+    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
+ #               dcc.Link(
+ #                   dbc.Button('Pixels', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
+ #                   href='/pixels'),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '5vw', 'width': '20vw'}),
+
+#Terceiro
+
+        html.Div([
+            html.Div([
+                
+                html.Label( id='verified_corrector_container', style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
     #        dcc.Link(
     #            dbc.Button('Commands', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
      #           href='/commands'),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '20vw'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center','margin-left': '5vw', 'width': '20vw'}),
     
+
+
     ], style={'display': 'flex'}),
-], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '460px', 'width': '1100px', 'height': '160px'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '430px', 'width': '1100px', 'height': '200px'}),
 
     dcc.Store(id='store-atmosphere-params', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
+
+    html.Div(id='just_sensors', style={'display': 'none'}),  # para poder chamar sem ter problemas
+    html.Div(id='just_loops', style={'display': 'none'}),
 ])
 
 #dcc.Store(id='store-atmosphere-params', storage_type='local'),
@@ -329,6 +352,19 @@ def display_name_data(data, pathname):
         return f'{system_name}'
     else:
         return ''
+    
+@callback(
+    Output('main_telescope', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_telescope_data(data, pathname):  
+    if pathname == '/analise' and data is not None:
+        
+        main_telescope = data['main_telescope']
+        return f'{main_telescope}'
+    else:
+        return ''
 
 @callback(
     Output('system_mode', 'children'),
@@ -382,28 +418,94 @@ def display_sources1(data, pathname):
 def display_sensor1(data, pathname):
     if pathname == '/analise' and data is not None:
         sensors = data['wavefront_sensors']
-        sensor_divs = [html.Div(sensor['uid'], id=sensor['uid'], className='option', n_clicks=0, style=option_STYLE) for sensor in sensors]
+        sensor_divs = [html.Div(sensor, id=sensor, className='option', n_clicks=0, style=option_STYLE) for sensor in sensors]
         return sensor_divs
     else:
         return []
+    
+
 
     
 @callback(
-    Output('sensor_source_div', 'children'),
-    [Input({'type': 'source-button', 'index': ALL}, 'n_clicks')],
+    [Output('sensor_source_div', 'children'),
+     Output('just_sensors', 'children')],
+    [Input({'type': 'source-button', 'index': ALL}, 'n_clicks'),
+     Input('url', 'pathname')],
     [State('store-atmosphere-params', 'data')]
 )
-def update_wavefront_corrector(n_clicks, data):
-    ctx = dash.callback_context
-    if not ctx.triggered or data is None:
-        return None
+def update_wavefront_sensor_and_display_names(n_clicks, pathname, data):
+    if pathname == '/analise' and data is not None:
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            return []
+        else:
+            button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+            source_id = json.loads(button_id)['index']
+            sensor_sources = data.get('other_sensor_sources')
+            if sensor_sources is None:
+                return []
+            associated_sensors = [sensor for sensor, sources in sensor_sources.items() if source_id in sources]
+            
+            image_name_dict = data.get('image_name')
+            if image_name_dict is None:
+                image_name_labels = []
+            else:
+                image_name_labels = [name for name, sensors in image_name_dict.items() if any(sensor in sensors for sensor in associated_sensors)]
+
+            detector_name_dict = data.get('detector_name')
+            if detector_name_dict is None:
+                detector_name_labels = []
+            else:
+                detector_name_labels = [name for name, sensors in detector_name_dict.items() if any(sensor in sensors for sensor in associated_sensors)]
+
+            labels = []
+            for i, sensor in enumerate(associated_sensors):
+                image_name = image_name_labels[i] if i < len(image_name_labels) else 'N/A'
+                detector_name = detector_name_labels[i] if i < len(detector_name_labels) else 'N/A'
+                labels.append(
+                    html.Div([
+                        html.Span(f'Sensor: {sensor}, Measurements: '),
+                        dcc.Link(f'{image_name}', href='/measurements'),
+                        html.Span(', Detector: '),
+                        dcc.Link(f'{detector_name}', href='/pixel'),
+                        ], id=f'verified_sensor[{i+1}]', style={'color': 'white'})
+            )
+
+            return labels, associated_sensors
     else:
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        source_id = json.loads(button_id)['index']
-        sensor_sources = data['other_sensor_sources']
-        associated_sensors = [sensor for sensor, sources in sensor_sources.items() if source_id in sources]
-        return associated_sensors
+        return [], []
+    
+#verificar os loops com os wavefront sensor correspondentes:
+@callback(
+    [Output('verified_loop_container', 'children'),
+     Output('just_loops', 'children')],
+    [Input('just_sensors', 'children'),
+     Input('url', 'pathname')],
+    [State('store-atmosphere-params', 'data')]
+)
+def update_verified_loop(just_sensors, pathname, data):
+    if pathname == '/analise' and data is not None:
+        ws_loops = data.get('other_WS_loops')
+        command_loop_mapping = data.get('command_name')  # Assuming this is the command-loop mapping
+        #print(f'commandmapping {command_loop_mapping}')
+        if ws_loops is None:
+            return None  
+        associated_loops = [loop for loop, sensors in ws_loops.items() if any(sensor in sensors['input_sensors'] for sensor in just_sensors)]
+        labels = []
+        for i, loop in enumerate(associated_loops):
+            command = next((cmd for cmd, loops in command_loop_mapping.items() if loop in loops), None)
+            labels.append(
+                html.Div([
+                    html.Span(f'Loop: {loop}, Command: '),
+                    dcc.Link(f'{command}', href='/commands'),
+            ], id=f'verified_loop[{i+1}]', style={'color': 'white'})
+)
+        #print(labels)
+        return labels, associated_loops
+    else:
+        return [], []
       
+
   
 
 #LOOPS
@@ -420,23 +522,60 @@ def display_loop(data, pathname):
         return loop_buttons
     else:
         return []
-
+    
+#WAVEFRONT CORRECTORS
 @callback(
-    Output('loop_corrector_div', 'children'),
-    [Input({'type': 'loop-button', 'index': ALL}, 'n_clicks')],
+    Output('verified_corrector_container', 'children'),
+    [Input('just_loops', 'children'),
+     Input('url', 'pathname')],
     [State('store-atmosphere-params', 'data')]
 )
-def update_corrector(n_clicks, data):
-    ctx = dash.callback_context
-    if not ctx.triggered or data is None:
-        return None
+def update_corrector_labels(loops, pathname, data):
+    if pathname == '/analise' and data is not None:
+        print(f'loops {loops}')
+        other_WC_loops = data.get('other_WC_loops')
+        print(f'other_WC_loops {other_WC_loops}')
+        if other_WC_loops is None:
+            return []
+        labels = []
+        for loop, correctors in other_WC_loops.items():
+            for corrector in correctors:
+                labels.append(html.Label(f'For the Loop {loop}, the corrector is {corrector}.', style={'color': 'white'}))
+        print(labels)
+        return labels
     else:
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        loop_id = json.loads(button_id)['index']
-        corrector = data['other_WC_lopps'][loop_id]
-        return corrector
+        return []
 
+#@callback(
+#    Output('loop_corrector_div', 'children'),
+#    [Input({'type': 'loop-button', 'index': ALL}, 'n_clicks')],
+#    [State('store-atmosphere-params', 'data')]
+#)
+#def update_corrector(n_clicks, data):
+#    ctx = dash.callback_context
+#    if not ctx.triggered or data is None:
+#        return None
+#    else:
+#        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+#        loop_id = json.loads(button_id)['index']
+#        corrector = data['other_WC_lopps'][loop_id]
+#        return corrector
 
+#Para já não preciso de mostrar os control loops
+#@callback(
+#    Output('control_loop', 'children'),
+#    [Input('store-atmosphere-params', 'data'),
+#     Input('url', 'pathname')]
+#)
+#def display_controloop(data, pathname):
+#    if pathname == '/analise' and data is not None:
+#        control_loops = data.get('control_loops')
+#        if control_loops is None:
+#            return []  
+#        control_loop_divs = [html.Div(control_loop['uid'], id=control_loop['uid'], className='option', n_clicks=0, style=option_STYLE) for control_loop in control_loops]
+#        return control_loop_divs
+#    else:
+#        return []
 
 
 #WAVEFRONT CORRECTORS

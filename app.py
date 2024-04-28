@@ -9,6 +9,7 @@ from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
 
 
 app = dash.Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
 #server = app.server
 
 #estilo
