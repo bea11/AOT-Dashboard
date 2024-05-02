@@ -11,17 +11,54 @@ import gzip
 
 dash.register_page(__name__, path='/commands')
 
+DRAG_STYLE = {
+    'width': '885px',
+    'height': '108px',
+    'left': '400px', 
+    'top': '60px',
+    'borderRadius': '5px',
+    'display': 'flex',
+    'backgroundColor': '#8CE397',
+    'color': 'white',
+}
+
+
 layout = html.Div([
     html.H1("Commands", style={'text-align': 'left', 'margin-left': '12vw', 'marginBottom' : '0px'}),
 
+    html.Div([
+    dbc.Select(
+        id='command-dropdown',
+        options=[
+            {'label': 'HODM', 'value': 'CMD1'},
+            {'label': 'ITTM', 'value': 'CMD2'},
+        ],
+        value='CMD1',
+        className='custom-select', 
+        style={
+            'width': "10vw",
+            'text-color': 'white',
+            'height': '28px',
+            'backgroundColor': '#1C2634',
+            'margin-left': '12vw',
+            'display': 'flex',  
+            'position': 'absolute', 
+            #'left': '830px', 
+            #'top': '50px',
+        }
+    ),
+]),
+    
+
    #1 quadrante
     html.Div([
+
         html.P("Properties", style={'text-align': 'left', 'margin-left': '1vw'}),
         
     #Strings    
         html.Div([
             html.Label("Name of sensor: ", style={'color': 'white'}),
-            html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '18px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
         html.Div([
@@ -67,7 +104,7 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '85px', 'width': '400px', 'height': '390px'}),
     
    #1 quadrante 
     html.Div([
@@ -105,7 +142,7 @@ layout = html.Div([
 
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '580px', 'top': '80px', 'width': '230px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '580px', 'top': '85px', 'width': '230px', 'height': '390px'}),
 
     #2 quadrante 
     #imagem

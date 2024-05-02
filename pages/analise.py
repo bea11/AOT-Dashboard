@@ -281,6 +281,11 @@ html.Div([
 
     dcc.Store(id='store-atmosphere-params', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
+    # html.Div(id='img_data2', style={'color': 'white'}),
+    #html.Div(id='mo2', style={'color': 'red'}),
+    #html.Div(id='sm2', style={'color': 'blue'}),
+    #html.Div(id='ss2', style={'color': 'black'}),
+
 
     html.Div(id='just_sensors', style={'display': 'none'}),  # para poder chamar sem ter problemas
     html.Div(id='just_loops', style={'display': 'none'}),
@@ -288,6 +293,59 @@ html.Div([
 
 #dcc.Store(id='store-atmosphere-params', storage_type='local'),
 #returnar dados todos
+
+"""@callback(
+    Output('img_data2', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_img_data(data, pathname):
+    if pathname == '/analise' and data is not None:
+        
+        img_data = data['np_image_data']
+        print(f"recebi {img_data}")
+        return img_data
+    else: []
+
+@callback(
+    Output('sm2', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_sm_data(data, pathname):
+    if pathname == '/analise' and data is not None:
+        
+        sm = data['subaperture_mask']
+        print(f"recebi {sm}")
+        return sm
+    else: []
+
+@callback(
+    Output('mo2', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_ss_data(data, pathname):
+    if pathname == '/analise' and data is not None:
+        
+        mo = data['mask_offsets']
+        print(f"recebi {mo}")
+        return mo
+    else: []
+
+@callback(
+    Output('ss2', 'children'),
+    [Input('store-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_ss_data(data, pathname):
+    if pathname == '/analise' and data is not None:
+        
+        ss = data['subaperture_size']
+        print(f"recebi {ss}")
+        return ss
+    else: []"""
+
 @callback(
     Output('beginning-date', 'children'),
     [Input('store-atmosphere-params', 'data'),
@@ -299,7 +357,7 @@ def display_beginning_date(data, pathname):
         beginning_date = data['date_beginning']
         return f'{beginning_date}'
     else:
-        return ''
+        return ''   
     
 @callback(
     Output('end-date', 'children'),
@@ -437,7 +495,7 @@ def update_wavefront_sensor_and_display_names(n_clicks, pathname, data):
     if pathname == '/analise' and data is not None:
         ctx = dash.callback_context
         if not ctx.triggered:
-            return []
+            return [], []
         else:
             button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             source_id = json.loads(button_id)['index']
@@ -467,7 +525,7 @@ def update_wavefront_sensor_and_display_names(n_clicks, pathname, data):
                         html.Span(f'Sensor: {sensor}, Measurements: '),
                         dcc.Link(f'{image_name}', href='/measurements'),
                         html.Span(', Detector: '),
-                        dcc.Link(f'{detector_name}', href='/pixel'),
+                        dcc.Link(f'{detector_name}', href='/pixels'),
                         ], id=f'verified_sensor[{i+1}]', style={'color': 'white'})
             )
 
@@ -486,7 +544,7 @@ def update_wavefront_sensor_and_display_names(n_clicks, pathname, data):
 def update_verified_loop(just_sensors, pathname, data):
     if pathname == '/analise' and data is not None:
         ws_loops = data.get('other_WS_loops')
-        command_loop_mapping = data.get('command_name')  # Assuming this is the command-loop mapping
+        command_loop_mapping = data.get('command_name')  
         #print(f'commandmapping {command_loop_mapping}')
         if ws_loops is None:
             return None  
@@ -532,16 +590,16 @@ def display_loop(data, pathname):
 )
 def update_corrector_labels(loops, pathname, data):
     if pathname == '/analise' and data is not None:
-        print(f'loops {loops}')
+        #print(f'loops {loops}')
         other_WC_loops = data.get('other_WC_loops')
-        print(f'other_WC_loops {other_WC_loops}')
+        #print(f'other_WC_loops {other_WC_loops}')
         if other_WC_loops is None:
             return []
         labels = []
         for loop, correctors in other_WC_loops.items():
             for corrector in correctors:
                 labels.append(html.Label(f'For the Loop {loop}, the corrector is {corrector}.', style={'color': 'white'}))
-        print(labels)
+        #print(labels)
         return labels
     else:
         return []

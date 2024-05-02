@@ -16,6 +16,8 @@ import numpy as np
 import pandas as pd
 import gzip
 import base64
+from PIL import Image
+
 
 
 
@@ -64,7 +66,8 @@ layout = html.Div([
        
     ]),
     dcc.Store(id='store-atmosphere-params'),
-     html.Div(id='output-data-upload'),
+    dcc.Store(id='second-atmosphere-params'),
+    html.Div(id='output-data-upload'),
 ])
 
 def telescope_to_dict(telescope):
@@ -113,6 +116,36 @@ def create_dict_image(sys):
     print(f"f: {f} type: {type(f)}")
     return f
 
+#def deliver_dict_image(sys):
+#    o = {}
+##    for wavefront_sensor in sys.wavefront_sensors:
+ #       if wavefront_sensor.measurements is not None:
+ #           image_image = wavefront_sensor.measurements.data
+  #          o[wavefront_sensor.uid] = image_image
+ #   return o
+
+
+#AQUIIIIIIIIIIIIIIIIIIII
+#def save_image(sys):
+#    images_dict = deliver_dict_image(sys)
+    image_data, sensor_uids = next(iter(images_dict.items()))
+
+ #   if isinstance(image_data, aotpy.core.image.Image):
+       
+ #       np_image_data = image_data.data
+
+   #     image = Image.fromarray(np.uint8(np_image_data))
+
+    #    byte_arr = io.BytesIO()
+    #    image.save(byte_arr, format='PNG')
+
+     #   base64_image = base64.b64encode(byte_arr.getvalue()).decode('ascii')
+
+      #  return base64_image
+    #else:
+    #  
+    #    return None
+
 def create_dict_detector(sys):
     h = {}
     for wavefront_sensor in sys.wavefront_sensors:
@@ -123,6 +156,41 @@ def create_dict_detector(sys):
             h[detector_name].append(wavefront_sensor.uid)
     print(f"h: {h} type: {type(h)}")
     return h
+
+def extract_detector_info(sys):
+    wfs = sys.wavefront_sensors[0]
+    #detector = wfs.detector
+    #pixel_image_data = detector.pixel_intensities
+    mask_offsets = wfs.mask_offsets.tolist() if isinstance(wfs.mask_offsets, np.ndarray) else wfs.mask_offsets
+    subaperture_mask = wfs.subaperture_mask.tolist() if isinstance(wfs.subaperture_mask, np.ndarray) else wfs.subaperture_mask
+    subaperture_size = wfs.subaperture_size.tolist() if isinstance(wfs.subaperture_size, np.ndarray) else wfs.subaperture_size
+
+    result= {
+        'mask_offsets': mask_offsets,
+        'subaperture_mask': subaperture_mask,
+        'subaperture_size': subaperture_size
+    }
+    
+    for key, value in result.items():
+        print(f"{key}: {type(value)}")
+
+    return result
+
+    
+def extract_np_image(sys):
+    wfs = sys.wavefront_sensors[0]
+    detector = wfs.detector
+    pixel_image_data = detector.pixel_intensities
+
+    np_image_data = pixel_image_data.data.tolist()
+
+    return np_image_data
+
+def TESTEextract_np_image(sys):
+    wfs = sys.wavefront_sensors[0]
+    detector = wfs.detector
+
+    return detector.pixel_intensities.data[0]
 
 #LOOP
 def loop_to_dict(loop):
@@ -163,19 +231,20 @@ def create_dict_command(sys):
             l[command_name].append(loop.uid)
     print(f"l: {l} type: {type(l)}")
     return l
-
-
-#->> PARA QUE ISTO
-#def create_dict_command(sys):
+#imagem do loop
+#def create_dict_loop_images(sys):
 #    i = {}
 #    for loop in sys.loops:
 #        if loop.commands is not None:
 #            command_name = loop.commands.name
+#            command_image = loop.commands 
+            # command_image = loop.commands.data
 #            if command_name not in i:
-#                i[command_name] = []
-#            i[command_name].append(loop.commanded_corrector.uid)
-#    print(f"i: {i} type: {type(i)}")
-#    return i
+ #               i[command_name] = []
+  #          i[command_name].append(command_image)
+    
+ #   return i
+
 
    
 #def control_loop_dict(sys):
@@ -249,7 +318,7 @@ def store_uploaded_file(contents):
         print(f"offload_loops: {offload_loops}")
         #CONTROL LOOPS
         control_loops = [loop_to_dict(loop) for loop in sys.loops if isinstance(loop, aotpy.core.loop.ControlLoop)]
-        print(f"control_loops: {control_loops}")
+        #print(f"control_loops: {control_loops}")
 
         #os wavefront sensors dos loops
         other_WS_loops= create_dict_wc(sys)
@@ -260,8 +329,8 @@ def store_uploaded_file(contents):
         other_WC_loops = create_dict_lp(sys)
         #print(f"other_WC_lopps:{other_WC_lopps}, type:{type(other_WC_lopps)}")
         command_name = create_dict_command(sys)
-        print(f"command_name: {command_name}, type: {type(command_name)}")
-        
+        #print(f"command_name: {command_name}, type: {type(command_name)}")
+        #command_image = create_dict_loop_images(sys)
         #wavefront corrector
         correctors = [wavefront_correctors_to_dict(wavefront_corrector) for wavefront_corrector in sys.wavefront_correctors]
        
@@ -270,10 +339,17 @@ def store_uploaded_file(contents):
 
         #Para a página Measurements
         n_subapertures = [wavefront_sensors_to_dict(wavefront_sensor)['n_valid_subapertures'] for wavefront_sensor in sys.wavefront_sensors] 
+        #print(f"n_subapertures: {n_subapertures}")
         subapertures_size = [wavefront_sensors_to_dict(wavefront_sensor)['subaperture_size'] for wavefront_sensor in sys.wavefront_sensors] 
+        #print(f"subapertures_size: {subapertures_size}")
         wavelength = [wavefront_sensors_to_dict(wavefront_sensor)['wavelength'] for wavefront_sensor in sys.wavefront_sensors] 
+        #print(f"wavelength: {wavelength}")
+
+        #testes para aceder à imagem
+        #base64_image = save_image(sys)
 
         return {
+           
             'atmosphere_params': atmosphere_params,
             'date_beginning': date_beginning,
             'date_end': date_end,
@@ -288,6 +364,7 @@ def store_uploaded_file(contents):
             'other_WC_loops': other_WC_loops, 
             'other_WS_loops': other_WS_loops,
             'command_name': command_name,
+            #'command_image': command_image,
             'sources': sources,
             
             'wavefront_sensors': sensors,
@@ -302,9 +379,41 @@ def store_uploaded_file(contents):
             'n_subapertures': n_subapertures,
             'subapertures_size': subapertures_size,
             'wavelength': wavelength,
+
+           # 'base64_image': base64_image,
         }
     else:
         raise PreventUpdate
+    
+@callback(
+    Output('second-atmosphere-params', 'data'),
+    [Input('upload-data', 'contents')]
+)
+def store_uploaded_file(contents):
+    if contents is not None:
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
+
+        detector_info = extract_detector_info(sys)
+        np_image_data = extract_np_image(sys)
+        print(type(np_image_data))
+        mask_offsets = detector_info['mask_offsets']
+        subaperture_mask = detector_info['subaperture_mask']
+        subaperture_size = detector_info['subaperture_size']
+        new=TESTEextract_np_image(sys)
+
+        return {
+            'np_image_data': np_image_data,
+            'mask_offsets': mask_offsets,
+            'subaperture_mask': subaperture_mask,
+            'subaperture_size': subaperture_size,
+            'new': new
+     
+        }
+    else:
+        raise PreventUpdate
+
 
 @callback(
     Output('output-data-upload', 'children'),

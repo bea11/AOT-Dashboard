@@ -1,5 +1,5 @@
 import dash
-from dash import Dash, dcc, html, dash_table, Input, Output, State, callback, register_page
+from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import base64
@@ -7,9 +7,31 @@ import datetime
 import io
 import aotpy
 import gzip
+import cv2
+import dash
+from dash import dcc
+from dash import html, register_page, callback
+from dash.dependencies import Input, Output, State
+import dash_bootstrap_components as dbc
+from dash import callback
+import matplotlib.pyplot as plt
+import matplotlib
+#matplotlib.use('Agg')
+
+import json
+from dash.dependencies import Input, Output, State, ALL
+
 
 
 dash.register_page(__name__, path='/pixels')
+
+option_STYLE = {
+    'width': '100%',
+    'background-color': '#1C2634',
+    'color': 'white',
+    'cursor': 'pointer',
+    'border': '1px solid #243343',
+}
 
 layout = html.Div([
 
@@ -32,8 +54,8 @@ layout = html.Div([
             html.P("Properties", style={'text-align': 'left', 'margin-left': '1vw'}),
            
             html.Div([
-                html.Label("Name of sensor: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Name of Detector: ", style={'color': 'white'}),
+                html.Div("SAPHIRA", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
             html.Div([
@@ -42,28 +64,28 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
-                html.Label("String: ", style={'color': 'white'}),
+                html.Label("Unique Identifier: ", style={'color': 'white'}),
                 html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
      
             html.Div([
-                html.Label("Unique Identifier: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Subaperture Mask: ", style={'color': 'white'}),
+                html.Div(id='sm', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px', 'margin-top': '13px'}),
 
             html.Div([
-                html.Label("Integer: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Mask Ofset: ", style={'color': 'white'}),
+                html.Div(id='mo', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Number of valid subapertures: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div("[68]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Subapertures Size: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div("[None]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
@@ -156,6 +178,7 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
+    html.Div(id='teste_imagem', style={'position': 'absolute', 'left': '10px', 'top': '50px'}),
 
         html.Div([  
             html.Label([
@@ -191,6 +214,7 @@ layout = html.Div([
             html.P("Data", style={'text-align': 'left','margin-left': '1vw'}),
             html.Div([  
                 html.Div(  
+                    html.Div(id='teste'),
                     style={
                     'background-color': 'grey',
                     'width': '300px',  
@@ -282,11 +306,178 @@ layout = html.Div([
     'width': '650px',  
     'height': '390px',  
 }),
-])
-
+]),
+    dcc.Store(id='second-atmosphere-params', storage_type='local'),
+    html.Div(id='output-atmosphere-params'),
+    
+   # html.Div(id='teste_imagem', style={'position': 'absolute', 'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'}),
+    html.Div(id='mo', style={'color': 'red'}),
+    html.Div(id='sm', style={'color': 'blue'}),
+    html.Div(id='ss', style={'color': 'black'}),
 
 ], style={'position': 'relative'})
     
+#CALLBACKS
+
+@callback(
+    Output('teste_imagem', 'children'),
+    [Input('second-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_imgs_data(data, pathname):
+    if pathname == '/pixels' and data is not None:
+        img_data = data['new']
+        # BytesIO object
+        buf = io.BytesIO()
+
+        fig = plt.figure()
+        plt.imshow(img_data)
+        plt.subplots_adjust(left=0, right=1, top=1, bottom=0)  
+        fig.savefig(buf, format='png', dpi=70)  # dpi-> tamanho
+
+        img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
+        return html.Img(src='data:image/png;base64,{}'.format(img_str))
+  
+    else: 
+        return []	
+
+
+"""@callback(
+    Output('img_data', 'children'),
+    [Input('second-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_img_data(data, pathname):
+    if pathname == '/pixels' and data is not None:
+        img_data = data['np_image_data']
+        print(f"received {img_data}")
+
+        # Flatten a lista duas vezes se for uma lista 3D e converter para inteiros
+        if isinstance(img_data[0][0], list):
+            img_data = [item for sublist1 in img_data for sublist2 in sublist1 for item in sublist2]
+        elif isinstance(img_data[0], list):
+            img_data = [item for sublist in img_data for item in sublist]
+        else:
+            img_data = [item for item in img_data]
+
+        # Normalizar entre 0-255
+        max_val = max(img_data)
+        min_val = min(img_data)
+        img_data = [int(255 * (item - min_val) / (max_val - min_val)) for item in img_data]
+
+        # lista inteiros -> bytes
+        img_data_bytes = bytes(img_data)
+
+        # encode bytes para base64 -> para passar para cá tive que decode
+        encoded_image = base64.b64encode(img_data_bytes).decode('utf-8')
+
+        # html.Img 
+        return html.Img(src=f"data:image/jpeg;base64,{encoded_image}", style={'width': '100%'})
+    else: []
+"""
+@callback(
+    Output('sm', 'children'),
+    [Input('second-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_sm_data(data, pathname):
+    if pathname == '/pixels' and data is not None:
+        
+        sm = data['subaperture_mask']
+        print(f"recebi {sm}")
+        return sm
+    else: 
+        return "None"
+
+@callback(
+    Output('mo', 'children'),
+    [Input('second-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_ss_data(data, pathname):
+    if pathname == '/pixels' and data is not None:
+        
+        mo = data['mask_offsets']
+        print(f"recebi {mo}")
+        return mo
+    else: 
+        return "None"
+
+@callback(
+    Output('ss', 'children'),
+    [Input('second-atmosphere-params', 'data'),
+     Input('url', 'pathname')]
+)
+def display_ss_data(data, pathname):
+    print(f"entrei aqui")
+    if pathname == '/pixels' and data is not None:
+        
+        ss = data['subaperture_size']
+        print(f"recebi {ss}")
+        return ss
+    else: 
+        return "None"
+
+"""
+@callback(
+    Output('teste', 'children'),
+    [Input('mo', 'children'),
+     Input('teste_imagem', 'children'),
+     Input('ss', 'children'),
+     Input('sm', 'children'),
+     Input('url', 'pathname')],
+    [State('second-atmosphere-params', 'data')])
+def display_corrector1(mo, teste_imagem, ss, sm, pathname, data):
+    if pathname == '/pixels' and data is not None:
+        
+        image_data=teste_imagem
+        mask_offsets=mo
+        subaperture_mask=sm
+        subaperture_size = ss
+
+
+        if subaperture_mask is not None:
+            n_rows = subaperture_mask.shape[0]
+            n_cols = subaperture_mask.shape[1]
+            
+        #Criar cópia dos dados da imagem para desenhar a grelha 
+            image_with_grid = image_data.copy()
+
+        # Colunas e linhas na grelha
+        #n_rows = subaperture_mask.shape[0]
+        #n_cols = subaperture_mask.shape[1]
+
+        #grelha
+            for i in range(n_rows):
+                for j in range(n_cols):
+                # canto superior esquerdo 
+                    top_left = (mask_offsets[0] + i * subaperture_size, mask_offsets[1] + j * subaperture_size)
+
+                #canto inferior direito
+                    bottom_right = (top_left[0] + subaperture_size, top_left[1] + subaperture_size)
+
+                # é uma subaperture válida?
+                    if subaperture_mask[i, j] == 1:
+                    # desenhar na imagem
+                        cv2.rectangle(image_with_grid, top_left, bottom_right, color=(0, 255, 0), thickness=1)
+        
+            buf = io.BytesIO()
+
+            fig = plt.figure()
+            plt.imshow(image_with_grid)
+            fig.savefig(buf, format='png')
+
+            
+            img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
+
+            return img_str
+    
+        else:
+            return []
+    else:
+        return []
+        """
+
 @callback(
     Output('store', 'data'),
     [Input('button-1', 'n_clicks'), Input('button-2', 'n_clicks')],
@@ -317,3 +508,4 @@ def update_output(n_clicks_timestamp1, n_clicks_timestamp2, content1, content2):
         return content1
     else:
         return content2
+
