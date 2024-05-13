@@ -14,6 +14,7 @@ from dash import html, register_page, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import callback
+import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib
 #matplotlib.use('Agg')
@@ -55,7 +56,7 @@ layout = html.Div([
            
             html.Div([
                 html.Label("Name of Detector: ", style={'color': 'white'}),
-                html.Div("SAPHIRA", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div("[[[SAPHIRA", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
             html.Div([
@@ -80,12 +81,12 @@ layout = html.Div([
 
             html.Div([
                 html.Label("Number of valid subapertures: ", style={'color': 'white'}),
-                html.Div("[68]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div("[]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Subapertures Size: ", style={'color': 'white'}),
-                html.Div("[None]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div("[]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
@@ -110,7 +111,7 @@ layout = html.Div([
                 html.P("Source", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
-                    html.Button("Example_Name", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    html.Button("NGS", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
                 html.P("Type: Natural Guide Star", style={'text-align': 'left', 'margin-left': '1vw', 'color': 'white'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'200px', 'height': '90px','margin-left': '1vw'}),
@@ -120,7 +121,7 @@ layout = html.Div([
                 html.P("Detector", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
-                    html.Button("Other_Name", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    html.Button("SAPHIRA", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
                 html.P("Type: CMOS", style={'text-align': 'left', 'margin-left': '1vw', 'color': 'white'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'200px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
@@ -307,6 +308,7 @@ layout = html.Div([
     'height': '390px',  
 }),
 ]),
+    html.Div(id='img_data'),
     dcc.Store(id='second-atmosphere-params', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
     
@@ -329,11 +331,15 @@ def display_imgs_data(data, pathname):
         img_data = data['new']
         # BytesIO object
         buf = io.BytesIO()
+        from .inicial import _sys
 
-        fig = plt.figure()
-        plt.imshow(img_data)
-        plt.subplots_adjust(left=0, right=1, top=1, bottom=0)  
-        fig.savefig(buf, format='png', dpi=70)  # dpi-> tamanho
+        # fig = plt.figure()
+        # plt.imshow(img_data)
+        # plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+        # fig.savefig(buf, format='png', dpi=70)  # dpi-> tamanho
+        #img = img_data[25:40]
+        fig = px.imshow(_sys.wavefront_sensors[0].detector.pixel_intensities.data, animation_frame=0, binary_string=True, labels=dict(animation_frame="slice"))
+        fig.show()
 
         img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
         return html.Img(src='data:image/png;base64,{}'.format(img_str))
@@ -342,7 +348,7 @@ def display_imgs_data(data, pathname):
         return []	
 
 
-"""@callback(
+@callback(
     Output('img_data', 'children'),
     [Input('second-atmosphere-params', 'data'),
      Input('url', 'pathname')]
@@ -374,7 +380,7 @@ def display_img_data(data, pathname):
         # html.Img 
         return html.Img(src=f"data:image/jpeg;base64,{encoded_image}", style={'width': '100%'})
     else: []
-"""
+
 @callback(
     Output('sm', 'children'),
     [Input('second-atmosphere-params', 'data'),

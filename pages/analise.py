@@ -474,7 +474,9 @@ def display_sources1(data, pathname):
      Input('url', 'pathname')]
 )
 def display_sensor1(data, pathname):
+    # from .inicial import _sys
     if pathname == '/analise' and data is not None:
+        # _sys.wavefront_sensors
         sensors = data['wavefront_sensors']
         sensor_divs = [html.Div(sensor, id=sensor, className='option', n_clicks=0, style=option_STYLE) for sensor in sensors]
         return sensor_divs

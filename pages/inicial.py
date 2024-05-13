@@ -19,6 +19,7 @@ import base64
 from PIL import Image
 
 
+_sys: aotpy.AOSystem = None
 
 
 dash.register_page(__name__, path='/')
@@ -278,10 +279,12 @@ def atmosphere_params_to_dict(atmosphere_param):
     [Input('upload-data', 'contents')]
 )
 def store_uploaded_file(contents):
+    global _sys
     if contents is not None:
         content_type, content_string = contents.split(',')
         decoded = base64.b64decode(content_string)
         sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
+        _sys = sys
         #teste
         atmosphere_params = len(sys.atmosphere_params)
         #date beginning
