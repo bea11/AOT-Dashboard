@@ -7,7 +7,8 @@ import datetime
 import io
 import aotpy
 import gzip
-
+import pickle
+from flask import session
 
 dash.register_page(__name__, path='/commands')
 
@@ -20,6 +21,13 @@ DRAG_STYLE = {
     'display': 'flex',
     'backgroundColor': '#8CE397',
     'color': 'white',
+}
+option_STYLE = {
+    'width': '100%',
+    'background-color': '#1C2634',
+    'color': 'white',
+    'cursor': 'pointer',
+    'border': '1px solid #243343',
 }
 
 
@@ -58,7 +66,7 @@ layout = html.Div([
     #Strings    
         html.Div([
             html.Label("Name of sensor: ", style={'color': 'white'}),
-            html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '18px', 'margin-left': '10px'})
+            html.Div(id='sensor_name', style={'background-color': '#243343', 'width': '160px', 'height': '18px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
         html.Div([
@@ -84,13 +92,13 @@ layout = html.Div([
 
         html.Div([
             html.Label("Number of valid subapertures: ", style={'color': 'white'}),
-            html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            html.Div(id='n_sub', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
     #Floats
         html.Div([
             html.Label("Subapertures Size: ", style={'color': 'white'}),
-            html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            html.Div(id='s_s', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
         html.Div([
@@ -99,8 +107,8 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
    
         html.Div([
-            html.Label("Float: ", style={'color': 'white'}),
-            html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            html.Label("Wavelength: ", style={'color': 'white'}),
+            html.Div(id='wavelength_d', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
@@ -242,6 +250,87 @@ layout = html.Div([
     'width': '600px',  
     'height': '300px'  
 }),
+        dcc.Store(id='pickle_store', storage_type='local'),
 
 ], style={'position': 'relative'})
     
+ #Funções
+#WAVEFRONT SENSORS
+def wavefront_sensors_to_dict(wavefront_sensor):
+    return {
+        'uid': wavefront_sensor.uid,
+        'n_valid_subapertures': wavefront_sensor.n_valid_subapertures,
+        'subaperture_size': wavefront_sensor.subaperture_size,
+        'wavelength': wavefront_sensor.wavelength,
+    }
+
+#Callbacks
+
+#Name of wavefront sensor
+@callback(
+    Output('sensor_name', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def display_sensor1(pickle_file, pathname):
+    if pathname == '/commands' and pickle_file is not None:
+  
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        sensors = [wavefront_sensors_to_dict(wavefront_sensor)['uid'] for wavefront_sensor in sys.wavefront_sensors]
+        sensor_divs = [html.Div(sensor, id=(sensor if sensor is not None else 'default-id'), className='option', n_clicks=0, style=option_STYLE) for sensor in sensors]
+        return sensor_divs
+    else:
+        return []
+    
+#Valid subapertures  
+@callback(
+    Output('n_sub', 'children'),
+    [Input('pickle_store', 'data'),
+    Input('url', 'pathname')]
+)
+def display_subap(pickle_file, pathname):  
+    if pathname == '/commands' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        n_subapertures = [wavefront_sensors_to_dict(wavefront_sensor)['n_valid_subapertures'] for wavefront_sensor in sys.wavefront_sensors]
+        return f'{n_subapertures}'
+    else:
+        return "None"
+    
+#Size subapertures 
+@callback(
+    Output('s_s', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def display_subapertures(pickle_file, pathname):
+    if pathname == '/commands' and pickle_file is not None:
+      
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        size_subapertures = [wavefront_sensors_to_dict(wavefront_sensor)['subaperture_size'] for wavefront_sensor in sys.wavefront_sensors]
+        return f'{size_subapertures}'
+    else:
+        return "None"
+    
+#Wavelength
+@callback(
+    Output('wavelength_d', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def display_wavelength(pickle_file, pathname):
+    if pathname == '/measurements' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        wave = [wavefront_sensors_to_dict(wavefront_sensor)['wavelength'] for wavefront_sensor in sys.wavefront_sensors]
+        return f'{wave}'
+    else:
+        return "None"

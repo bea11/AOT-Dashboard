@@ -25,31 +25,22 @@ SIDEBAR_STYLE = {
 }
 
 
-
-sidebar = dbc.Nav(
+navbar = dbc.Navbar(
     [
-        dbc.NavLink("Home", href="/", active="exact"),
-        dbc.NavLink("Analise", href="/analise", active="exact"),
-        dbc.NavLink("Pixels", href="/pixels", active="exact"),
-        dbc.NavLink("Measurements", href="/measurements", active="exact"),
-        dbc.NavLink("Commands", href="/commands", active="exact"),
-      
+        dbc.NavItem(dbc.NavLink("Home", href="/")),
+        dbc.NavItem(dbc.NavLink("Analise", href="/analise")),
+        dbc.NavItem(dbc.NavLink("Pixels", href="/pixels")),
+        dbc.NavItem(dbc.NavLink("Measurements", href="/measurements")),
+        dbc.NavItem(dbc.NavLink("Commands", href="/commands")),
     ],
-    vertical=True,
-    pills=True,
-    style=SIDEBAR_STYLE,
+    color="dark",
+    dark=True,
 )
-            
 
 app.layout = html.Div([
     dcc.Store(id='store'),
     dcc.Location(id='url', refresh=False),
-    html.Div([
-        html.Div(
-            dcc.Link(f"{page['name']}", href=page["relative_path"])
-        ) for page in dash.page_registry.values()
-    ], 
-    style=SIDEBAR_STYLE),
+    navbar,
     dash.page_container
 ])
 

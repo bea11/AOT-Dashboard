@@ -2,6 +2,7 @@ import dash
 from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
+import plotly.io as pio
 import base64
 import datetime
 import io
@@ -18,6 +19,12 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib
 #matplotlib.use('Agg')
+import pickle
+import numpy as np
+from flask import session
+import plotly.graph_objects as go
+import plotly.express as px
+import pandas as pd
 
 import json
 from dash.dependencies import Input, Output, State, ALL
@@ -37,7 +44,7 @@ option_STYLE = {
 layout = html.Div([
 
 
-    html.H1("Pixels", style={'text-align': 'left', 'margin-left': '12vw', 'marginBottom' : '0px'}),
+    html.H1("Pixels", style={'text-align': 'left', 'margin-left': '8vw', 'marginBottom' : '0px'}),
 
 #Buttons
     html.Div([
@@ -46,7 +53,7 @@ layout = html.Div([
     dcc.Store(id='store'),
     html.Div(id='output')
 
-], style={'position': 'absolute', 'left': '160px','display': 'flex', 'justify-content': 'space-between', 'top': '50px', 'width': '20px', 'height': '25px'}),
+], style={'position': 'absolute', 'left': '90px','display': 'flex', 'justify-content': 'space-between', 'top': '50px', 'width': '20px', 'height': '25px'}),
   
   
    #1 quadrante
@@ -138,7 +145,7 @@ layout = html.Div([
 
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '400px', 'top': '30px', 'width': '250px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '310px', 'top': '30px', 'width': '280px', 'height': '390px'}),
 ]),
     #2 quadrante 
     #imagem
@@ -179,7 +186,7 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-    html.Div(id='teste_imagem', style={'position': 'absolute', 'left': '10px', 'top': '50px'}),
+    dcc.Graph(id='teste_imagem', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
 
         html.Div([  
             html.Label([
@@ -204,35 +211,26 @@ layout = html.Div([
     'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
-    'left': '830px', 
+    'left': '700px', 
     'top': '50px', 
-    'width': '480px', 
-    'height': '420px'
+    'width': '600px', 
+    'height': '520px'
 }),
   
   #3 quadrante
         html.Div([
-            html.P("Data", style={'text-align': 'left','margin-left': '1vw'}),
+            #html.P("Data", style={'text-align': 'left','margin-left': '1vw'}),
             html.Div([  
-                html.Div(  
-                    html.Div(id='teste'),
-                    style={
-                    'background-color': 'grey',
-                    'width': '300px',  
-                    'height': '150px'  
-            }
-        ),
-        html.Div('Seconds', style={'color': 'white'}),  # x
-    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-        html.Div('Pixel index', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y
+                dcc.Graph(id='imag2D'),
+    ], style={'display': 'flex', 'align-items': 'left'}),
 
 ], style={
     'background-color': '#1C2634',  # Corectangulo
     'position': 'absolute',
-    'left': '160px',
+    'left': '50px',
     'top': '480px',
-    'width': '600px',  
-    'height': '250px'  
+    'width': '630px',  
+    'height': '400px'  
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
  
@@ -254,9 +252,9 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
-    'left': '780px',
-    'top': '480px',
-    'width': '550px',  
+    'left': '700px',
+    'top': '580px',
+    'width': '600px',  
     'height': '250px'  
 }),
 
@@ -308,46 +306,77 @@ layout = html.Div([
     'height': '390px',  
 }),
 ]),
-    html.Div(id='img_data'),
-    dcc.Store(id='second-atmosphere-params', storage_type='local'),
+
+    #html.Div(id='img_data'),
+    dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
     
-   # html.Div(id='teste_imagem', style={'position': 'absolute', 'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'}),
+    
+    #dcc.Graph(id='img_imagem', style={'width': '33%', 'display': 'inline-block'}),
+
+    
+    #dcc.Dropdown(id='slice-selector', options=[], placeholder="Select Pixel Slice"),
+    #dcc.Graph(id='selected_slice', style={'width': '33%', 'display': 'inline-block'}),
+   
+    
+    #dcc.Graph(id='imag2D', style={'width': '33%', 'display': 'inline-block'}),
+    #dcc.Slider(id='frameindex', min=0, max=100, step=1, value=0, marks={0: '0', 100: '100'}),
+
+
     html.Div(id='mo', style={'color': 'red'}),
     html.Div(id='sm', style={'color': 'blue'}),
     html.Div(id='ss', style={'color': 'black'}),
 
 ], style={'position': 'relative'})
     
+
+#Funções
+
 #CALLBACKS
 
+
 @callback(
-    Output('teste_imagem', 'children'),
-    [Input('second-atmosphere-params', 'data'),
+    Output('imag2D', 'figure'),
+    [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_imgs_data(data, pathname):
-    if pathname == '/pixels' and data is not None:
-        img_data = data['new']
-        # BytesIO object
-        buf = io.BytesIO()
-        from .inicial import _sys
+def display_detector_frame(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file is not None:
+        # Load the AOSystem object from the pickle file
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
 
-        # fig = plt.figure()
-        # plt.imshow(img_data)
-        # plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-        # fig.savefig(buf, format='png', dpi=70)  # dpi-> tamanho
-        #img = img_data[25:40]
-        fig = px.imshow(_sys.wavefront_sensors[0].detector.pixel_intensities.data, animation_frame=0, binary_string=True, labels=dict(animation_frame="slice"))
-        fig.show()
+        pixel_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
 
-        img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
-        return html.Img(src='data:image/png;base64,{}'.format(img_str))
-  
-    else: 
-        return []	
+        # poder ter uma imagem 2D por tempo
+        reshaped = pixel_data.reshape(pixel_data.shape[0], -1)
+
+        # Criar com o timeslider
+        fig = go.Figure(data=go.Heatmap(z=reshaped, colorscale='Viridis'))
+
+        fig.update_layout(
+            title='Pixel with frame index',
+            xaxis_title='Pixel',
+            yaxis_title='Frame Index',
+            autosize=False,
+            width=600,
+            height=350,
+            margin=dict(l=65, r=50, b=65, t=90),
+            #plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)', 
+            title_font=dict(color='white'),  # texto cor
+            xaxis_title_font=dict(color='white'), 
+            yaxis_title_font=dict(color='white'),
+            xaxis_tickfont=dict(color='white'),  # label
+            yaxis_tickfont=dict(color='white')
+        )
+
+        return fig
+    else:
+        return {}
 
 
+"""
 @callback(
     Output('img_data', 'children'),
     [Input('second-atmosphere-params', 'data'),
@@ -379,51 +408,167 @@ def display_img_data(data, pathname):
 
         # html.Img 
         return html.Img(src=f"data:image/jpeg;base64,{encoded_image}", style={'width': '100%'})
-    else: []
+    else: []"""
+
+@callback(
+    Output('teste_imagem', 'figure'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def display_imgs_data(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file is not None:
+    
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+
+ 
+        fig = px.imshow(img_data, animation_frame=0, binary_string=True, labels=dict(animation_frame="slice"))
+        fig.update_layout(
+            title='Different 2D images over time',
+            xaxis_title='Local X',
+            yaxis_title='Local Y',
+            autosize=False,
+            width=600,
+            height=450,
+            paper_bgcolor='rgba(0,0,0,0)', 
+            title_font=dict(color='white'),  
+            xaxis_title_font=dict(color='white'),  
+            yaxis_title_font=dict(color='white'),
+            xaxis_tickfont=dict(color='white'),  
+            yaxis_tickfont=dict(color='white'),
+            coloraxis_showscale=False, 
+            margin=dict(l=65, r=50, b=65, t=90),
+        )
+        return fig
+    else:
+        return {}
+
+
+"""@callback(
+    Output('slice-selector', 'options'),
+    Input('pickle_store', 'data'),
+    Input('url', 'pathname')
+)
+def update_slice_selector(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+     
+        num_pixels = sys.wavefront_sensors[0].detector.pixel_intensities.data.shape[1] * sys.wavefront_sensors[0].detector.pixel_intensities.data.shape[2]
+        
+        options = [{'label': f'Pixel {i}', 'value': i} for i in range(num_pixels)]
+        return options
+    return []    """
+
+""""@callback(
+    Output('img_imagem', 'figure'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('slice-selector', 'value')]
+)
+def update_1d_graph(pickle_file, pathname, selected_slice):
+    if pathname == '/pixels' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+       
+        img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+
+        img_data_1d = img_data[selected_slice].flatten()
+
+        fig1 = px.line(x=range(len(img_data_1d)), y=img_data_1d)
+        fig1.update_layout(title="1D representation of the selected slice")
+
+        return fig1
+    else:
+        return {}"""
+
+"""@callback(
+    Output('selected_slice', 'figure'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('slice-selector', 'value')]
+)
+def update_2d_graph(pickle_file, pathname, selected_slice):
+    if pathname == '/pixels' and pickle_file and selected_slice is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+ 
+        img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+        
+        num_frames, rows, cols = img_data.shape
+        img_data_1d = img_data.reshape(num_frames, rows * cols)
+        
+        selected_slice_data = img_data_1d[:, selected_slice]
+        
+        selected_slice_2d = selected_slice_data.reshape(num_frames, 1)
+        
+        fig = px.imshow(selected_slice_2d.T, aspect='auto', color_continuous_scale='gray')
+        fig.update_layout(
+            xaxis_title="Time (Frames)",
+            yaxis_title="Pixel Intensity",
+            coloraxis_showscale=False
+        )
+        return fig
+    return {}"""
+
+
 
 @callback(
     Output('sm', 'children'),
-    [Input('second-atmosphere-params', 'data'),
+    [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_sm_data(data, pathname):
-    if pathname == '/pixels' and data is not None:
-        
-        sm = data['subaperture_mask']
-        print(f"recebi {sm}")
+def display_sm_data(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file is not None:
+      
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        sm = sys.wavefront_sensors[0].subaperture_mask
+
         return sm
     else: 
         return "None"
 
 @callback(
     Output('mo', 'children'),
-    [Input('second-atmosphere-params', 'data'),
+    [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_ss_data(data, pathname):
-    if pathname == '/pixels' and data is not None:
-        
-        mo = data['mask_offsets']
-        print(f"recebi {mo}")
-        return mo
+def display_sm_data(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file is not None:
+     
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        sm = sys.wavefront_sensors[0].mask_offsets
+
+        return sm
     else: 
         return "None"
 
 @callback(
     Output('ss', 'children'),
-    [Input('second-atmosphere-params', 'data'),
+    [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_ss_data(data, pathname):
-    print(f"entrei aqui")
-    if pathname == '/pixels' and data is not None:
-        
-        ss = data['subaperture_size']
-        print(f"recebi {ss}")
-        return ss
+def display_sm_data(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file is not None:
+   
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        sm = sys.wavefront_sensors[0].subaperture_size
+
+        return sm
     else: 
         return "None"
-
+    
 """
 @callback(
     Output('teste', 'children'),

@@ -27,3 +27,13 @@ body {
 .tree-view li {
     margin-bottom: 0.5em;
 }
+
+.navbar {
+    background-color: #1C2634 !important;
+}
+
+.nav-link {
+    border: 1px solid #e5c749 !important;
+    margin-right: 10px !important; /* Add space to the right of each link */
+    border-radius: 5px !important; /* Make the borders rounded */
+}

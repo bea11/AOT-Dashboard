@@ -8,6 +8,8 @@ import io
 import aotpy
 import gzip
 from dash.html import Img
+import pickle
+from flask import session
 
 
 dash.register_page(__name__, path='/measurements')
@@ -31,7 +33,7 @@ layout = html.Div([
     dcc.Store(id='store3'),
     html.Div(id='output3')
 
-], style={'position': 'absolute', 'left': '160px','display': 'flex', 'justify-content': 'space-between', 'top': '50px', 'width': '20px', 'height': '25px'}),
+], style={'position': 'absolute', 'left': '90px','display': 'flex', 'justify-content': 'space-between', 'top': '50px', 'width': '20px', 'height': '25px'}),
   
   
    #1 quadrante
@@ -40,7 +42,7 @@ layout = html.Div([
             
             html.Div([
                 html.Label("Name of sensor: ", style={'color': 'white'}),
-                html.Div(id='sensor_name', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
             html.Div([
@@ -70,7 +72,8 @@ layout = html.Div([
 
             html.Div([
                 html.Label("Subapertures Size: ", style={'color': 'white'}),
-                html.Div(id='subapertures-size-container', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+               # html.Div(id='s_s'),
+                #style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
@@ -80,7 +83,7 @@ layout = html.Div([
    
             html.Div([
                 html.Label("Wavelength: ", style={'color': 'white'}),
-                html.Div(id='wavelength-container', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='[]', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
@@ -122,7 +125,7 @@ layout = html.Div([
 
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '400px', 'top': '30px', 'width': '250px', 'height': '370px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '310px', 'top': '30px', 'width': '250px', 'height': '370px'}),
 ]),
 
 #5quadrante
@@ -169,8 +172,8 @@ layout = html.Div([
     'position': 'absolute',
     'left': '0px',
     'top': '30px',
-    'width': '650px',  
-    'height': '390px',  
+    'width': '620px', 
+    'height': '370px',
 }),
 ]),
 
@@ -223,9 +226,9 @@ layout = html.Div([
     'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
-    'left': '830px', 
+    'left': '700px', 
     'top': '50px', 
-    'width': '480px', 
+    'width': '600px', 
     'height': '420px'
 }),
   
@@ -264,10 +267,10 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Cor ectangulo
     'position': 'absolute',
-    'left': '160px',
-    'top': '470px',
+    'left': '90px',
+    'top': '480px',
     'width': '600px',  
-    'height': '300px'  
+    'height': '250px'  
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
  
@@ -288,90 +291,97 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
-    'left': '780px',
+    'left': '700px',
     'top': '480px',
     'width': '600px',  
-    'height': '280px'  
+    'height': '250px'  
 }),
-    dcc.Store(id='store-atmosphere-params', storage_type='local'),
+    dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
-
+    #html.Div(id='s_s'),
 ], style={'position': 'relative'})
 
- #callbacks 
+ #Funções
+#WAVEFRONT SENSORS
+def wavefront_sensors_to_dict(wavefront_sensor):
+    return {
+        'uid': wavefront_sensor.uid,
+        'n_valid_subapertures': wavefront_sensor.n_valid_subapertures,
+        'subaperture_size': wavefront_sensor.subaperture_size,
+        'wavelength': wavefront_sensor.wavelength,
+    }
 
 
-
-#@callback(
-#    Output('image', 'children'),
-#    [Input('store-atmosphere-params', 'data'),
- #   Input('url', 'pathname')]
-#)
-#def display_config_data(data, pathname):  
- #   if pathname == '/analise' and data is not None:
- #       base64_image = data['base64_image']
-
-        # Use the base64 string as the source for the Img element
-  #      return html.Img(src='data:image/png;base64,{}'.format(base64_image))
-  #  else:
-  #      return ''
-
- #Name of wavefront sensor
+#Callbacks
+"""
+#Name of wavefront sensor
 @callback(
     Output('sensor_name', 'children'),
-    [Input('store-atmosphere-params', 'data'),
+    [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_sensor1(data, pathname):
-    if pathname == '/measurements' and data is not None:
-        sensors = data['wavefront_sensors']
+def display_sensor1(pickle_file, pathname):
+    if pathname == '/measurements' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        sensors = [wavefront_sensors_to_dict(wavefront_sensor)['uid'] for wavefront_sensor in sys.wavefront_sensors]
         sensor_divs = [html.Div(sensor, id=(sensor if sensor is not None else 'default-id'), className='option', n_clicks=0, style=option_STYLE) for sensor in sensors]
-        print(f'name: {sensor_divs}')
         return sensor_divs
     else:
         return []
     
 #Valid subapertures of wavefront sensor  
 @callback(
-    Output('valid-subapertures-container', 'children'),
-    [Input('store-atmosphere-params', 'data'),
+    Output('n_sub', 'children'),
+    [Input('pickle_store', 'data'),
     Input('url', 'pathname')]
 )
-def display_subap(data, pathname):  
-    if pathname == '/measurements' and data is not None:
-        n_subapertures = data['n_subapertures']
-        print(f'n subapertures: {n_subapertures}')
+def display_subap(pickle_file, pathname):  
+    if pathname == '/measurements' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        n_subapertures = [wavefront_sensors_to_dict(wavefront_sensor)['n_valid_subapertures'] for wavefront_sensor in sys.wavefront_sensors]
         return f'{n_subapertures}'
     else:
         return "None"
     
 #Size subapertures of wavefront sensor
 @callback(
-    Output('subapertures-size-container', 'children'),
-    [Input('store-atmosphere-params', 'data'),
+    Output('s_s', 'children'),
+    [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_subapertures(data, pathname):
-    if pathname == '/measurements' and data is not None:
-        size_subapertures = data['subapertures_size']
-        #print(f'n subapertures: {size_subapertures}')
+def display_subapertures(pickle_file, pathname):
+    if pathname == '/measurements' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        size_subapertures = [wavefront_sensors_to_dict(wavefront_sensor)['subaperture_size'] for wavefront_sensor in sys.wavefront_sensors]
         return f'{size_subapertures}'
     else:
         return "None"
     
 #Wavelength of wavefront sensor
 @callback(
-    Output('wavelength-container', 'children'),
-    [Input('store-atmosphere-params', 'data'),
+    Output('wavelength_container', 'children'),
+    [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_wavelength(data, pathname):
-    if pathname == '/measurements' and data is not None:
-        wave = data['wavelength']
-        #print(f'n subapertures: {size_subapertures}')
+def display_wavelength(pickle_file, pathname):
+    if pathname == '/measurements' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        wave = [wavefront_sensors_to_dict(wavefront_sensor)['wavelength'] for wavefront_sensor in sys.wavefront_sensors]
         return f'{wave}'
     else:
-        return "None"
+        return "None" """
 
 @callback(
     Output('store3', 'data'),
