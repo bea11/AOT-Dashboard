@@ -121,7 +121,7 @@ html.Div([
 
 
     #importante quando quero variar entre estados
-    html.Button('Source', id='source'),
+    #html.Button('Source', id='source'),
 
 ]),
 
@@ -262,7 +262,7 @@ html.Div([
  #               dcc.Link(
  #                   dbc.Button('Pixels', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
  #                   href='/pixels'),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '5vw', 'width': '20vw'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '5vw', 'width': '23vw'}),
 
 #Terceiro
 
@@ -274,12 +274,12 @@ html.Div([
     #        dcc.Link(
     #            dbc.Button('Commands', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
      #           href='/commands'),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center','margin-left': '5vw', 'width': '20vw'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center','margin-left': '5vw', 'width': '25vw'}),
     
 
 
     ], style={'display': 'flex'}),
-], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '430px', 'width': '1100px', 'height': '200px'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '430px', 'width': '1500px', 'height': '200px'}),
 
     dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),

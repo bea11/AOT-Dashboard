@@ -10,6 +10,8 @@ import gzip
 from dash.html import Img
 import pickle
 from flask import session
+import plotly.graph_objects as go
+import plotly.express as px
 
 
 dash.register_page(__name__, path='/measurements')
@@ -218,7 +220,7 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-
+        dcc.Graph(id='meas1D', style={'position': 'absolute', 'left': '20px', 'top': '50px'}),
        # html.Div(id='image', style={'position': 'absolute', 'left': '160px', 'top': '50px', 'width': '600px', 'height': '420px'}),
 
 ], style={
@@ -382,6 +384,51 @@ def display_wavelength(pickle_file, pathname):
         return f'{wave}'
     else:
         return "None" """
+
+#Measurements from the sensor over time. Each of its Sv subapertures is able to measure in d dimensions. (Dimensions t×d×Sv, in user defined units, using data type flt)
+
+@callback(
+    Output('meas1D', 'figure'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def display_meas_frame(pickle_file, pathname):
+    if pathname == '/measurements' and pickle_file is not None:
+
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        meas_data = sys.wavefront_sensors[0].measurements
+
+        if hasattr(meas_data, 'data'):
+            meas_data = meas_data.data
+
+        
+            reshaped = meas_data.reshape(meas_data.shape[0], -1)
+
+        fig = go.Figure(data=go.Heatmap(z=reshaped, colorscale='Viridis'))
+
+        fig.update_layout(
+            title='Measurements over time',
+            xaxis_title='X',
+            yaxis_title='Y',
+            autosize=False,
+            width=600,
+            height=350,
+            margin=dict(l=65, r=50, b=65, t=90),
+            paper_bgcolor='rgba(0,0,0,0)', 
+            title_font=dict(color='white'),  # text color
+            xaxis_title_font=dict(color='white'), 
+            yaxis_title_font=dict(color='white'),
+            xaxis_tickfont=dict(color='white'),  # label
+            yaxis_tickfont=dict(color='white'),
+            )
+
+        return fig
+    else:
+        return {}
+
+
 
 @callback(
     Output('store3', 'data'),

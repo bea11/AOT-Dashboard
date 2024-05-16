@@ -63,7 +63,7 @@ layout = html.Div([
            
             html.Div([
                 html.Label("Name of Detector: ", style={'color': 'white'}),
-                html.Div("[[[SAPHIRA", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div("SAPHIRA", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
             html.Div([
@@ -88,12 +88,12 @@ layout = html.Div([
 
             html.Div([
                 html.Label("Number of valid subapertures: ", style={'color': 'white'}),
-                html.Div("[]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div("[68]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Subapertures Size: ", style={'color': 'white'}),
-                html.Div("[]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div("[None]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
@@ -333,7 +333,7 @@ layout = html.Div([
 #Funções
 
 #CALLBACKS
-
+#Intensity detected in each pixel, for each data frame. This is a sequence of t images, each spanning x pixels horizontally and y pixels vertically. (Dimensions t×h×w, in ADU units, using data type flt)
 
 @callback(
     Output('imag2D', 'figure'),
@@ -342,7 +342,7 @@ layout = html.Div([
 )
 def display_detector_frame(pickle_file, pathname):
     if pathname == '/pixels' and pickle_file is not None:
-        # Load the AOSystem object from the pickle file
+        
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
@@ -374,8 +374,6 @@ def display_detector_frame(pickle_file, pathname):
         return fig
     else:
         return {}
-
-
 """
 @callback(
     Output('img_data', 'children'),
