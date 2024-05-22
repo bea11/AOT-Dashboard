@@ -1,7 +1,5 @@
 import dash
 from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
-from dash.dependencies import Input, Output
-import dash_bootstrap_components as dbc
 import plotly.io as pio
 import base64
 import datetime
@@ -9,21 +7,18 @@ import io
 import aotpy
 import gzip
 import cv2
-import dash
-from dash import dcc
 from dash import html, register_page, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import callback
-import plotly.express as px
-import matplotlib.pyplot as plt
 import matplotlib
 #matplotlib.use('Agg')
 import pickle
 import numpy as np
 from flask import session
-import plotly.graph_objects as go
 import plotly.express as px
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import pandas as pd
 
 import json
@@ -350,14 +345,15 @@ def display_detector_frame(pickle_file, pathname):
 
         # poder ter uma imagem 2D por tempo
         reshaped = pixel_data.reshape(pixel_data.shape[0], -1)
+        swapped = np.swapaxes(reshaped, 0, 1)
 
         # Criar com o timeslider
-        fig = go.Figure(data=go.Heatmap(z=reshaped, colorscale='Viridis'))
+        fig = go.Figure(data=go.Heatmap(z=swapped, colorscale='Viridis'))
 
         fig.update_layout(
             title='Pixel with frame index',
-            xaxis_title='Pixel',
-            yaxis_title='Frame Index',
+            xaxis_title='Frame Index',
+            yaxis_title='Pixel',
             autosize=False,
             width=600,
             height=350,
@@ -420,13 +416,13 @@ def display_imgs_data(pickle_file, pathname):
             sys = pickle.load(f)
 
         img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
-
+        print(f"Data PIXEL shape: {img_data.shape}, Data type: {type(img_data)}")
  
         fig = px.imshow(img_data, animation_frame=0, binary_string=True, labels=dict(animation_frame="slice"))
         fig.update_layout(
-            title='Different 2D images over time',
-            xaxis_title='Local X',
-            yaxis_title='Local Y',
+            title='Different 2D images over frames',
+            xaxis_title='X',
+            yaxis_title='Y',
             autosize=False,
             width=600,
             height=450,

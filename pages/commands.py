@@ -325,7 +325,7 @@ def display_subapertures(pickle_file, pathname):
      Input('url', 'pathname')]
 )
 def display_wavelength(pickle_file, pathname):
-    if pathname == '/measurements' and pickle_file is not None:
+    if pathname == '/commands' and pickle_file is not None:
        
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)

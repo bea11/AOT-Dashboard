@@ -30,11 +30,23 @@ body {
 
 .navbar {
     background-color: #1C2634 !important;
+    padding: 0;
 }
 
 .nav-link {
-    border: 1px solid #e5c749 !important;
-    background-color: #243343;
-    margin-right: 10px !important; 
-    border-radius: 5px !important; 
+    padding: 10px 10px;
+    height: 100%; 
+}
+
+.nav-link:hover {
+    background-color: #9bbfe6;
+    color: #FFFFFF;
+}
+
+#pages_content{
+    padding-top: 20px;
+}
+
+.slider-step-label {
+    color: white !important;
 }

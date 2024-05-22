@@ -26,7 +26,7 @@ option_STYLE = {
 
 
 layout = html.Div([
-    html.H1("Analysis", style={'text-align': 'left', 'margin-left': '12vw'}),
+    html.H1("Information", style={'text-align': 'left', 'margin-left': '12vw'}),
     
 #nomes/blocos -Juntar os 2
     #primeiros2

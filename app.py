@@ -28,7 +28,7 @@ SIDEBAR_STYLE = {
 navbar = dbc.Navbar(
     [
         dbc.NavItem(dbc.NavLink("Home", href="/")),
-        dbc.NavItem(dbc.NavLink("Analise", href="/analise")),
+        dbc.NavItem(dbc.NavLink("Information", href="/analise")),
         dbc.NavItem(dbc.NavLink("Pixels", href="/pixels")),
         dbc.NavItem(dbc.NavLink("Measurements", href="/measurements")),
         dbc.NavItem(dbc.NavLink("Commands", href="/commands")),
