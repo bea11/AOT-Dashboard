@@ -45,8 +45,8 @@ layout = html.Div([
     html.Div([
     html.Button('Properties', id='button-1', n_clicks=0, style={'background-color': '#1C2634', 'color': 'white', 'text-align': 'center'},),
     html.Button('Statistics', id='button-2', n_clicks=0, style={'background-color': '#1C2634', 'color': 'white', 'text-align': 'center'},),
-    dcc.Store(id='store'),
-    html.Div(id='output')
+    dcc.Store(id='store_data'),
+    html.Div(id='output_data')
 
 ], style={'position': 'absolute', 'left': '90px','display': 'flex', 'justify-content': 'space-between', 'top': '50px', 'width': '20px', 'height': '25px'}),
   
@@ -58,17 +58,17 @@ layout = html.Div([
            
             html.Div([
                 html.Label("Name of Detector: ", style={'color': 'white'}),
-                html.Div("SAPHIRA", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='name_ns', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
             html.Div([
                 html.Label("Shutter Type: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='shuttert', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Unique Identifier: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='detect_ui', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
      
             html.Div([
@@ -82,13 +82,13 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
-                html.Label("Number of valid subapertures: ", style={'color': 'white'}),
-                html.Div("[68]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Other: ", style={'color': 'white'}),
+                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Subapertures Size: ", style={'color': 'white'}),
-                html.Div("[None]", style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='ss', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
@@ -318,9 +318,9 @@ layout = html.Div([
     #dcc.Slider(id='frameindex', min=0, max=100, step=1, value=0, marks={0: '0', 100: '100'}),
 
 
-    html.Div(id='mo', style={'color': 'red'}),
-    html.Div(id='sm', style={'color': 'blue'}),
-    html.Div(id='ss', style={'color': 'black'}),
+   # html.Div(id='mo', style={'color': 'red'}),
+    #html.Div(id='sm', style={'color': 'blue'}),
+    #html.Div(id='ss', style={'color': 'black'}),
 
 ], style={'position': 'relative'})
     
@@ -329,6 +329,41 @@ layout = html.Div([
 
 #CALLBACKS
 #Intensity detected in each pixel, for each data frame. This is a sequence of t images, each spanning x pixels horizontally and y pixels vertically. (Dimensions t×h×w, in ADU units, using data type flt)
+
+
+@callback(
+    Output('store_data', 'data'),
+    [Input('button-1', 'n_clicks'), Input('button-2', 'n_clicks')],
+    [dash.dependencies.State('store', 'data')]
+)
+def update_store(n1, n2, data):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        button_id = 'No clicks yet'
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    return button_id
+
+@callback(
+    Output('output_data', 'children'),
+    [Input('button-1', 'n_clicks_timestamp'), Input('button-2', 'n_clicks_timestamp')],
+    [State('1-quadrante-content', 'data'), State('5-quadrante-content', 'data')]
+)
+def update_output(n_clicks_timestamp1, n_clicks_timestamp2, content1, content2):
+    if n_clicks_timestamp1 is None and n_clicks_timestamp2 is None:
+        return content1
+    if n_clicks_timestamp1 is None:
+        n_clicks_timestamp1 = 0
+    if n_clicks_timestamp2 is None:
+        n_clicks_timestamp2 = 0
+
+    if n_clicks_timestamp1 > n_clicks_timestamp2:
+        return content1
+    else:
+        return content2
+
+
+
 
 @callback(
     Output('imag2D', 'figure'),
@@ -457,29 +492,7 @@ def update_slice_selector(pickle_file, pathname):
         return options
     return []    """
 
-""""@callback(
-    Output('img_imagem', 'figure'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname'),
-     Input('slice-selector', 'value')]
-)
-def update_1d_graph(pickle_file, pathname, selected_slice):
-    if pathname == '/pixels' and pickle_file is not None:
-       
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
 
-       
-        img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
-
-        img_data_1d = img_data[selected_slice].flatten()
-
-        fig1 = px.line(x=range(len(img_data_1d)), y=img_data_1d)
-        fig1.update_layout(title="1D representation of the selected slice")
-
-        return fig1
-    else:
-        return {}"""
 
 """@callback(
     Output('selected_slice', 'figure'),
@@ -513,56 +526,44 @@ def update_2d_graph(pickle_file, pathname, selected_slice):
 
 
 @callback(
-    Output('sm', 'children'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def display_sm_data(pickle_file, pathname):
-    if pathname == '/pixels' and pickle_file is not None:
-      
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-
-        sm = sys.wavefront_sensors[0].subaperture_mask
-
-        return sm
-    else: 
-        return "None"
-
-@callback(
+    [Output('sm', 'children'),
     Output('mo', 'children'),
+    Output('ss', 'children')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_sm_data(pickle_file, pathname):
+def key_properties(pickle_file, pathname):
     if pathname == '/pixels' and pickle_file is not None:
-     
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
+        
+        sm = sys.wavefront_sensors[0].subaperture_mask
+        mo = sys.wavefront_sensors[0].mask_offsets
+        ss = sys.wavefront_sensors[0].subaperture_size
 
-        sm = sys.wavefront_sensors[0].mask_offsets
-
-        return sm
+        return sm, mo, ss
     else: 
-        return "None"
+        return "None", "None", "None"
 
 @callback(
-    Output('ss', 'children'),
+    [Output('name_ns', 'children'),
+    Output('detect_ui', 'children'),
+    Output('shuttert', 'children')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_sm_data(pickle_file, pathname):
+def key_properties_2(pickle_file, pathname):
     if pathname == '/pixels' and pickle_file is not None:
-   
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
+        
+        detect_ui = sys.wavefront_sensors[0].uid
+        name_ns = sys.wavefront_sensors[0].detector.uid
+        shuttert = sys.wavefront_sensors[0].detector.shutter_type 
 
-        sm = sys.wavefront_sensors[0].subaperture_size
-
-        return sm
+        return name_ns, detect_ui, shuttert
     else: 
-        return "None"
-    
+        return "None", "None", "None"
 """
 @callback(
     Output('teste', 'children'),
@@ -622,35 +623,3 @@ def display_corrector1(mo, teste_imagem, ss, sm, pathname, data):
     else:
         return []
         """
-
-@callback(
-    Output('store', 'data'),
-    [Input('button-1', 'n_clicks'), Input('button-2', 'n_clicks')],
-    [dash.dependencies.State('store', 'data')]
-)
-def update_store(n1, n2, data):
-    ctx = dash.callback_context
-    if not ctx.triggered:
-        button_id = 'No clicks yet'
-    else:
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-    return button_id
-
-@callback(
-    Output('output', 'children'),
-    [Input('button-1', 'n_clicks_timestamp'), Input('button-2', 'n_clicks_timestamp')],
-    [State('1-quadrante-content', 'data'), State('5-quadrante-content', 'data')]
-)
-def update_output(n_clicks_timestamp1, n_clicks_timestamp2, content1, content2):
-    if n_clicks_timestamp1 is None and n_clicks_timestamp2 is None:
-        return content1
-    if n_clicks_timestamp1 is None:
-        n_clicks_timestamp1 = 0
-    if n_clicks_timestamp2 is None:
-        n_clicks_timestamp2 = 0
-
-    if n_clicks_timestamp1 > n_clicks_timestamp2:
-        return content1
-    else:
-        return content2
-

@@ -279,7 +279,7 @@ html.Div([
 
 
     ], style={'display': 'flex'}),
-], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '430px', 'width': '1500px', 'height': '200px'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '430px', 'width': '1100px', 'height': '200px'}),
 
     dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
