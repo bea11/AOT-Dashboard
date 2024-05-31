@@ -6,13 +6,10 @@ import datetime
 import io
 import aotpy
 import gzip
-import cv2
 from dash import html, register_page, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from dash import callback
 import matplotlib
-#matplotlib.use('Agg')
 import pickle
 import numpy as np
 from flask import session
