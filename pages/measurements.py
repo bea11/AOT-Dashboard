@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
 import pandas as pd
-import numpy as np
+from plotly_resampler import FigureResampler
 
 
 dash.register_page(__name__, path='/measurements')
@@ -225,8 +225,52 @@ layout = html.Div([
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
        # html.Div(id='image', style={'position': 'absolute', 'left': '160px', 'top': '50px', 'width': '600px', 'height': '420px'}),
-        dcc.Graph(id='teste_meas', style={'position': 'absolute', 'left': '20px', 'top': '50px'}),
-            #dcc.Graph(id='measnovo', style={'position': 'absolute', 'left': '10px', 'top': '50px'}),
+        #dcc.Graph(id='teste_meas', style={'position': 'absolute', 'left': '20px', 'top': '50px'}),
+        #dcc.Graph(id='measnovo', style={'position': 'absolute', 'left': '10px', 'top': '50px'}),
+        
+        
+        html.Div([  
+            #    dcc.Graph(id='new_x_dimension_image', style={'position': 'absolute', 'left': '0px', 'top': '5px'}),
+             #   dcc.Graph(id='new_y_dimension_image', style={'position': 'absolute', 'left': '300px', 'top': '10px'}),
+             #   dcc.Interval(
+             #       id='interval-component',
+             #       interval=1*1000,  # 1000 milliseconds = 1 second
+             #       n_intervals=0
+             #   ),
+            
+            dcc.Graph(id='testes_imagem1', style={
+                'position': 'absolute',
+                'left': '0px',
+                'top': '50px',
+                'height': '30px',
+                'width': '400px'
+            }),
+            dcc.Graph(id='testes_imagem2', style={
+                'position': 'absolute',
+                'left': '200px',
+                'top': '50px',
+                'height': '30px',
+                'width': '400px'
+            }),
+            html.Div(dcc.Slider(
+                id='frame_slider',
+                min=0,
+                max=1,
+                step=1,
+                value=0,
+                marks={},
+            ), style={
+                        'width': '600px',  # Increase the width of the slider
+                        'position': 'absolute',  # Position the slider absolutely
+                        'left': '20px',  # Align the slider with the left edge of the graph
+                        'height': '30px',
+                        'top': '350px',  # Align the slider with the bottom of the graph
+                    }),
+            # Slider to select the frame
+            dcc.Store(id='image_data_store'),  # Store component to hold the image data
+                
+    ]),
+
 ], style={
     'display': 'flex',  
     'justify-content': 'space-between',  
@@ -246,7 +290,7 @@ layout = html.Div([
             html.Div([  
                 dcc.Graph(id='x_dimension_image', style={'position': 'absolute', 'left': '0px', 'top': '5px'}),
                 dcc.Graph(id='y_dimension_image', style={'position': 'absolute', 'left': '300px', 'top': '10px'}),
-                
+              #  slider,
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
 
 ]),
@@ -413,6 +457,118 @@ def display_measurements_data(pickle_file, pathname):
         return {}
 """
 
+
+@callback(
+    Output('image_data_store', 'data'),
+    Output('frame_slider', 'max'),
+    Output('frame_slider', 'marks'), 
+    Output('frame_slider', 'value'),
+    Input('pickle_store', 'data'),
+    Input('url', 'pathname')
+)
+def load_image_data(pickle_file, pathname):
+    if pathname == '/measurements' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        img_data = sys.wavefront_sensors[0].measurements.data 
+        
+       # print(f'img_data shape: {img_data.shape}')
+    
+        max_frame = img_data.shape[0] - 1
+        marks = {i: str(i) for i in range(0, max_frame + 1, 1000)}  
+        return img_data.tolist(), max_frame, marks, 0
+    else:
+        return None, 0, dash.no_update, dash.no_update
+
+@callback(
+    Output('testes_imagem1', 'figure'),
+    Input('image_data_store', 'data'),
+    Input('pickle_store', 'data'),
+    Input('frame_slider', 'value')
+)
+def update_image(data,pickle_file, frame_index):
+   # print(f'data: {data}')
+    #print(f'frame_index: {frame_index}')
+    with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+    subaperture_mask = sys.wavefront_sensors[0].subaperture_mask  
+    img_data = sys.wavefront_sensors[0].measurements.data   
+
+    if data is None or frame_index is None:
+        return {}
+
+    if subaperture_mask is None or subaperture_mask.data is None:
+        mask_flattened = None
+    else:
+        subaperture_mask_data = subaperture_mask.data
+        mask_flattened = subaperture_mask_data.flatten()
+
+    
+    frame = img_data[frame_index, 0, :]
+    #frame = img_data[frame_index, 0, :].reshape(-1, 1)
+    if mask_flattened is not None:
+        valid_indices = mask_flattened >= 0
+        frame_processed = frame[valid_indices]
+    else:
+        frame_processed = frame
+
+    frame_processed = frame_processed.reshape(-1, 1)
+
+    fig = px.imshow(frame_processed, color_continuous_scale='Viridis')
+    fig.update_layout(
+        title=f'Frame {frame_index} Dimension X',
+        #xaxis_title='X',
+        #yaxis_title='Y',
+        autosize=False,
+        width=250,
+        height=300,
+        paper_bgcolor='rgba(0,0,0,0)', 
+        title_font=dict(color='white'),  
+        xaxis_title_font=dict(color='white'),  
+        yaxis_title_font=dict(color='white'),
+        xaxis_tickfont=dict(color='white'),  
+        yaxis_tickfont=dict(color='white'),
+        coloraxis_showscale=False, 
+        margin=dict(l=65, r=50, b=65, t=90),
+    )
+    return fig
+  
+
+@callback(
+    Output('testes_imagem2', 'figure'),
+    Input('image_data_store', 'data'),
+    Input('frame_slider', 'value')
+)
+def update_image(data, frame_index):
+   # print(f'data: {data}')
+    #print(f'frame_index: {frame_index}')
+    if data is None or frame_index is None:
+        return {}
+
+    img_data = np.array(data)
+    frame = img_data[frame_index, 1, :].reshape(-1, 1)
+
+    fig = px.imshow(frame, color_continuous_scale='Viridis')
+    fig.update_layout(
+        title=f'Frame {frame_index} Dimension Y',
+        #xaxis_title='X',
+        #yaxis_title='Y',
+        autosize=False,
+        width=500,
+        height=300,
+        paper_bgcolor='rgba(0,0,0,0)', 
+        title_font=dict(color='white'),  
+        xaxis_title_font=dict(color='white'),  
+        yaxis_title_font=dict(color='white'),
+        xaxis_tickfont=dict(color='white'),  
+        yaxis_tickfont=dict(color='white'),
+        coloraxis_showscale=False, 
+        margin=dict(l=65, r=50, b=65, t=90),
+    )
+    return fig
+  
+
+
 #Measurements from the sensor over time. Each of its Sv subapertures is able to measure in d dimensions. (Dimensions t×d×Sv, in user defined units, using data type flt)
 
 @callback(
@@ -428,35 +584,35 @@ def display_measurements(pickle_file, pathname):
       
         measurements = sys.wavefront_sensors[0].measurements.data  
 
-        subaperture_mask = sys.wavefront_sensors[0].subaperture_mask
-        #subaperture_mask = [wavefront_sensors_to_dict(wavefront_sensor)['subaperture_mask'] for wavefront_sensor in sys.wavefront_sensors]
+        #subaperture_mask = sys.wavefront_sensors[0].subaperture_mask
+        
 
 
-        if subaperture_mask is None or subaperture_mask.data is None:
-            mask_flattened = None
-        else:
-            subaperture_mask_data = subaperture_mask.data
-            mask_flattened = subaperture_mask_data.flatten()
+        #if subaperture_mask is None or subaperture_mask.data is None:
+        #    mask_flattened = None
+        #else:
+        #    subaperture_mask_data = subaperture_mask.data
+        #    mask_flattened = subaperture_mask_data.flatten()
 
 # Separar
         x_measurements = measurements[:, 0, :]
         y_measurements = measurements[:, 1, :]
 
 #  t x sv
-        t, sv = x_measurements.shape
+        #t, sv = x_measurements.shape
 
 # subaperture mask filter
-        if mask_flattened is not None:
-            valid_indices = mask_flattened >= 0
-            x_processed = x_measurements[:, valid_indices]
-            y_processed = y_measurements[:, valid_indices]
-        else:
-            x_processed = x_measurements
-            y_processed = y_measurements
+        #if mask_flattened is not None:
+        #    valid_indices = mask_flattened >= 0
+        #    x_processed = x_measurements[:, valid_indices]
+        #    y_processed = y_measurements[:, valid_indices]
+        #else:
+        #    x_processed = x_measurements
+        #    y_processed = y_measurements
 
 # 
-        fig_x = go.Figure(data=go.Heatmap(z=x_processed.T, colorscale='Viridis'))
-        fig_y = go.Figure(data=go.Heatmap(z=y_processed.T, colorscale='Viridis'))
+        fig_x = go.Figure(data=go.Heatmap(z=x_measurements.T, colorscale='Viridis'))
+        fig_y = go.Figure(data=go.Heatmap(z=y_measurements.T, colorscale='Viridis'))
 
         fig_x.update_layout(
             title='X_D Measurements Over Time',
@@ -623,7 +779,7 @@ def display_measurements(pickle_file, pathname):
         return {}, {}"""
 
 
-
+""" a funcionar mas minimo
 @callback(
     Output('teste_meas', 'figure'),
     [Input('pickle_store', 'data'),
@@ -661,7 +817,7 @@ def display_imgs_data(pickle_file, pathname):
         return fig
     else:
         return {}
-
+"""
 """
 
 @callback(
@@ -686,52 +842,6 @@ def display_wavelength(pickle_file, pathname):
         return f'{max_value}', f'{min_value}', f'{average}'
     else:
         return "None"
-"""
-"""@callback(
-    Output('meas1D', 'figure'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def display_meas_frame(pickle_file, pathname):
-    if pathname == '/measurements' and pickle_file is not None:
-
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-
-        meas_data = sys.wavefront_sensors[0].measurements
-
-        if hasattr(meas_data, 'data'):
-            meas_data = meas_data.data
-
-        
-            reshaped = meas_data.reshape(meas_data.shape[0], -1)
-
-        fig = go.Figure(data=go.Heatmap(z=reshaped, colorscale='Viridis'))
-
-        fig.update_layout(
-            title='Measurements over time',
-            xaxis_title='Subaperture',
-            yaxis_title='Y',
-            autosize=False,
-            width=600,
-            height=320,
-            margin=dict(l=65, r=50, b=65, t=90),
-            paper_bgcolor='rgba(0,0,0,0)', 
-            title_font=dict(color='white'),  # text color
-            xaxis_title_font=dict(color='white'), 
-            yaxis_title_font=dict(color='white'),
-            xaxis_tickfont=dict(color='white'),  # label
-            yaxis_tickfont=dict(color='white'),
-            )
-
-        return fig
-    else:
-        return {}
-
-
-
-
-
 """
 
 @callback(
@@ -764,3 +874,4 @@ def update_output3(n_clicks_timestamp3, n_clicks_timestamp4, content3, content4)
         return content3
     else:
         return content4
+
