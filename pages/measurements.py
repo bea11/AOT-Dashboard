@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
 import pandas as pd
-from plotly_resampler import FigureResampler
+
 
 
 dash.register_page(__name__, path='/measurements')
