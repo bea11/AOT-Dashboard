@@ -114,7 +114,7 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '85px', 'width': '400px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '85px', 'width': '400px', 'height': '390px'}),
     
    #1 quadrante 
     html.Div([
@@ -152,7 +152,7 @@ layout = html.Div([
 
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '580px', 'top': '85px', 'width': '230px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '520px', 'top': '85px', 'width': '230px', 'height': '390px'}),
 
     #2 quadrante 
     #imagem
@@ -193,7 +193,7 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-    dcc.Graph(id='teste2_imagem', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+    dcc.Graph(id='teste2_imagem', style={'position': 'absolute', 'left': '20px', 'top': '10px', 'height': '330px', 'width': '500px'}),
 
     html.Div(dcc.Slider(
                 id='frame2_slider',
@@ -207,7 +207,7 @@ layout = html.Div([
                         'position': 'absolute',  
                         'left': '20px',  
                         'height': '30px',
-                        'top': '350px',  
+                        'top': '370px',  
                     }),
 
 ], style={
@@ -215,9 +215,9 @@ layout = html.Div([
     'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
-    'left': '830px', 
+    'left': '780px', 
     'top': '50px', 
-    'width': '480px', 
+    'width': '580px', 
     'height': '420px'
 }),
   
@@ -238,8 +238,8 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  
     'position': 'absolute',
-    'left': '160px',
-    'top': '480px',
+    'left': '110px',
+    'top': '510px',
     'width': '600px',  
     'height': '300px'  
 }),
@@ -247,18 +247,16 @@ layout = html.Div([
  
     #4 quadrante
     html.Div([
-    html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
     html.Div([  
-        dcc.Graph(id='differentplot', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+        dcc.Graph(id='differentplot', style={'position': 'absolute', 'left': '20px', 'height': '330px', 'width': '500px'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-    html.Div('AAA', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
     'left': '780px',
     'top': '480px',
-    'width': '600px',  
-    'height': '300px'  
+    'width': '580px',  
+    'height': '330px'  
 }),
         dcc.Store(id='pickle_store', storage_type='local'),
 
@@ -367,8 +365,8 @@ def update_image(frame_index, pickle_file, pathname, selected_command):
             xaxis_title='Index',
             yaxis_title='Value',
             autosize=False,
-            width=600,
-            height=450,
+            width=550,
+            height=400,
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),  
             xaxis_title_font=dict(color='white'),  
