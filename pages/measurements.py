@@ -261,10 +261,10 @@ layout = html.Div([
     'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
-    'left': '610px', 
+    'left': '700px', 
     'top': '50px', 
-    'width': '750px', 
-    'height': '420px'
+    'width': '600px', 
+    'height': '400px'
 }),
   
 
@@ -276,30 +276,29 @@ layout = html.Div([
                 dcc.Graph(id='x_dimension_image', style={'position': 'absolute', 'left': '0px', 'top': '5px'}),
                 dcc.Graph(id='y_dimension_image', style={'position': 'absolute', 'left': '300px', 'top': '10px'}),
               #  slider,
-    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
+    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center', }),
 
 ]),
 
 ], style={
     'background-color': '#1C2634',  # Cor ectangulo
     'position': 'absolute',
-    'left': '90px',
+    'left': '40px',
     'top': '480px',
-    'width': '700px',  
-    'height': '350px'  
+    'width': '690px',  
+    'height': '320px'   
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
     #4 quadrante
     html.Div([
-        html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
-        dcc.Graph(id='scatterplot', style={'position': 'absolute', 'left': '0px', 'top': '5px'}),
+        dcc.Graph(id='scatterplot', style={'position': 'absolute'}),
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
-    'left': '700px',
+    'left': '760px',
     'top': '480px',
-    'width': '600px',  
-    'height': '250px'  
+    'width': '580px',  
+    'height': '340px'  
 }),
     dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
@@ -471,12 +470,14 @@ def update_image(data,pickle_file, frame_index):
 @callback(
     Output('testes_imagem2', 'figure'),
     Input('image_data_store', 'data'),
-    Input('frame_slider', 'value')
+    [Input('frame_slider', 'value'),
+    Input('url', 'pathname')]
 )
-def update_image(data, frame_index):
+def update_image(data, frame_index, pathname):
    # print(f'data: {data}')
     #print(f'frame_index: {frame_index}')
-    if data is None or frame_index is None:
+    
+    if pathname == '/measurements' or data is None or frame_index is None:
         return {}
 
     img_data = np.array(data)
