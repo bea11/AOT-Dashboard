@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
 import pandas as pd
-
+from plotly_resampler import FigureResampler
 
 
 dash.register_page(__name__, path='/measurements')
@@ -46,49 +46,34 @@ layout = html.Div([
         html.Div([
             
             html.Div([
-                html.Label("Name of sensor: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Name: ", style={'color': 'white'}),
+                html.Div(id='name', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
             html.Div([
-                html.Label("Shutter Type: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Dimensions: ", style={'color': 'white'}),
+                html.Div(id='dimensions', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
-                html.Label("String: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Type: ", style={'color': 'white'}),
+                html.Div(id='detect_type', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
      
             html.Div([
-                html.Label("Unique Identifier: ", style={'color': 'white'}),
+                html.Label("Pyramid ", style={'color': 'white'}),
                 html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px', 'margin-top': '13px'}),
 
             html.Div([
-                html.Label("Integer: ", style={'color': 'white'}),
+                html.Label("Shack Hartman", style={'color': 'white'}),
                 html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
-            html.Div([
-                html.Label("Number of valid subapertures: ", style={'color': 'white'}),
-                html.Div(id='valid-subapertures-container', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-
-            html.Div([
-                html.Label("Subapertures Size: ", style={'color': 'white'}),
-               # html.Div(id='s_s'),
-                #style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-
-            html.Div([
-                html.Label("Altitudes: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
    
             html.Div([
                 html.Label("Wavelength: ", style={'color': 'white'}),
-                html.Div(id='[]', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='wv', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
@@ -260,14 +245,14 @@ layout = html.Div([
                 value=0,
                 marks={},
             ), style={
-                        'width': '600px',  # Increase the width of the slider
-                        'position': 'absolute',  # Position the slider absolutely
-                        'left': '20px',  # Align the slider with the left edge of the graph
+                        'width': '600px',  
+                        'position': 'absolute',  
+                        'left': '20px',  
                         'height': '30px',
-                        'top': '350px',  # Align the slider with the bottom of the graph
+                        'top': '350px', 
                     }),
-            # Slider to select the frame
-            dcc.Store(id='image_data_store'),  # Store component to hold the image data
+      
+            dcc.Store(id='image_data_store'),  
                 
     ]),
 
@@ -307,10 +292,7 @@ layout = html.Div([
     #4 quadrante
     html.Div([
         html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
-        #html.Div([
-         #   dcc.Graph(id='fig_x', style={'position': 'absolute', 'left': '0px', 'top': '5px'}),
-         #   dcc.Graph(id='fig_y', style={'position': 'absolute', 'left': '300px', 'top': '10px'}),
-        #], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
+        dcc.Graph(id='scatterplot', style={'position': 'absolute', 'left': '0px', 'top': '5px'}),
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
@@ -408,55 +390,8 @@ def display_wavelength(pickle_file, pathname):
         return "None" 
 
 """
-#Downsampling.
-#Preprocessing: Perform any necessary preprocessing steps normalization, filtering)
-"""@callback(
-    Output('measnovo', 'figure'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def display_measurements_data(pickle_file, pathname):
-    if pathname == '/measurements' and pickle_file is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
 
-        measurements_data = sys.wavefront_sensors[0].measurements.data
-        print(f"Data shape: {measurements_data.shape}, Data type: {type(measurements_data)}")
-
-        # Create a list of figures for each frame
-        frames = [px.imshow(frame, binary_string=True).data[0] for frame in measurements_data]
-
-        fig = go.Figure(
-            data=frames[0],
-            layout=go.Layout(
-                title='Different 2D images over frames',
-                xaxis_title='Local X',
-                yaxis_title='Local Y',
-                autosize=False,
-                width=600,
-                height=450,
-                paper_bgcolor='rgba(0,0,0,0)', 
-                title_font=dict(color='white'),  
-                xaxis_title_font=dict(color='white'),  
-                yaxis_title_font=dict(color='white'),
-                xaxis_tickfont=dict(color='white'),  
-                yaxis_tickfont=dict(color='white'),
-                coloraxis_showscale=False, 
-                margin=dict(l=65, r=50, b=65, t=90),
-                updatemenus=[dict(type='buttons',
-                                  showactive=False,
-                                  buttons=[dict(label='Play',
-                                                method='animate',
-                                                args=[None])])]),
-            frames=[go.Frame(data=frame) for frame in frames]
-        )
-
-        return fig
-    else:
-        print("Pathname not '/measurements' or pickle_file is None")
-        return {}
-"""
-
+#Imagem com slider
 
 @callback(
     Output('image_data_store', 'data'),
@@ -532,7 +467,6 @@ def update_image(data,pickle_file, frame_index):
         margin=dict(l=65, r=50, b=65, t=90),
     )
     return fig
-  
 
 @callback(
     Output('testes_imagem2', 'figure'),
@@ -567,7 +501,7 @@ def update_image(data, frame_index):
     )
     return fig
   
-
+#Imagem estática
 
 #Measurements from the sensor over time. Each of its Sv subapertures is able to measure in d dimensions. (Dimensions t×d×Sv, in user defined units, using data type flt)
 
@@ -651,56 +585,46 @@ def display_measurements(pickle_file, pathname):
         return fig_x, fig_y
     else:
         return {}, {}
-"""   
+
+#Gráfico
 @callback(
-    Output('teste_meas', 'figure'),
+    Output('scatterplot', 'figure'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_imgs_data(pickle_file, pathname):
+def display_detector_frame(pickle_file, pathname):
     if pathname == '/measurements' and pickle_file is not None:
-    
+        
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        img_data = sys.wavefront_sensors[0].measurements.data 
-        half_frames = img_data.shape[0] // 2
-        img_data = img_data[:half_frames]
-        print(f"Data MEASUREMENT shape: {img_data.shape}, Data type: {type(img_data)}")
+        meas_data = sys.wavefront_sensors[0].measurements.data  
+     
+        meas_data_mean = np.mean(meas_data, axis=(1, 2))
 
-        fig = go.Figure(
-            data=[go.Heatmap(z=img_data[0], colorscale='Viridis')],
-            layout=go.Layout(
-                title='Different 2D images over frames',
-                xaxis_title='Local X',
-                yaxis_title='Local Y',
-                autosize=False,
-                width=700,
-                height=650,
-                paper_bgcolor='rgba(0,0,0,0)', 
-                title_font=dict(color='white'),  
-                xaxis_title_font=dict(color='white'),  
-                yaxis_title_font=dict(color='white'),
-                xaxis_tickfont=dict(color='white'),  
-                yaxis_tickfont=dict(color='white'),
-                coloraxis_showscale=False, 
-                margin=dict(l=65, r=50, b=65, t=90),
-                updatemenus=[dict(
-                    type="buttons",
-                    showactive=False,
-                    buttons=[dict(label="Play",
-                                  method="animate",
-                                  args=[None, {"frame": {"duration": 500, "redraw": False},
-                                               "fromcurrent": True,
-                                               "transition": {"duration": 300, "easing": "quadratic-in-out"}}])]
-                )]
-            ),
-            frames=[go.Frame(data=[go.Heatmap(z=img_data[i])]) for i in range(half_frames)]
+        time_values = list(range(len(meas_data_mean)))
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=time_values, y=meas_data_mean, mode='lines', name='Mean intensity over time'))
+        fig.update_layout(
+            title='Density over time',
+            xaxis_title='Time',
+            yaxis_title='Density',
+            autosize=False,
+            width=600,
+            height=350,
+            margin=dict(l=65, r=50, b=65, t=90),
+            paper_bgcolor='rgba(0,0,0,0)', 
+            title_font=dict(color='white'),
+            xaxis_title_font=dict(color='white'), 
+            yaxis_title_font=dict(color='white'),
+            xaxis_tickfont=dict(color='white'),
+            yaxis_tickfont=dict(color='white')
         )
 
         return fig
     else:
-        return {}    """
+        return {}
 
 """@callback(
     Output('fig_x', 'figure'),
@@ -844,6 +768,40 @@ def display_wavelength(pickle_file, pathname):
         return "None"
 """
 
+def none_to_string(*args):
+    return ['None' if arg is None or (isinstance(arg, list) and not arg) else arg for arg in args]
+
+
+@callback(
+    [Output('name', 'children'),
+    Output('dimensions', 'children'),
+    Output('wv', 'children'),
+    Output('detect_type', 'children')],
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def key_properties_meas(pickle_file, pathname):
+    if pathname == '/measurements' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+        name = sys.wavefront_sensors[0].measurements.name
+        dimensions = sys.wavefront_sensors[0].dimensions
+        #sm2 = sys.wavefront_sensors[0].subaperture_mask
+        #refm = sys.wavefront_sensors[0].ref_measurements.name 
+        #si = sys.wavefront_sensors[0].subaperture_intensities.name
+        wv = sys.wavefront_sensors[0].wavelength
+        detect_type = type(sys.wavefront_sensors[0]).__name__
+
+
+        
+        #Assim mostra o None
+        name, dimensions, wv, detect_type = none_to_string(name, dimensions, wv, detect_type) 
+        print(f'Name: {name}, Dimensions: {dimensions}, Wavelength: {wv}, type: {detect_type}')
+        return name, dimensions, wv, detect_type
+    else: 
+        return ["None"] * 4
+
 @callback(
     Output('store3', 'data'),
     [Input('button-3', 'n_clicks'), Input('button-4', 'n_clicks')],
@@ -874,4 +832,3 @@ def update_output3(n_clicks_timestamp3, n_clicks_timestamp4, content3, content4)
         return content3
     else:
         return content4
-
