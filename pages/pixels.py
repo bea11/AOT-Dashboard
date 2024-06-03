@@ -6,12 +6,16 @@ import datetime
 import io
 import aotpy
 import gzip
+import cv2
 from dash import html, register_page, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+from dash import callback
 import matplotlib
+#matplotlib.use('Agg')
 import pickle
 import numpy as np
+from scipy import ndimage
 from flask import session
 import plotly.express as px
 import matplotlib.pyplot as plt
@@ -23,7 +27,7 @@ from dash.dependencies import Input, Output, State, ALL
 
 
 
-dash.register_page(__name__, path='/pixels')
+dash.register_page(__name__, path='/pixels', suppress_callback_exceptions=True)
 
 option_STYLE = {
     'width': '100%',
@@ -64,38 +68,53 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
-                html.Label("Unique Identifier: ", style={'color': 'white'}),
-                html.Div(id='detect_ui', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Subeapertures Size: ", style={'color': 'white'}),
+                html.Div(id='ss', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
      
             html.Div([
-                html.Label("Subaperture Mask: ", style={'color': 'white'}),
-                html.Div(id='sm', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Mask Ofset: ", style={'color': 'white'}),
+                html.Div(id='mo', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px', 'margin-top': '13px'}),
 
             html.Div([
-                html.Label("Mask Ofset: ", style={'color': 'white'}),
-                html.Div(id='mo', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Frame Rate: ", style={'color': 'white'}),
+                html.Div(id='frame_rate', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
-                html.Label("Other: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Gain: ", style={'color': 'white'}),
+                html.Div(id='gain', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
-                html.Label("Subapertures Size: ", style={'color': 'white'}),
-                html.Div(id='ss', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Integration Time: ", style={'color': 'white'}),
+                html.Div(id='integration_time', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
-                html.Label("Altitudes: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Pixel Scale: ", style={'color': 'white'}),
+                html.Div(id='pixel_scale', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
    
             html.Div([
-                html.Label("Float: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+                html.Label("Quantum Efficiency: ", style={'color': 'white'}),
+                html.Div(id='quantum_efficiency', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+
+            html.Div([
+                html.Label("Readout Noise: ", style={'color': 'white'}),
+                html.Div(id='readout_noise', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+
+            html.Div([
+                html.Label("Readout Rate: ", style={'color': 'white'}),
+                html.Div(id='readout_rate', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+
+            html.Div([
+                html.Label("Sampling Technique: ", style={'color': 'white'}),
+                html.Div(id='sampling_technique', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
@@ -143,26 +162,34 @@ layout = html.Div([
     #imagem
         html.Div([
             dbc.Select(
-            id="aotpy_scale",
-            options=[
-                {'label': 'Scale', 'value': 'loops'},
-                {'label': 'C0', 'value': 'C0'},
-                {'label': 'C1', 'value': 'C1'},
-                {'label': 'C2', 'value': 'C2'}
-        ],
-        value='loops',
-        className='custom-select',
-        style={'width': "10vw",'color': 'white', 'height':'35px' }
-    ),
+    id="aotpy_scale",
+    options=[
+        {'label': 'Linear', 'value': 'Linear'},
+        {'label': 'Log', 'value': 'Log'},
+        {'label': 'Power', 'value': 'Power'},
+        {'label': 'Square Root', 'value': 'Square Root'},
+        {'label': 'Squared', 'value': 'Squared'},
+        {'label': 'ASINH', 'value': 'ASINH'},
+        {'label': 'SINH', 'value': 'SINH'},
+        {'label': 'Histogram Equalization', 'value': 'Histogram Equalization'}
+    ],
+    value='Linear',
+    className='custom-select',
+    style={'width': "10vw",'color': 'white', 'height':'35px' }
+),
         dbc.Select(
         id="aotpy_color",
             options=[
-                {'label': 'Color', 'value': 'loops'},
-                {'label': 'C0', 'value': 'C0'},
-                {'label': 'C1', 'value': 'C1'},
-                {'label': 'C2', 'value': 'C2'}
+                {'label': 'Standard', 'value': 'Standard'},
+                {'label': 'Grey', 'value': 'Grey'},
+                {'label': 'Red', 'value': 'Red'},
+                {'label': 'Green', 'value': 'Green'},
+                {'label': 'Blue', 'value': 'Blue'},
+                {'label': 'Heat', 'value': 'Heat'},
+                {'label': 'Tropics', 'value': 'Tropics'},
+                {'label': 'Rainbow', 'value': 'Rainbow'},
         ],
-        value='loops',
+        value='Standard',
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
@@ -178,7 +205,7 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-    dcc.Graph(id='teste_imagem', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+    dcc.Graph(id='teste_imagem_diferente', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
 
         html.Div([  
             html.Label([
@@ -230,14 +257,8 @@ layout = html.Div([
         html.Div([
             html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
             html.Div([  
-                html.Div(  # graph
-                    style={
-                    'background-color': '#243343',
-                    'width': '400px',  
-                    'height': '160px'  
-            }
-        ),
-        html.Div('Time', style={'color': 'white'}),  
+                dcc.Graph(id='lineplot',style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+       
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
         html.Div('Density', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'}) 
 
@@ -302,11 +323,11 @@ layout = html.Div([
     #html.Div(id='img_data'),
     dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
-    
+    dcc.Store(id='teste_imagem'),
     
     #dcc.Graph(id='img_imagem', style={'width': '33%', 'display': 'inline-block'}),
 
-    
+
     #dcc.Dropdown(id='slice-selector', options=[], placeholder="Select Pixel Slice"),
     #dcc.Graph(id='selected_slice', style={'width': '33%', 'display': 'inline-block'}),
    
@@ -326,6 +347,58 @@ layout = html.Div([
 
 #CALLBACKS
 #Intensity detected in each pixel, for each data frame. This is a sequence of t images, each spanning x pixels horizontally and y pixels vertically. (Dimensions t×h×w, in ADU units, using data type flt)
+
+
+def apply_scale(image, scale_type):
+    if scale_type == 'Linear':
+        return image
+    elif scale_type == 'Log':
+        return np.log1p(image)  # log(1 + imagem)
+    elif scale_type == 'Power':
+        return np.power(image, 2)
+    elif scale_type == 'Square Root':
+        return np.sqrt(image)
+    elif scale_type == 'Squared':
+        return np.square(image)
+    elif scale_type == 'ASINH':
+        return np.arcsinh(image)
+    elif scale_type == 'SINH':
+        return np.sinh(image)
+    elif scale_type == 'Histogram Equalization':
+        #conta histograma
+        img_array = np.array(image)
+
+        histogram, bins = np.histogram(img_array.flatten(), bins=256, density=True)
+        cdf = histogram.cumsum()  # função distribuição cumulativa
+        cdf = 255 * cdf / cdf[-1]  # normalizar
+
+    # interpolação linear
+        image_equalized = np.interp(img_array.flatten(), bins[:-1], cdf)
+        return image_equalized.reshape(img_array.shape)
+    elif scale_type == 'Log Exponent':
+        return np.exp(image)
+    else:
+        raise ValueError(f'Invalid scale: {scale_type}')
+
+def apply_colormap(colormap):
+    if colormap == 'Standard':
+        return None #normal
+    elif colormap == 'Grey':
+        return 'greys'
+    elif colormap == 'Red':
+        return 'reds'
+    elif colormap == 'Green':
+        return 'greens'
+    elif colormap == 'Blue':
+        return 'blues'
+    elif colormap == 'Heat':
+        return 'hot'
+    elif colormap == 'Tropic':
+        return 'tropic'
+    elif colormap == 'Rainbow':
+        return 'rainbow'
+    else:
+        raise ValueError(f'Invalid colormap {colormap}')
 
 
 @callback(
@@ -360,7 +433,7 @@ def update_output(n_clicks_timestamp1, n_clicks_timestamp2, content1, content2):
         return content2
 
 
-
+#Imagem estática
 
 @callback(
     Output('imag2D', 'figure'),
@@ -379,7 +452,7 @@ def display_detector_frame(pickle_file, pathname):
         reshaped = pixel_data.reshape(pixel_data.shape[0], -1)
         swapped = np.swapaxes(reshaped, 0, 1)
 
-        # Criar com o timeslider
+    
         fig = go.Figure(data=go.Heatmap(z=swapped, colorscale='Viridis'))
 
         fig.update_layout(
@@ -436,8 +509,10 @@ def display_img_data(data, pathname):
         return html.Img(src=f"data:image/jpeg;base64,{encoded_image}", style={'width': '100%'})
     else: []"""
 
+#Imagem com slider
+
 @callback(
-    Output('teste_imagem', 'figure'),
+    Output('teste_imagem', 'data'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
@@ -449,24 +524,89 @@ def display_imgs_data(pickle_file, pathname):
 
         img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
         print(f"Data PIXEL shape: {img_data.shape}, Data type: {type(img_data)}")
- 
-        fig = px.imshow(img_data, animation_frame=0, binary_string=True, labels=dict(animation_frame="slice"))
+
+        return img_data.tolist()  
+    else:
+        return []
+
+
+@callback(
+    Output('teste_imagem_diferente', 'figure'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('aotpy_scale', 'value'),
+     Input('aotpy_color', 'value'),
+     Input('teste_imagem', 'data')]  
+)
+def display_detector_frame(pickle_file, pathname, scale_type, color_type, img):
+  
+    # Apply the selected scale
+    scaled_data = apply_scale(img, scale_type)
+    scaled_data_array = np.array(scaled_data, dtype=float)
+  
+    
+    colormap = apply_colormap(color_type)
+    print(f"Colormap: {colormap}")
+    #para mudar a cor uso o continuous_scale mas ainda não está a funcionar
+    new_figure = px.imshow(scaled_data_array, animation_frame=0, binary_string=True, labels=dict(animation_frame="slice"), color_continuous_scale=colormap)
+    print(f"{colormap}")
+    new_figure.update_layout(
+        title='Different 2D images over frames',
+        xaxis_title='X',
+        yaxis_title='Y',
+        autosize=False,
+        width=600,
+        height=450,
+        paper_bgcolor='rgba(0,0,0,0)', 
+        title_font=dict(color='white'),  
+        xaxis_title_font=dict(color='white'),  
+        yaxis_title_font=dict(color='white'),
+        xaxis_tickfont=dict(color='white'),  
+        yaxis_tickfont=dict(color='white'),
+        coloraxis_showscale=False, 
+        margin=dict(l=65, r=50, b=65, t=90),
+    )
+    return new_figure
+
+#Gráfico com intensidade
+
+@callback(
+    Output('lineplot', 'figure'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def display_detector_frame(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file is not None:
+        
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        pixel_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+        
+
+       # media
+        pixel_data_mean = np.mean(pixel_data, axis=(1, 2))
+
+        time_values = list(range(len(pixel_data_mean)))
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=time_values, y=pixel_data_mean, mode='lines', name='Mean intensity over time'))
         fig.update_layout(
-            title='Different 2D images over frames',
-            xaxis_title='X',
-            yaxis_title='Y',
+            title='Intensity over time',
+            xaxis_title='Time',
+            yaxis_title='Intensity',
             autosize=False,
             width=600,
-            height=450,
-            paper_bgcolor='rgba(0,0,0,0)', 
-            title_font=dict(color='white'),  
-            xaxis_title_font=dict(color='white'),  
-            yaxis_title_font=dict(color='white'),
-            xaxis_tickfont=dict(color='white'),  
-            yaxis_tickfont=dict(color='white'),
-            coloraxis_showscale=False, 
+            height=350,
             margin=dict(l=65, r=50, b=65, t=90),
+            paper_bgcolor='rgba(0,0,0,0)', 
+            title_font=dict(color='white'),
+            xaxis_title_font=dict(color='white'), 
+            yaxis_title_font=dict(color='white'),
+            xaxis_tickfont=dict(color='white'),
+            yaxis_tickfont=dict(color='white')
         )
+
         return fig
     else:
         return {}
@@ -490,41 +630,53 @@ def update_slice_selector(pickle_file, pathname):
     return []    """
 
 
-
-"""@callback(
-    Output('selected_slice', 'figure'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname'),
-     Input('slice-selector', 'value')]
-)
-def update_2d_graph(pickle_file, pathname, selected_slice):
-    if pathname == '/pixels' and pickle_file and selected_slice is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
- 
-        img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
-        
-        num_frames, rows, cols = img_data.shape
-        img_data_1d = img_data.reshape(num_frames, rows * cols)
-        
-        selected_slice_data = img_data_1d[:, selected_slice]
-        
-        selected_slice_2d = selected_slice_data.reshape(num_frames, 1)
-        
-        fig = px.imshow(selected_slice_2d.T, aspect='auto', color_continuous_scale='gray')
-        fig.update_layout(
-            xaxis_title="Time (Frames)",
-            yaxis_title="Pixel Intensity",
-            coloraxis_showscale=False
-        )
-        return fig
-    return {}"""
-
+def none_to_string(*args):
+    return ['None' if arg is None or arg == [] else arg for arg in args]
 
 
 @callback(
-    [Output('sm', 'children'),
-    Output('mo', 'children'),
+    [Output('name_ns', 'children'),
+    Output('shuttert', 'children'),
+    Output('frame_rate', 'children'),
+    Output('gain', 'children'),
+    Output('integration_time', 'children'),
+    Output('pixel_scale', 'children'),
+    Output('quantum_efficiency', 'children'),
+    Output('readout_noise', 'children'),
+    Output('readout_rate', 'children'),
+    Output('sampling_technique', 'children'),],
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def key_properties_2(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+        #detect_ui = sys.wavefront_sensors[0].uid
+        name_ns = sys.wavefront_sensors[0].detector.uid
+        shuttert = sys.wavefront_sensors[0].detector.shutter_type 
+        frame_rate = sys.wavefront_sensors[0].detector.frame_rate
+        gain = sys.wavefront_sensors[0].detector.gain
+        integration_time = sys.wavefront_sensors[0].detector.integration_time
+        pixel_scale = sys.wavefront_sensors[0].detector.pixel_scale
+        quantum_efficiency = sys.wavefront_sensors[0].detector.quantum_efficiency
+        readout_noise = sys.wavefront_sensors[0].detector.readout_noise
+        readout_rate = sys.wavefront_sensors[0].detector.readout_rate
+        sampling_technique = sys.wavefront_sensors[0].detector.sampling_technique
+        
+   
+        properties = [name_ns, shuttert, frame_rate, gain, integration_time, pixel_scale, quantum_efficiency, readout_noise, readout_rate, sampling_technique]
+        properties = none_to_string(*properties) 
+        print(f"Properties: {properties}")
+        
+        return properties
+    else: 
+        return ["None"] * 10  
+    
+
+@callback(
+    [Output('mo', 'children'),
     Output('ss', 'children')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
@@ -534,31 +686,14 @@ def key_properties(pickle_file, pathname):
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
         
-        sm = sys.wavefront_sensors[0].subaperture_mask
+        #sm = sys.wavefront_sensors[0].subaperture_mask.name if sys.wavefront_sensors[0].subaperture_mask else None
         mo = sys.wavefront_sensors[0].mask_offsets
         ss = sys.wavefront_sensors[0].subaperture_size
 
-        return sm, mo, ss
+         #Assim mostra o None
+        mo, ss = none_to_string( mo, ss)  
+        print(f" Mask offsets: {mo}, Subaperture size: {ss}")
+
+        return mo, ss
     else: 
-        return "None", "None", "None"
-
-@callback(
-    [Output('name_ns', 'children'),
-    Output('detect_ui', 'children'),
-    Output('shuttert', 'children')],
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def key_properties_2(pickle_file, pathname):
-    if pathname == '/pixels' and pickle_file is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-        
-        detect_ui = sys.wavefront_sensors[0].uid
-        name_ns = sys.wavefront_sensors[0].detector.uid
-        shuttert = sys.wavefront_sensors[0].detector.shutter_type 
-
-        return name_ns, detect_ui, shuttert
-    else: 
-        return "None", "None", "None"
-
+        return "None", "None"
