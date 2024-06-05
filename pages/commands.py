@@ -114,7 +114,7 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '160px', 'top': '85px', 'width': '400px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '85px', 'width': '400px', 'height': '390px'}),
     
    #1 quadrante 
     html.Div([
@@ -152,32 +152,40 @@ layout = html.Div([
 
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '580px', 'top': '85px', 'width': '230px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '520px', 'top': '85px', 'width': '230px', 'height': '390px'}),
 
     #2 quadrante 
     #imagem
     html.Div([
-    dbc.Select(
-        id="aotpy_scale",
+     dbc.Select(
+        id="aotpy_scale_c",
         options=[
-            {'label': 'Scale', 'value': 'loops'},
-            {'label': 'C0', 'value': 'C0'},
-            {'label': 'C1', 'value': 'C1'},
-            {'label': 'C2', 'value': 'C2'}
+            {'label': 'Linear', 'value': 'Linear'},
+            {'label': 'Log', 'value': 'Log'},
+            {'label': 'Power', 'value': 'Power'},
+            {'label': 'Square Root', 'value': 'Square Root'},
+            {'label': 'Squared', 'value': 'Squared'},
+            {'label': 'ASINH', 'value': 'ASINH'},
+            {'label': 'SINH', 'value': 'SINH'},
+            {'label': 'Histogram Equalization', 'value': 'Histogram Equalization'}
         ],
-        value='loops',
+        value='Linear',
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
     dbc.Select(
-        id="aotpy_color",
-        options=[
-            {'label': 'Color', 'value': 'loops'},
-            {'label': 'C0', 'value': 'C0'},
-            {'label': 'C1', 'value': 'C1'},
-            {'label': 'C2', 'value': 'C2'}
+        id="aotpy_color_c",
+            options=[
+                {'label': 'Standard', 'value': 'Standard'},
+                {'label': 'Grey', 'value': 'Grey'},
+                {'label': 'Red', 'value': 'Red'},
+                {'label': 'Green', 'value': 'Green'},
+                {'label': 'Blue', 'value': 'Blue'},
+                {'label': 'Heat', 'value': 'Heat'},
+                {'label': 'Tropics', 'value': 'Tropics'},
+                {'label': 'Rainbow', 'value': 'Rainbow'},
         ],
-        value='loops',
+        value='Standard',
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
@@ -193,7 +201,7 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-    dcc.Graph(id='teste2_imagem', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+    dcc.Graph(id='teste2_imagem', style={'position': 'absolute', 'left': '20px', 'top': '10px', 'height': '330px', 'width': '500px'}),
 
     html.Div(dcc.Slider(
                 id='frame2_slider',
@@ -207,7 +215,7 @@ layout = html.Div([
                         'position': 'absolute',  
                         'left': '20px',  
                         'height': '30px',
-                        'top': '350px',  
+                        'top': '370px',  
                     }),
 
 ], style={
@@ -215,50 +223,40 @@ layout = html.Div([
     'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
-    'left': '830px', 
+    'left': '780px', 
     'top': '50px', 
-    'width': '480px', 
+    'width': '580px', 
     'height': '420px'
 }),
   
   #3 quadrante
   html.Div([
-    html.P("Data", style={'text-align': 'left','margin-left': '1vw'}),
-    html.Div([  
-        html.Div(  
-            style={
-                'background-color': 'grey',
-                'width': '300px',  
-                'height': '200px'  
-            }
-        ),
-        html.Div('Seconds', style={'color': 'white'}),  # x
-    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-    html.Div('Actuator index', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y
+    dcc.Graph(id='imag2D_com', style={'position': 'absolute', 'left': '10px', 'height': '320px', 'width': '500px'}),
+    
 ], style={
     'background-color': '#1C2634',  
     'position': 'absolute',
-    'left': '160px',
-    'top': '480px',
+    'left': '110px',
+    'top': '510px',
     'width': '600px',  
-    'height': '300px'  
+    'height': '330px'  
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
  
     #4 quadrante
     html.Div([
-    html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
-    html.Div([  
-        dcc.Graph(id='differentplot', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+        html.Div([  
+        dcc.Graph(id='differentplot', style={'position': 'absolute', 'left': '20px', 'height': '330px', 'width': '500px'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-    html.Div('AAA', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'})  # y
+
+   
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
     'left': '780px',
     'top': '480px',
-    'width': '600px',  
-    'height': '300px'  
+    'width': '580px',  
+    'height': '330px'  
 }),
         dcc.Store(id='pickle_store', storage_type='local'),
 
@@ -273,6 +271,59 @@ def wavefront_sensors_to_dict(wavefront_sensor):
         'subaperture_size': wavefront_sensor.subaperture_size,
         'wavelength': wavefront_sensor.wavelength,
     }
+
+
+
+def apply_scale(image, scale_type):
+    if scale_type == 'Linear':
+        return image
+    elif scale_type == 'Log':
+        return np.log1p(image)  # log(1 + imagem)
+    elif scale_type == 'Power':
+        return np.power(image, 2)
+    elif scale_type == 'Square Root':
+        return np.sqrt(image)
+    elif scale_type == 'Squared':
+        return np.square(image)
+    elif scale_type == 'ASINH':
+        return np.arcsinh(image)
+    elif scale_type == 'SINH':
+        return np.sinh(image)
+    elif scale_type == 'Histogram Equalization':
+        #conta histograma
+        img_array = np.array(image)
+
+        histogram, bins = np.histogram(img_array.flatten(), bins=256, density=True)
+        cdf = histogram.cumsum()  # função distribuição cumulativa
+        cdf = 255 * cdf / cdf[-1]  # normalizar
+
+    # interpolação linear
+        image_equalized = np.interp(img_array.flatten(), bins[:-1], cdf)
+        return image_equalized.reshape(img_array.shape)
+    elif scale_type == 'Log Exponent':
+        return np.exp(image)
+    else:
+        raise ValueError(f'Invalid scale: {scale_type}')
+
+def apply_colormap(colormap):
+    if colormap == 'Standard':
+        return None #normal
+    elif colormap == 'Grey':
+        return 'greys'
+    elif colormap == 'Red':
+        return 'reds'
+    elif colormap == 'Green':
+        return 'greens'
+    elif colormap == 'Blue':
+        return 'blues'
+    elif colormap == 'Heat':
+        return 'hot'
+    elif colormap == 'Tropic':
+        return 'tropic'
+    elif colormap == 'Rainbow':
+        return 'rainbow'
+    else:
+        raise ValueError(f'Invalid colormap {colormap}')
 
 #Callbacks
 
@@ -345,9 +396,10 @@ def key_properties_comma(pickle_file, pathname, selected_command):
     [Input('frame2_slider', 'value'),
      Input('pickle_store', 'data'),
      Input('url', 'pathname'),
-     Input('command-dropdown', 'value')]
+     Input('command-dropdown', 'value'),
+     Input('aotpy_scale_c', 'value'),]
 )
-def update_image(frame_index, pickle_file, pathname, selected_command):
+def update_image(frame_index, pickle_file, pathname, selected_command, scale_type):
     if pathname == '/commands' and pickle_file is not None:
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
@@ -358,7 +410,7 @@ def update_image(frame_index, pickle_file, pathname, selected_command):
         
         img_data = loop.commands.data
         frame_processed = img_data[frame_index]
-
+        frame_processed = apply_scale(frame_processed, scale_type)
       
         fig = go.Figure(data=go.Heatmap(z=frame_processed.reshape(-1, 1), colorscale='Viridis'))
 
@@ -367,8 +419,8 @@ def update_image(frame_index, pickle_file, pathname, selected_command):
             xaxis_title='Index',
             yaxis_title='Value',
             autosize=False,
-            width=600,
-            height=450,
+            width=550,
+            height=400,
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),  
             xaxis_title_font=dict(color='white'),  
@@ -450,6 +502,52 @@ def display_commands_frame(pickle_file, pathname, selected_command):
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),
+            yaxis_tickfont=dict(color='white')
+        )
+
+        return fig
+    else:
+        return {}
+    
+
+@callback(
+    Output('imag2D_com', 'figure'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('command-dropdown', 'value')]
+)
+def display_detector_frame(pickle_file, pathname, selected_command):
+    if pathname == '/commands' and pickle_file is not None:
+        
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
+        if loop is None:
+            return {}  
+        
+        cmd_data = loop.commands.data
+
+      
+        swapped = np.swapaxes(cmd_data, 0, 1)
+
+    
+        fig = go.Figure(data=go.Heatmap(z=swapped, colorscale='Viridis'))
+
+        fig.update_layout(
+            title='ACtuators with frame index',
+            xaxis_title='Time',
+            yaxis_title='Index',
+            autosize=False,
+            width=600,
+            height=350,
+            margin=dict(l=65, r=50, b=65, t=90),
+            #plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)', 
+            title_font=dict(color='white'),  # texto cor
+            xaxis_title_font=dict(color='white'), 
+            yaxis_title_font=dict(color='white'),
+            xaxis_tickfont=dict(color='white'),  # label
             yaxis_tickfont=dict(color='white')
         )
 

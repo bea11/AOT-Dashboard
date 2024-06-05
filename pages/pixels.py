@@ -6,7 +6,6 @@ import datetime
 import io
 import aotpy
 import gzip
-import cv2
 from dash import html, register_page, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
@@ -15,15 +14,11 @@ import matplotlib
 #matplotlib.use('Agg')
 import pickle
 import numpy as np
-from scipy import ndimage
 from flask import session
 import plotly.express as px
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import pandas as pd
-
-import json
-from dash.dependencies import Input, Output, State, ALL
 
 
 
@@ -75,7 +70,7 @@ layout = html.Div([
             html.Div([
                 html.Label("Mask Ofset: ", style={'color': 'white'}),
                 html.Div(id='mo', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px', 'margin-top': '13px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Frame Rate: ", style={'color': 'white'}),
@@ -156,7 +151,7 @@ layout = html.Div([
 
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '310px', 'top': '30px', 'width': '280px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '310px', 'top': '30px', 'width': '280px', 'height': '470px'}),
 ]),
     #2 quadrante 
     #imagem
@@ -246,18 +241,17 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Corectangulo
     'position': 'absolute',
-    'left': '50px',
-    'top': '480px',
-    'width': '630px',  
-    'height': '400px'  
+    'left': '90px',
+    'top': '580px',
+    'width': '590px',  
+    'height': '350px'  
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
  
     #4 quadrante
         html.Div([
-            html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
             html.Div([  
-                dcc.Graph(id='lineplot',style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+                dcc.Graph(id='lineplot',style={'position': 'absolute', 'left': '20px', 'top': '0px', 'height': '330px', 'width': '500px'}),
        
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
         html.Div('Density', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'}) 
@@ -267,8 +261,8 @@ layout = html.Div([
     'position': 'absolute',
     'left': '700px',
     'top': '580px',
-    'width': '600px',  
-    'height': '250px'  
+    'width': '590px',  
+    'height': '350px'  
 }),
 
 #5quadrante
@@ -529,7 +523,7 @@ def display_imgs_data(pickle_file, pathname):
     else:
         return []
 
-
+#com slide
 @callback(
     Output('teste_imagem_diferente', 'figure'),
     [Input('pickle_store', 'data'),

@@ -14,7 +14,6 @@ import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
 import pandas as pd
-from plotly_resampler import FigureResampler
 
 
 dash.register_page(__name__, path='/measurements')
@@ -174,26 +173,34 @@ layout = html.Div([
     #imagem
         html.Div([
             dbc.Select(
-            id="aotpy_scale",
-            options=[
-                {'label': 'Scale', 'value': 'loops'},
-                {'label': 'C0', 'value': 'C0'},
-                {'label': 'C1', 'value': 'C1'},
-                {'label': 'C2', 'value': 'C2'}
+        id="aotpy_scale_m",
+        options=[
+            {'label': 'Linear', 'value': 'Linear'},
+            {'label': 'Log', 'value': 'Log'},
+            {'label': 'Power', 'value': 'Power'},
+            {'label': 'Square Root', 'value': 'Square Root'},
+            {'label': 'Squared', 'value': 'Squared'},
+            {'label': 'ASINH', 'value': 'ASINH'},
+            {'label': 'SINH', 'value': 'SINH'},
+            {'label': 'Histogram Equalization', 'value': 'Histogram Equalization'}
         ],
-        value='loops',
+        value='Linear',
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-        dbc.Select(
-        id="aotpy_color",
+          dbc.Select(
+        id="aotpy_color_m",
             options=[
-                {'label': 'Color', 'value': 'loops'},
-                {'label': 'C0', 'value': 'C0'},
-                {'label': 'C1', 'value': 'C1'},
-                {'label': 'C2', 'value': 'C2'}
+                {'label': 'Standard', 'value': 'Standard'},
+                {'label': 'Grey', 'value': 'Grey'},
+                {'label': 'Red', 'value': 'Red'},
+                {'label': 'Green', 'value': 'Green'},
+                {'label': 'Blue', 'value': 'Blue'},
+                {'label': 'Heat', 'value': 'Heat'},
+                {'label': 'Tropics', 'value': 'Tropics'},
+                {'label': 'Rainbow', 'value': 'Rainbow'},
         ],
-        value='loops',
+        value='Standard',
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
@@ -261,10 +268,10 @@ layout = html.Div([
     'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
-    'left': '610px', 
+    'left': '700px', 
     'top': '50px', 
-    'width': '750px', 
-    'height': '420px'
+    'width': '600px', 
+    'height': '400px'
 }),
   
 
@@ -283,23 +290,22 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Cor ectangulo
     'position': 'absolute',
-    'left': '90px',
+    'left': '40px',
     'top': '480px',
-    'width': '700px',  
-    'height': '350px'  
+    'width': '690px',  
+    'height': '320px'  
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
     #4 quadrante
-    html.Div([
-        html.P("Graphics", style={'text-align': 'left','margin-left': '1vw'}),
-        dcc.Graph(id='scatterplot', style={'position': 'absolute', 'left': '0px', 'top': '5px'}),
+    html.Div([  
+        dcc.Graph(id='scatterplot', style={'position': 'absolute'}),
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
-    'left': '700px',
+    'left': '760px',
     'top': '480px',
-    'width': '600px',  
-    'height': '250px'  
+    'width': '580px',  
+    'height': '340px'  
 }),
     dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
@@ -317,6 +323,57 @@ def wavefront_sensors_to_dict(wavefront_sensor):
         #'subaperture_mask': wavefront_sensor.subaperture_mask.data,
     }
 
+
+def apply_scale(image, scale_type):
+    if scale_type == 'Linear':
+        return image
+    elif scale_type == 'Log':
+        return np.log1p(image)  # log(1 + imagem)
+    elif scale_type == 'Power':
+        return np.power(image, 2)
+    elif scale_type == 'Square Root':
+        return np.sqrt(image)
+    elif scale_type == 'Squared':
+        return np.square(image)
+    elif scale_type == 'ASINH':
+        return np.arcsinh(image)
+    elif scale_type == 'SINH':
+        return np.sinh(image)
+    elif scale_type == 'Histogram Equalization':
+        #conta histograma
+        img_array = np.array(image)
+
+        histogram, bins = np.histogram(img_array.flatten(), bins=256, density=True)
+        cdf = histogram.cumsum()  # função distribuição cumulativa
+        cdf = 255 * cdf / cdf[-1]  # normalizar
+
+    # interpolação linear
+        image_equalized = np.interp(img_array.flatten(), bins[:-1], cdf)
+        return image_equalized.reshape(img_array.shape)
+    elif scale_type == 'Log Exponent':
+        return np.exp(image)
+    else:
+        raise ValueError(f'Invalid scale: {scale_type}')
+
+def apply_colormap(colormap):
+    if colormap == 'Standard':
+        return None #normal
+    elif colormap == 'Grey':
+        return 'greys'
+    elif colormap == 'Red':
+        return 'reds'
+    elif colormap == 'Green':
+        return 'greens'
+    elif colormap == 'Blue':
+        return 'blues'
+    elif colormap == 'Heat':
+        return 'hot'
+    elif colormap == 'Tropic':
+        return 'tropic'
+    elif colormap == 'Rainbow':
+        return 'rainbow'
+    else:
+        raise ValueError(f'Invalid colormap {colormap}')
 
 #Callbacks
 """
@@ -419,9 +476,10 @@ def load_image_data(pickle_file, pathname):
     Output('testes_imagem1', 'figure'),
     Input('image_data_store', 'data'),
     Input('pickle_store', 'data'),
-    Input('frame_slider', 'value')
+    Input('frame_slider', 'value'),
+    Input('aotpy_scale_m', 'value'),
 )
-def update_image(data,pickle_file, frame_index):
+def update_image_x(data,pickle_file, frame_index, scale_type):
    # print(f'data: {data}')
     #print(f'frame_index: {frame_index}')
     with open(pickle_file, 'rb') as f:
@@ -449,6 +507,8 @@ def update_image(data,pickle_file, frame_index):
 
     frame_processed = frame_processed.reshape(-1, 1)
 
+    frame_processed = apply_scale(frame_processed, scale_type)
+
     fig = px.imshow(frame_processed, color_continuous_scale='Viridis')
     fig.update_layout(
         title=f'Frame {frame_index} Dimension X',
@@ -468,27 +528,51 @@ def update_image(data,pickle_file, frame_index):
     )
     return fig
 
+#at 2 cima
 @callback(
     Output('testes_imagem2', 'figure'),
     Input('image_data_store', 'data'),
-    Input('frame_slider', 'value')
+    Input('pickle_store', 'data'),
+    Input('frame_slider', 'value'),
+    Input('aotpy_scale_m', 'value'),
 )
-def update_image(data, frame_index):
+def update_image_y(data,pickle_file, frame_index, scale_type):
    # print(f'data: {data}')
     #print(f'frame_index: {frame_index}')
+    with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+    subaperture_mask = sys.wavefront_sensors[0].subaperture_mask  
+    img_data = sys.wavefront_sensors[0].measurements.data   
+
     if data is None or frame_index is None:
         return {}
 
-    img_data = np.array(data)
-    frame = img_data[frame_index, 1, :].reshape(-1, 1)
+    if subaperture_mask is None or subaperture_mask.data is None:
+        mask_flattened = None
+    else:
+        subaperture_mask_data = subaperture_mask.data
+        mask_flattened = subaperture_mask_data.flatten()
 
-    fig = px.imshow(frame, color_continuous_scale='Viridis')
+    
+    frame = img_data[frame_index, 1, :]
+    #frame = img_data[frame_index, 0, :].reshape(-1, 1)
+    if mask_flattened is not None:
+        valid_indices = mask_flattened >= 0
+        frame_processed = frame[valid_indices]
+    else:
+        frame_processed = frame
+
+    frame_processed = frame_processed.reshape(-1, 1)
+
+    frame_processed = apply_scale(frame_processed, scale_type)
+
+    fig = px.imshow(frame_processed, color_continuous_scale='Viridis')
     fig.update_layout(
         title=f'Frame {frame_index} Dimension Y',
         #xaxis_title='X',
         #yaxis_title='Y',
         autosize=False,
-        width=500,
+        width=250,
         height=300,
         paper_bgcolor='rgba(0,0,0,0)', 
         title_font=dict(color='white'),  
@@ -500,7 +584,6 @@ def update_image(data, frame_index):
         margin=dict(l=65, r=50, b=65, t=90),
     )
     return fig
-  
 #Imagem estática
 
 #Measurements from the sensor over time. Each of its Sv subapertures is able to measure in d dimensions. (Dimensions t×d×Sv, in user defined units, using data type flt)
