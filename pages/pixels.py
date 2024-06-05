@@ -6,7 +6,6 @@ import datetime
 import io
 import aotpy
 import gzip
-import cv2
 from dash import html, register_page, callback
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
