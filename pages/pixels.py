@@ -14,7 +14,6 @@ import matplotlib
 #matplotlib.use('Agg')
 import pickle
 import numpy as np
-from scipy import ndimage
 from flask import session
 import plotly.express as px
 import matplotlib.pyplot as plt
