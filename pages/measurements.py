@@ -125,18 +125,17 @@ layout = html.Div([
         html.P("For the Image: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
             html.Div([
                 html.Label("Maximum value: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='stat_max_m', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Minimum value: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='stat_min_m', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Average values: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
+                html.Div(id='stat_aver_m', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'}),
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
         html.P("For the Queue: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
@@ -230,20 +229,16 @@ layout = html.Div([
              #       n_intervals=0
              #   ),
             
-            dcc.Graph(id='testes_imagem1', style={
-                'position': 'absolute',
-                'left': '0px',
-                'top': '50px',
-                'height': '30px',
-                'width': '400px'
-            }),
-            dcc.Graph(id='testes_imagem2', style={
-                'position': 'absolute',
-                'left': '200px',
-                'top': '50px',
-                'height': '30px',
-                'width': '400px'
-            }),
+            html.Div(id='testes_imagem1'),
+            #dcc.Graph(id='testes_imagem2', style={
+            #    'position': 'absolute',
+            #    'left': '200px',
+            #    'top': '50px',
+            #    'height': '30px',
+            #    'width': '400px'
+            #}),
+            html.Div(id='testes_imagem2'),
+
             html.Div(dcc.Slider(
                 id='frame_slider',
                 min=0,
@@ -374,6 +369,13 @@ def apply_colormap(colormap):
         return 'rainbow'
     else:
         raise ValueError(f'Invalid colormap {colormap}')
+    
+def extract_coordinates(clickData):
+    x = clickData['points'][0]['x']
+    y = clickData['points'][0]['y']
+    z = clickData['points'][0]['z']
+    return x, y, z
+
 
 #Callbacks
 """
@@ -473,13 +475,14 @@ def load_image_data(pickle_file, pathname):
         return None, 0, dash.no_update, dash.no_update
 
 @callback(
-    Output('testes_imagem1', 'figure'),
+    Output('testes_imagem1', 'children'),
     Input('image_data_store', 'data'),
     Input('pickle_store', 'data'),
     Input('frame_slider', 'value'),
     Input('aotpy_scale_m', 'value'),
+    Input('x_dimension_image', 'clickData')
 )
-def update_image_x(data,pickle_file, frame_index, scale_type):
+def update_image_x(data,pickle_file, frame_index, scale_type, x_clickData):
    # print(f'data: {data}')
     #print(f'frame_index: {frame_index}')
     with open(pickle_file, 'rb') as f:
@@ -496,6 +499,12 @@ def update_image_x(data,pickle_file, frame_index, scale_type):
         subaperture_mask_data = subaperture_mask.data
         mask_flattened = subaperture_mask_data.flatten()
 
+    if x_clickData is not None:
+        # cordenadas do click data 
+            x, y, z = extract_coordinates(x_clickData)
+        
+        # o x do slider é o frame index (tempo)
+            frame_index = int(x)
     
     frame = img_data[frame_index, 0, :]
     #frame = img_data[frame_index, 0, :].reshape(-1, 1)
@@ -526,17 +535,34 @@ def update_image_x(data,pickle_file, frame_index, scale_type):
         coloraxis_showscale=False, 
         margin=dict(l=65, r=50, b=65, t=90),
     )
-    return fig
+    
+    if subaperture_mask is None or subaperture_mask.data is None:
+        return html.Div("The image cannot be rasterized without the subaperture_mask", style={
+                'position': 'absolute',
+                'left': '30px',
+                'top': '50px',
+                'width': '140px'
+                
+            })
+    else:
+        return dcc.Graph(figure=fig, style={
+                'position': 'absolute',
+                'left': '0px',
+                'top': '50px',
+                'height': '30px',
+                'width': '400px'
+            })
 
 #at 2 cima
 @callback(
-    Output('testes_imagem2', 'figure'),
+    Output('testes_imagem2', 'children'),
     Input('image_data_store', 'data'),
     Input('pickle_store', 'data'),
     Input('frame_slider', 'value'),
     Input('aotpy_scale_m', 'value'),
+    Input('y_dimension_image', 'clickData')
 )
-def update_image_y(data,pickle_file, frame_index, scale_type):
+def update_image_y(data,pickle_file, frame_index, scale_type, y_clickData):
    # print(f'data: {data}')
     #print(f'frame_index: {frame_index}')
     with open(pickle_file, 'rb') as f:
@@ -548,11 +574,19 @@ def update_image_y(data,pickle_file, frame_index, scale_type):
         return {}
 
     if subaperture_mask is None or subaperture_mask.data is None:
+        
         mask_flattened = None
+       # mask_flattened = None
     else:
         subaperture_mask_data = subaperture_mask.data
         mask_flattened = subaperture_mask_data.flatten()
 
+    if y_clickData is not None:
+        # cordenadas do click data 
+            x, y, z = extract_coordinates(y_clickData)
+        
+        # o x do slider é o frame index (tempo)
+            frame_index = int(x)
     
     frame = img_data[frame_index, 1, :]
     #frame = img_data[frame_index, 0, :].reshape(-1, 1)
@@ -583,7 +617,23 @@ def update_image_y(data,pickle_file, frame_index, scale_type):
         coloraxis_showscale=False, 
         margin=dict(l=65, r=50, b=65, t=90),
     )
-    return fig
+
+    if subaperture_mask is None or subaperture_mask.data is None:
+        return html.Div("The image cannot be rasterized without the subaperture_mask", style={
+                'position': 'absolute',
+                'left': '300px',
+                'top': '50px',
+                'width': '140px'
+                
+            })
+    else:
+        return dcc.Graph(figure=fig, style={
+                'position': 'absolute',
+                'left': '200px',
+                'top': '50px',
+                'height': '30px',
+                'width': '400px'
+            })
 #Imagem estática
 
 #Measurements from the sensor over time. Each of its Sv subapertures is able to measure in d dimensions. (Dimensions t×d×Sv, in user defined units, using data type flt)
@@ -709,81 +759,7 @@ def display_detector_frame(pickle_file, pathname):
     else:
         return {}
 
-"""@callback(
-    Output('fig_x', 'figure'),
-    Output('fig_y', 'figure'),
-    Input('pickle_store', 'data'),
-    Input('url', 'pathname')
-)
-def display_measurements(pickle_file, pathname):
-    if pathname == '/measurements' and pickle_file is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-      
-        measurements = sys.wavefront_sensors[0].measurements.data  
 
-        subaperture_mask = sys.wavefront_sensors[0].subaperture_mask
-
-        if subaperture_mask is None or subaperture_mask.data is None:
-            mask_flattened = None
-        else:
-            subaperture_mask_data = subaperture_mask.data
-            mask_flattened = subaperture_mask_data.flatten()
-
-        x_measurements = measurements[:, 0, :]
-        y_measurements = measurements[:, 1, :]
-
-        t, sv = x_measurements.shape
-
-        if mask_flattened is not None:
-            valid_indices = mask_flattened >= 0
-            x_processed = x_measurements[:, valid_indices]
-            y_processed = y_measurements[:, valid_indices]
-        else:
-            x_processed = x_measurements
-            y_processed = y_measurements
-
-        fig_x = go.Figure()
-        fig_y = go.Figure()
-
-        for i in range(t):
-            fig_x.add_trace(go.Heatmap(z=x_processed[i, :].T, colorscale='Viridis', visible=(i==0)))
-            fig_y.add_trace(go.Heatmap(z=y_processed[i, :].T, colorscale='Viridis', visible=(i==0)))
-
-        steps_x = []
-        steps_y = []
-        for i in range(t):
-            step_x = dict(
-                method="update",
-                args=[{"visible": [(el==i) for el in range(t)]}],
-            )
-            step_y = dict(
-                method="update",
-                args=[{"visible": [(el==i) for el in range(t)]}],
-            )
-            steps_x.append(step_x)
-            steps_y.append(step_y)
-
-        sliders_x = [dict(
-            active=0,
-            currentvalue={"prefix": "Time: "},
-            pad={"t": t},
-            steps=steps_x
-        )]
-
-        sliders_y = [dict(
-            active=0,
-            currentvalue={"prefix": "Time: "},
-            pad={"t": t},
-            steps=steps_y
-        )]
-
-        fig_x.update_layout(sliders=sliders_x)
-        fig_y.update_layout(sliders=sliders_y)
-
-        return fig_x, fig_y
-    else:
-        return {}, {}"""
 
 
 """ a funcionar mas minimo
@@ -825,16 +801,16 @@ def display_imgs_data(pickle_file, pathname):
     else:
         return {}
 """
-"""
+
 
 @callback(
-    Output('stat_max', 'children'),
-    Output('stat_min', 'children'),
-    Output('stat_aver', 'children'),
+    Output('stat_max_m', 'children'),
+    Output('stat_min_m', 'children'),
+    Output('stat_aver_m', 'children'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_wavelength(pickle_file, pathname):
+def display_stats_m(pickle_file, pathname):
     if pathname == '/measurements' and pickle_file is not None:
        
         with open(pickle_file, 'rb') as f:
@@ -848,8 +824,8 @@ def display_wavelength(pickle_file, pathname):
 
         return f'{max_value}', f'{min_value}', f'{average}'
     else:
-        return "None"
-"""
+        return ["None"] *3
+
 
 def none_to_string(*args):
     return ['None' if arg is None or (isinstance(arg, list) and not arg) else arg for arg in args]

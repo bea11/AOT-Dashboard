@@ -325,6 +325,14 @@ def apply_colormap(colormap):
     else:
         raise ValueError(f'Invalid colormap {colormap}')
 
+def extract_coordinates(clickData):
+    x = clickData['points'][0]['x']
+    y = clickData['points'][0]['y']
+    z = clickData['points'][0]['z']
+    return x, y, z
+
+
+
 #Callbacks
 
 #Name of wavefront sensor
@@ -388,6 +396,34 @@ def key_properties_comma(pickle_file, pathname, selected_command):
         return loop, refcom, rescom, mc, wave_corrector, valid_act, tfz_den, tfz_num
     else: 
         return ["None"] * 8
+"""
+@callback(
+    Output('stat_max_c', 'children'),
+    Output('stat_min_c', 'children'),
+    Output('stat_aver_c', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('command-dropdown', 'value')]
+)
+def display_stats_c(pickle_file, pathname, selected_command):
+    if pathname == '/commands' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
+        if loop is None:
+            return ["None"] * 8
+
+        img_data = loop.commands.data
+    
+        max_value = np.max(img_data)
+        min_value = np.min(img_data)
+        average = np.mean(img_data)
+
+        return f'{max_value}', f'{min_value}', f'{average}'
+    else:
+        return ["None"] *3"""
 
 
 #Imagem com slide
@@ -397,9 +433,11 @@ def key_properties_comma(pickle_file, pathname, selected_command):
      Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('command-dropdown', 'value'),
-     Input('aotpy_scale_c', 'value'),]
+     Input('aotpy_scale_c', 'value'),
+     Input('imag2D_com', 'clickData')]
+     
 )
-def update_image(frame_index, pickle_file, pathname, selected_command, scale_type):
+def update_image(frame_index, pickle_file, pathname, selected_command, scale_type, clickData):
     if pathname == '/commands' and pickle_file is not None:
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
@@ -409,6 +447,12 @@ def update_image(frame_index, pickle_file, pathname, selected_command, scale_typ
             return {}  
         
         img_data = loop.commands.data
+        if clickData is not None:
+        # cordenadas do click data 
+            x, y, z = extract_coordinates(clickData)
+        
+        # o x do slider é o frame index (tempo)
+            frame_index = int(x)
         frame_processed = img_data[frame_index]
         frame_processed = apply_scale(frame_processed, scale_type)
       
@@ -459,8 +503,6 @@ def update_slider(pickle_file, pathname, selected_command):
         return 0, {}, 0
     
 #Gráfico
-import numpy as np
-import plotly.graph_objects as go
 
 @callback(
     Output('differentplot', 'figure'),
@@ -509,7 +551,7 @@ def display_commands_frame(pickle_file, pathname, selected_command):
     else:
         return {}
     
-
+#imagem estatica
 @callback(
     Output('imag2D_com', 'figure'),
     [Input('pickle_store', 'data'),

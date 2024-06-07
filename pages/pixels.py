@@ -254,7 +254,7 @@ layout = html.Div([
                 dcc.Graph(id='lineplot',style={'position': 'absolute', 'left': '20px', 'top': '0px', 'height': '330px', 'width': '500px'}),
        
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
-        html.Div('Density', style={'color': 'white', 'position': 'absolute', 'top': '50%', 'left': '0'}) 
+       
 
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
@@ -273,18 +273,17 @@ layout = html.Div([
         html.P("For the Image: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
             html.Div([
                 html.Label("Maximum value: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='stat_max_p', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Minimum value: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='stat_min_p', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Average values: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
+                html.Div(id='stat_aver_p', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'}),
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
         html.P("For the Queue: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
@@ -691,3 +690,27 @@ def key_properties(pickle_file, pathname):
         return mo, ss
     else: 
         return "None", "None"
+
+
+@callback(
+    Output('stat_max_p', 'children'),
+    Output('stat_min_p', 'children'),
+    Output('stat_aver_p', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def display_stats_p(pickle_file, pathname):
+    if pathname == '/pixels' and pickle_file is not None:
+       
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        pixel_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+    
+        max_value = np.max(pixel_data)
+        min_value = np.min(pixel_data)
+        average = np.mean(pixel_data)
+
+        return f'{max_value}', f'{min_value}', f'{average}'
+    else:
+        return ["None"] *3
