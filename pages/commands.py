@@ -41,7 +41,7 @@ layout = html.Div([
 
     html.Div([
     dbc.Select(
-        id='command-dropdown',
+        id='command-dropdown_c',
         options=[],
         value=None,
         className='custom-select', 
@@ -338,8 +338,8 @@ def none_to_string(*args):
     return ['None' if arg is None or (isinstance(arg, list) and not arg) else arg for arg in args]
     
 @callback(
-    Output('command-dropdown', 'options'),
-    Output('command-dropdown', 'value'),
+    Output('command-dropdown_c', 'options'),
+    Output('command-dropdown_c', 'value'),
     [Input('url', 'pathname')],
     [State('pickle_store', 'data')]
 )
@@ -371,7 +371,7 @@ def see_commands_loop(pathname, pickle_file):
     Output('tfz_num', 'children')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
-     Input('command-dropdown', 'value')]
+     Input('command-dropdown_c', 'value')]
 )
 def key_properties_comma(pickle_file, pathname, selected_command):
     if pathname == '/commands' and pickle_file is not None:
@@ -406,7 +406,7 @@ def key_properties_comma(pickle_file, pathname, selected_command):
     Output('stat_aver_c', 'children'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
-     Input('command-dropdown', 'value')]
+     Input('command-dropdown_c', 'value')]
 )
 def display_stats_c(pickle_file, pathname, selected_command):
     if pathname == '/commands' and pickle_file is not None:
@@ -435,7 +435,7 @@ def display_stats_c(pickle_file, pathname, selected_command):
     [Input('frame2_slider', 'value'),
      Input('pickle_store', 'data'),
      Input('url', 'pathname'),
-     Input('command-dropdown', 'value'),
+     Input('command-dropdown_c', 'value'),
      Input('aotpy_scale_c', 'value'),
      Input('aotpy_color_c', 'value'),
      Input('imag2D_com', 'clickData')]
@@ -497,7 +497,7 @@ def update_image(slider_value, pickle_file, pathname, selected_command, scale_ty
      Output('frame2_slider', 'value')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
-     Input('command-dropdown', 'value')]
+     Input('command-dropdown_c', 'value')]
 )
 def update_slider(pickle_file, pathname, selected_command):
     if pathname == '/commands' and pickle_file is not None:
@@ -523,7 +523,7 @@ def update_slider(pickle_file, pathname, selected_command):
     Output('differentplot', 'figure'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
-     Input('command-dropdown', 'value')]
+     Input('command-dropdown_c', 'value')]
 )
 def display_commands_frame(pickle_file, pathname, selected_command):
     if pathname == '/commands' and pickle_file is not None:
@@ -573,7 +573,7 @@ def display_commands_frame(pickle_file, pathname, selected_command):
     Output('imag2D_com', 'figure'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
-     Input('command-dropdown', 'value')]
+     Input('command-dropdown_c', 'value')]
 )
 def display_detector_frame(pickle_file, pathname, selected_command):
     if pathname == '/commands' and pickle_file is not None:

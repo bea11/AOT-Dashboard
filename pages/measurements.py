@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 
-dash.register_page(__name__, path='/measurements')
+dash.register_page(__name__, path='/measurements', supress_callback_exceptions=True)
 
 option_STYLE = {
     'width': '100%',
@@ -29,6 +29,26 @@ option_STYLE = {
 
 layout = html.Div([
     html.H1("Measurements", style={'text-align': 'left', 'margin-left': '12vw', 'marginBottom' : '0px'}),
+
+    html.Div([
+    dbc.Select(
+        id='command-dropdown_m',
+        options=[],
+        value=None,
+        className='custom-select', 
+        style={
+            'width': "10vw",
+            'text-color': 'white',
+            'height': '35px',
+            'backgroundColor': '#1C2634',
+            'margin-left': '25vw',
+            'display': 'flex',  
+            'position': 'absolute', 
+            #'left': '830px', 
+            #'top': '50px',
+        }
+    ),
+]),
 
 #Buttons
     html.Div([
@@ -376,79 +396,72 @@ def extract_coordinates(clickData):
     z = clickData['points'][0]['z']
     return x, y, z
 
+def none_to_string(*args):
+    return ['None' if arg is None or (isinstance(arg, list) and not arg) else arg for arg in args]
 
 #Callbacks
-"""
-#Name of wavefront sensor
 @callback(
-    Output('meas_sensor_name', 'children'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
+    Output('command-dropdown_m', 'options'),
+    Output('command-dropdown_m', 'value'),
+    [Input('url', 'pathname')],
+    [State('pickle_store', 'data')]
 )
-def display_sensor1(pickle_file, pathname):
+def see_meas_wfs(pathname, pickle_file):
     if pathname == '/measurements' and pickle_file is not None:
-       
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        sensors = [wavefront_sensors_to_dict(wavefront_sensor)['uid'] for wavefront_sensor in sys.wavefront_sensors]
-        sensor_divs = [html.Div(sensor, id=(sensor if sensor is not None else 'default-id'), className='option', n_clicks=0, style=option_STYLE) for sensor in sensors]
-        return sensor_divs
+        sensors = sys.wavefront_sensors
+
+        measurements = [sensor.measurements for sensor in sensors if sensor.measurements is not None]
+        if measurements:
+            options = [{'label': measurement.name, 'value': measurement.name} for measurement in measurements]
+            initial_value = measurements[0].name
+            return options, initial_value
+        else:
+            return [], None
     else:
-        return []
+        return [], None
     
-#Valid subapertures of wavefront sensor  
+
 @callback(
-    Output('meas_n_sub', 'children'),
+    [Output('name', 'children'),
+    Output('dimensions', 'children'),
+    Output('wv', 'children'),
+    Output('detect_type', 'children')],
     [Input('pickle_store', 'data'),
-    Input('url', 'pathname')]
+     Input('url', 'pathname'),
+     Input('command-dropdown_m', 'value')]
 )
-def display_subap(pickle_file, pathname):  
+def key_properties_meas(pickle_file, pathname, selected_command):
     if pathname == '/measurements' and pickle_file is not None:
-       
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        n_subapertures = [wavefront_sensors_to_dict(wavefront_sensor)['n_valid_subapertures'] for wavefront_sensor in sys.wavefront_sensors]
-        return f'{n_subapertures}'
-    else:
-        return "None"
-    
-#Size subapertures of wavefront sensor
-@callback(
-    Output('meas_s_s', 'children'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def display_subapertures(pickle_file, pathname):
-    if pathname == '/measurements' and pickle_file is not None:
-       
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+        
+        if sensor is None or sensor.measurements is None:
+            return ["None"] * 10  
+        
+        name = sensor.measurements.name
+        dimensions = sensor.dimensions
+        #sm2 = sensor.subaperture_mask
+        #refm = sensor.ref_measurements.name 
+        #si = sensor.subaperture_intensities.name
+        wv = sensor.wavelength
+        detect_type = type(sensor).__name__
 
-        size_subapertures = [wavefront_sensors_to_dict(wavefront_sensor)['subaperture_size'] for wavefront_sensor in sys.wavefront_sensors]
-        return f'{size_subapertures}'
-    else:
-        return "None"
-    
-#Wavelength of wavefront sensor --> posso só usar extrair a variavel a partir do objeto não tenho que passar pelo dicionário
-@callback(
-    Output('meas_wavelength_container', 'children'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def display_wavelength(pickle_file, pathname):
-    if pathname == '/measurements' and pickle_file is not None:
-       
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
 
-        wave = [wavefront_sensors_to_dict(wavefront_sensor)['wavelength'] for wavefront_sensor in sys.wavefront_sensors]
-        return f'{wave}'
-    else:
-        return "None" 
-
-"""
+        
+        #Assim mostra o None
+        name, dimensions, wv, detect_type = none_to_string(name, dimensions, wv, detect_type) 
+        print(f'Name: {name}, Dimensions: {dimensions}, Wavelength: {wv}, type: {detect_type}')
+        return name, dimensions, wv, detect_type
+    else: 
+        return ["None"] * 4
 
 #Imagem com slider
 
@@ -457,14 +470,24 @@ def display_wavelength(pickle_file, pathname):
     Output('frame_slider', 'max'),
     Output('frame_slider', 'marks'), 
     Output('frame_slider', 'value'),
-    Input('pickle_store', 'data'),
-    Input('url', 'pathname')
+    [Input('pickle_store', 'data'),
+    Input('url', 'pathname'),
+    Input('command-dropdown_m', 'value')]
 )
-def load_image_data(pickle_file, pathname):
+def load_image_data(pickle_file, pathname, selected_command):
     if pathname == '/measurements' and pickle_file is not None:
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-        img_data = sys.wavefront_sensors[0].measurements.data 
+
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+        
+        if sensor is None or sensor.measurements is None:
+            return None, 0, dash.no_update, dash.no_update
+        
+        img_data = sensor.measurements.data 
         
        # print(f'img_data shape: {img_data.shape}')
     
@@ -476,19 +499,29 @@ def load_image_data(pickle_file, pathname):
 
 @callback(
     Output('testes_imagem1', 'children'),
-    Input('image_data_store', 'data'),
+    [Input('image_data_store', 'data'),
     Input('pickle_store', 'data'),
     Input('frame_slider', 'value'),
     Input('aotpy_scale_m', 'value'),
-    Input('x_dimension_image', 'clickData')
+    Input('x_dimension_image', 'clickData'),
+    Input('command-dropdown_m','value')]
 )
-def update_image_x(data,pickle_file, frame_index, scale_type, x_clickData):
+def update_image_x(data,pickle_file, frame_index, scale_type, x_clickData, selected_command):
    # print(f'data: {data}')
     #print(f'frame_index: {frame_index}')
     with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-    subaperture_mask = sys.wavefront_sensors[0].subaperture_mask  
-    img_data = sys.wavefront_sensors[0].measurements.data   
+
+    if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+    sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+        
+    if sensor is None or sensor.measurements is None:
+            return {}
+    
+    subaperture_mask = sensor.subaperture_mask  
+    img_data = sensor.measurements.data   
 
     if data is None or frame_index is None:
         return {}
@@ -556,19 +589,29 @@ def update_image_x(data,pickle_file, frame_index, scale_type, x_clickData):
 #at 2 cima
 @callback(
     Output('testes_imagem2', 'children'),
-    Input('image_data_store', 'data'),
+    [Input('image_data_store', 'data'),
     Input('pickle_store', 'data'),
     Input('frame_slider', 'value'),
     Input('aotpy_scale_m', 'value'),
-    Input('y_dimension_image', 'clickData')
+    Input('y_dimension_image', 'clickData'),
+    Input('command-dropdown_m','value')]
 )
-def update_image_y(data,pickle_file, frame_index, scale_type, y_clickData):
+def update_image_y(data,pickle_file, frame_index, scale_type, y_clickData, selected_command):
    # print(f'data: {data}')
     #print(f'frame_index: {frame_index}')
     with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-    subaperture_mask = sys.wavefront_sensors[0].subaperture_mask  
-    img_data = sys.wavefront_sensors[0].measurements.data   
+
+    if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+    sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+        
+    if sensor is None or sensor.measurements is None:
+            return {}
+
+    subaperture_mask = sensor.subaperture_mask  
+    img_data = sensor.measurements.data   
 
     if data is None or frame_index is None:
         return {}
@@ -641,15 +684,24 @@ def update_image_y(data,pickle_file, frame_index, scale_type, y_clickData):
 @callback(
     Output('x_dimension_image', 'figure'),
     Output('y_dimension_image', 'figure'),
-    Input('pickle_store', 'data'),
-    Input('url', 'pathname')
+    [Input('pickle_store', 'data'),
+    Input('url', 'pathname'),
+    Input('command-dropdown_m', 'value')]
 )
-def display_measurements(pickle_file, pathname):
+def display_measurements(pickle_file, pathname, selected_command):
     if pathname == '/measurements' and pickle_file is not None:
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
       
-        measurements = sys.wavefront_sensors[0].measurements.data  
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+        
+        if sensor is None or sensor.measurements is None:
+            return {},{}
+        
+        measurements = sensor.measurements.data  
 
         #subaperture_mask = sys.wavefront_sensors[0].subaperture_mask
         
@@ -723,15 +775,24 @@ def display_measurements(pickle_file, pathname):
 @callback(
     Output('scatterplot', 'figure'),
     [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
+     Input('url', 'pathname'),
+     Input('command-dropdown_m', 'value')]
 )
-def display_detector_frame(pickle_file, pathname):
+def display_detector_frame(pickle_file, pathname, selected_command):
     if pathname == '/measurements' and pickle_file is not None:
         
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        meas_data = sys.wavefront_sensors[0].measurements.data  
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+        
+        if sensor is None or sensor.measurements is None:
+            return {}
+
+        meas_data = sensor.measurements.data  
      
         meas_data_mean = np.mean(meas_data, axis=(1, 2))
 
@@ -762,61 +823,30 @@ def display_detector_frame(pickle_file, pathname):
 
 
 
-""" a funcionar mas minimo
-@callback(
-    Output('teste_meas', 'figure'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def display_imgs_data(pickle_file, pathname):
-    if pathname == '/measurements' and pickle_file is not None:
-    
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-
-        img_data = sys.wavefront_sensors[0].measurements.data
-        half_frames = img_data.shape[0] // 2
-        img_data = img_data[:half_frames]
-
-        print(f"Data MEASUREMENT shape: {img_data.shape}, Data type: {type(img_data)}")
- 
-        fig = px.imshow(img_data, animation_frame=0, binary_string=True, labels=dict(animation_frame="slice"))
-        fig.update_layout(
-            title='Different 2D images over frames',
-            xaxis_title='Local X',
-            yaxis_title='Local Y',
-            autosize=False,
-            width=500,
-            height=200,
-            paper_bgcolor='rgba(0,0,0,0)', 
-            title_font=dict(color='white'),  
-            xaxis_title_font=dict(color='white'),  
-            yaxis_title_font=dict(color='white'),
-            xaxis_tickfont=dict(color='white'),  
-            yaxis_tickfont=dict(color='white'),
-            coloraxis_showscale=False, 
-            margin=dict(l=65, r=50, b=65, t=90),
-        )
-        return fig
-    else:
-        return {}
-"""
-
 
 @callback(
     Output('stat_max_m', 'children'),
     Output('stat_min_m', 'children'),
     Output('stat_aver_m', 'children'),
     [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
+     Input('url', 'pathname'),
+     Input('command-dropdown_m', 'value')]
 )
-def display_stats_m(pickle_file, pathname):
+def display_stats_m(pickle_file, pathname, selected_command):
     if pathname == '/measurements' and pickle_file is not None:
        
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        meas_data = sys.wavefront_sensors[0].measurements.data
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+        
+        if sensor is None or sensor.measurements is None:
+            return ["None"] *3
+
+        meas_data = sensor.measurements.data
     
         max_value = np.max(meas_data)
         min_value = np.min(meas_data)
@@ -827,39 +857,6 @@ def display_stats_m(pickle_file, pathname):
         return ["None"] *3
 
 
-def none_to_string(*args):
-    return ['None' if arg is None or (isinstance(arg, list) and not arg) else arg for arg in args]
-
-
-@callback(
-    [Output('name', 'children'),
-    Output('dimensions', 'children'),
-    Output('wv', 'children'),
-    Output('detect_type', 'children')],
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def key_properties_meas(pickle_file, pathname):
-    if pathname == '/measurements' and pickle_file is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-        
-        name = sys.wavefront_sensors[0].measurements.name
-        dimensions = sys.wavefront_sensors[0].dimensions
-        #sm2 = sys.wavefront_sensors[0].subaperture_mask
-        #refm = sys.wavefront_sensors[0].ref_measurements.name 
-        #si = sys.wavefront_sensors[0].subaperture_intensities.name
-        wv = sys.wavefront_sensors[0].wavelength
-        detect_type = type(sys.wavefront_sensors[0]).__name__
-
-
-        
-        #Assim mostra o None
-        name, dimensions, wv, detect_type = none_to_string(name, dimensions, wv, detect_type) 
-        print(f'Name: {name}, Dimensions: {dimensions}, Wavelength: {wv}, type: {detect_type}')
-        return name, dimensions, wv, detect_type
-    else: 
-        return ["None"] * 4
 
 @callback(
     Output('store3', 'data'),

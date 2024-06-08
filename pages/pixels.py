@@ -36,7 +36,25 @@ layout = html.Div([
 
 
     html.H1("Pixels", style={'text-align': 'left', 'margin-left': '8vw', 'marginBottom' : '0px'}),
-
+    html.Div([
+    dbc.Select(
+        id='command-dropdown_p',
+        options=[],
+        value=None,
+        className='custom-select', 
+        style={
+            'width': "10vw",
+            'text-color': 'white',
+            'height': '35px',
+            'backgroundColor': '#1C2634',
+            'margin-left': '25vw',
+            'display': 'flex',  
+            'position': 'absolute', 
+            #'left': '830px', 
+            #'top': '50px',
+        }
+    ),
+]),
 #Buttons
     html.Div([
     html.Button('Properties', id='button-1', n_clicks=0, style={'background-color': '#1C2634', 'color': 'white', 'text-align': 'center'},),
@@ -444,21 +462,137 @@ def update_output(n_clicks_timestamp1, n_clicks_timestamp2, content1, content2):
     else:
         return content2
 
+@callback(
+    Output('command-dropdown_p', 'options'),
+    Output('command-dropdown_p', 'value'),
+    [Input('url', 'pathname')],
+    [State('pickle_store', 'data')]
+)
+def see_pixels_wfs(pathname, pickle_file):
+    if pathname == '/pixels' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        sensors = sys.wavefront_sensors  
+        detectors = [sensor.detector for sensor in sensors if sensor.detector is not None]
+        if detectors:
+            options = [{'label': detector.uid, 'value': detector.uid} for detector in detectors]
+            initial_value = detectors[0].uid  
+            return options, initial_value
+        else:
+            return [], None
+    else:
+        return [], None
+
+#Texto
+@callback(
+    [Output('name_ns', 'children'),
+    Output('shuttert', 'children'),
+    Output('frame_rate', 'children'),
+    Output('gain', 'children'),
+    Output('integration_time', 'children'),
+    Output('pixel_scale', 'children'),
+    Output('quantum_efficiency', 'children'),
+    Output('readout_noise', 'children'),
+    Output('readout_rate', 'children'),
+    Output('sampling_technique', 'children'),],
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('command-dropdown_p', 'value')]
+)
+def key_properties_2(pickle_file, pathname, selected_command):
+    if pathname == '/pixels' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return ["None"] * 10  
+        
+        #detect_ui = sys.wavefront_sensors[0].uid
+        name_ns = sensor.detector.uid
+        shuttert = sensor.detector.shutter_type 
+        frame_rate = sensor.detector.frame_rate
+        gain = sensor.detector.gain
+        integration_time = sensor.detector.integration_time
+        pixel_scale = sensor.detector.pixel_scale
+        quantum_efficiency = sensor.detector.quantum_efficiency
+        readout_noise = sensor.detector.readout_noise
+        readout_rate = sensor.detector.readout_rate
+        sampling_technique = sensor.detector.sampling_technique
+        
+   
+        properties = [name_ns, shuttert, frame_rate, gain, integration_time, pixel_scale, quantum_efficiency, readout_noise, readout_rate, sampling_technique]
+        properties = none_to_string(*properties) 
+        print(f"Properties: {properties}")
+        
+        return properties
+    else: 
+        return ["None"] * 10  
+    
+
+@callback(
+    [Output('mo', 'children'),
+    Output('ss', 'children')],
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('command-dropdown_p', 'value')]
+)
+def key_properties(pickle_file, pathname, selected_command):
+    if pathname == '/pixels' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return ["None"] * 2 
+        
+        #sm = sys.wavefront_sensors[0].subaperture_mask.name if sys.wavefront_sensors[0].subaperture_mask else None
+        mo = sensor.mask_offsets
+        ss = sensor.subaperture_size
+
+         #Assim mostra o None
+        mo, ss = none_to_string( mo, ss)  
+        print(f" Mask offsets: {mo}, Subaperture size: {ss}")
+
+        return mo, ss
+    else: 
+        return ["None"] * 2 
+
 
 #Imagem estática
 
 @callback(
     Output('imag2D', 'figure'),
     [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
+     Input('url', 'pathname'),
+     Input('command-dropdown_p', 'value'),]
 )
-def display_detector_frame(pickle_file, pathname):
+def display_detector_frame(pickle_file, pathname, selected_command):
     if pathname == '/pixels' and pickle_file is not None:
         
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        pixel_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return {} 
+        
+        pixel_data = sensor.detector.pixel_intensities.data
 
         # poder ter uma imagem 2D por tempo
         reshaped = pixel_data.reshape(pixel_data.shape[0], -1)
@@ -529,14 +663,24 @@ def display_img_data(data, pathname):
      Output('frame3_slider', 'marks'), 
      Output('frame3_slider', 'value')],
     [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
+     Input('url', 'pathname'),
+     Input('command-dropdown_p', 'value')]
 )
-def update_slider_pixel(pickle_file, pathname):
+def update_slider_pixel(pickle_file, pathname, selected_command):
     if pathname == '/pixels' and pickle_file is not None:
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
         
-        img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return  0, {}, 0 
+        
+        img_data = sensor.detector.pixel_intensities.data
         max_frame = img_data.shape[0] - 1
         step = max(1, max_frame // 10)  # Example: divide by 10 for more granularity
 
@@ -554,16 +698,26 @@ def update_slider_pixel(pickle_file, pathname):
      Input('url', 'pathname'),
      Input('aotpy_scale', 'value'),
      Input('aotpy_color', 'value'),
-     Input('imag2D', 'clickData')]  
+     Input('imag2D', 'clickData'),
+     Input('command-dropdown_p', 'value')]  
 )
-def display_detector_frame(slider_value, pickle_file, pathname, scale_type, color_type, clickData):
+def display_detector_frame(slider_value, pickle_file, pathname, scale_type, color_type, clickData, selected_command):
   
     if pathname == '/pixels' and pickle_file is not None:
         ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return  {}
+
+        img_data = sensor.detector.pixel_intensities.data
         print(f"Data PIXEL shape: {img_data.shape}, Data type: {type(img_data)}")
 
         frame_index = slider_value
@@ -600,21 +754,33 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
             margin=dict(l=65, r=50, b=65, t=90),
         )
         return new_figure
+    else:
+        return {}
 
 #Gráfico com intensidade
 
 @callback(
     Output('lineplot', 'figure'),
     [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
+     Input('url', 'pathname'),
+     Input('command-dropdown_p', 'value')]
 )
-def display_detector_frame(pickle_file, pathname):
+def display_detector_frame(pickle_file, pathname, selected_command):
     if pathname == '/pixels' and pickle_file is not None:
         
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        pixel_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return  {}
+
+        pixel_data = sensor.detector.pixel_intensities.data
         
 
        # media
@@ -667,84 +833,29 @@ def update_slice_selector(pickle_file, pathname):
 
 
 @callback(
-    [Output('name_ns', 'children'),
-    Output('shuttert', 'children'),
-    Output('frame_rate', 'children'),
-    Output('gain', 'children'),
-    Output('integration_time', 'children'),
-    Output('pixel_scale', 'children'),
-    Output('quantum_efficiency', 'children'),
-    Output('readout_noise', 'children'),
-    Output('readout_rate', 'children'),
-    Output('sampling_technique', 'children'),],
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def key_properties_2(pickle_file, pathname):
-    if pathname == '/pixels' and pickle_file is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-        
-        #detect_ui = sys.wavefront_sensors[0].uid
-        name_ns = sys.wavefront_sensors[0].detector.uid
-        shuttert = sys.wavefront_sensors[0].detector.shutter_type 
-        frame_rate = sys.wavefront_sensors[0].detector.frame_rate
-        gain = sys.wavefront_sensors[0].detector.gain
-        integration_time = sys.wavefront_sensors[0].detector.integration_time
-        pixel_scale = sys.wavefront_sensors[0].detector.pixel_scale
-        quantum_efficiency = sys.wavefront_sensors[0].detector.quantum_efficiency
-        readout_noise = sys.wavefront_sensors[0].detector.readout_noise
-        readout_rate = sys.wavefront_sensors[0].detector.readout_rate
-        sampling_technique = sys.wavefront_sensors[0].detector.sampling_technique
-        
-   
-        properties = [name_ns, shuttert, frame_rate, gain, integration_time, pixel_scale, quantum_efficiency, readout_noise, readout_rate, sampling_technique]
-        properties = none_to_string(*properties) 
-        print(f"Properties: {properties}")
-        
-        return properties
-    else: 
-        return ["None"] * 10  
-    
-
-@callback(
-    [Output('mo', 'children'),
-    Output('ss', 'children')],
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def key_properties(pickle_file, pathname):
-    if pathname == '/pixels' and pickle_file is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-        
-        #sm = sys.wavefront_sensors[0].subaperture_mask.name if sys.wavefront_sensors[0].subaperture_mask else None
-        mo = sys.wavefront_sensors[0].mask_offsets
-        ss = sys.wavefront_sensors[0].subaperture_size
-
-         #Assim mostra o None
-        mo, ss = none_to_string( mo, ss)  
-        print(f" Mask offsets: {mo}, Subaperture size: {ss}")
-
-        return mo, ss
-    else: 
-        return "None", "None"
-
-
-@callback(
     Output('stat_max_p', 'children'),
     Output('stat_min_p', 'children'),
     Output('stat_aver_p', 'children'),
     [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
+     Input('url', 'pathname'),
+     Input('command-dropdown_p', 'value')]
 )
-def display_stats_p(pickle_file, pathname):
+def display_stats_p(pickle_file, pathname, selected_command):
     if pathname == '/pixels' and pickle_file is not None:
        
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-
-        pixel_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+        
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return  ["None"] *3 
+        
+        pixel_data = sensor.detector.pixel_intensities.data
     
         max_value = np.max(pixel_data)
         min_value = np.min(pixel_data)
