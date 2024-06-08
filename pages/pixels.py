@@ -586,7 +586,7 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         if not selected_command:
             selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
         
-        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+       
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
         
         if sensor is None or sensor.detector is None:
@@ -674,7 +674,7 @@ def update_slider_pixel(pickle_file, pathname, selected_command):
         if not selected_command:
             selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
         
-        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+       
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
         
         if sensor is None or sensor.detector is None:
@@ -711,7 +711,6 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
         if not selected_command:
             selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
         
-        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
         
         if sensor is None or sensor.detector is None:
@@ -774,7 +773,6 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         if not selected_command:
             selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
         
-        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
         
         if sensor is None or sensor.detector is None:
@@ -849,7 +847,6 @@ def display_stats_p(pickle_file, pathname, selected_command):
         if not selected_command:
             selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
         
-        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
         
         if sensor is None or sensor.detector is None:
