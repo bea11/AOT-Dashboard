@@ -181,7 +181,6 @@ layout = html.Div([
                 {'label': 'Green', 'value': 'Green'},
                 {'label': 'Blue', 'value': 'Blue'},
                 {'label': 'Heat', 'value': 'Heat'},
-                {'label': 'Tropics', 'value': 'Tropics'},
                 {'label': 'Rainbow', 'value': 'Rainbow'},
         ],
         value='Standard',
@@ -201,6 +200,20 @@ layout = html.Div([
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
     dcc.Graph(id='teste_imagem_diferente', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+    html.Div(dcc.Slider(
+                id='frame3_slider',
+                min=0,
+                max=1,
+                step=1,
+                value=0,
+                marks={},
+            ), style={
+                        'width': '600px',  
+                        'position': 'absolute',  
+                        'left': '20px',  
+                        'height': '30px',
+                        'top': '370px',  
+                    }),
 
         html.Div([  
             html.Label([
@@ -340,7 +353,8 @@ layout = html.Div([
 
 #CALLBACKS
 #Intensity detected in each pixel, for each data frame. This is a sequence of t images, each spanning x pixels horizontally and y pixels vertically. (Dimensions t×h×w, in ADU units, using data type flt)
-
+def none_to_string(*args):
+    return ['None' if arg is None or arg == [] else arg for arg in args]
 
 def apply_scale(image, scale_type):
     if scale_type == 'Linear':
@@ -386,12 +400,17 @@ def apply_colormap(colormap):
         return 'blues'
     elif colormap == 'Heat':
         return 'hot'
-    elif colormap == 'Tropic':
-        return 'tropic'
     elif colormap == 'Rainbow':
         return 'rainbow'
     else:
         raise ValueError(f'Invalid colormap {colormap}')
+    
+def extract_coordinates(clickData):
+    x = clickData['points'][0]['x']
+    y = clickData['points'][0]['y']
+    z = clickData['points'][0]['z']
+    return x, y, z
+
 
 
 @callback(
@@ -504,62 +523,83 @@ def display_img_data(data, pathname):
 
 #Imagem com slider
 
+
 @callback(
-    Output('teste_imagem', 'data'),
+    [Output('frame3_slider', 'max'),
+     Output('frame3_slider', 'marks'), 
+     Output('frame3_slider', 'value')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname')]
 )
-def display_imgs_data(pickle_file, pathname):
+def update_slider_pixel(pickle_file, pathname):
     if pathname == '/pixels' and pickle_file is not None:
-    
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+        img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
+        max_frame = img_data.shape[0] - 1
+        step = max(1, max_frame // 10)  # Example: divide by 10 for more granularity
+
+        marks = {i: str(i) for i in range(0, max_frame + 1, step)}  
+        
+        return max_frame, marks, 0
+    else:
+        return 0, {}, 0
+
+#com slide
+@callback(
+    Output('teste_imagem_diferente', 'figure'),
+    [Input('frame3_slider', 'value'),
+    Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('aotpy_scale', 'value'),
+     Input('aotpy_color', 'value'),
+     Input('imag2D', 'clickData')]  
+)
+def display_detector_frame(slider_value, pickle_file, pathname, scale_type, color_type, clickData):
+  
+    if pathname == '/pixels' and pickle_file is not None:
+        ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
         img_data = sys.wavefront_sensors[0].detector.pixel_intensities.data
         print(f"Data PIXEL shape: {img_data.shape}, Data type: {type(img_data)}")
 
-        return img_data.tolist()  
-    else:
-        return []
-
-#com slide
-@callback(
-    Output('teste_imagem_diferente', 'figure'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname'),
-     Input('aotpy_scale', 'value'),
-     Input('aotpy_color', 'value'),
-     Input('teste_imagem', 'data')]  
-)
-def display_detector_frame(pickle_file, pathname, scale_type, color_type, img):
-  
-    # Apply the selected scale
-    scaled_data = apply_scale(img, scale_type)
-    scaled_data_array = np.array(scaled_data, dtype=float)
-  
+        frame_index = slider_value
+        
+        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D':
+            # cordenadas do click data 
+                x, y, z = extract_coordinates(clickData)
+            
+            # o x do slider é o frame index (tempo)
+                frame_index = int(x)
     
-    colormap = apply_colormap(color_type)
-    print(f"Colormap: {colormap}")
-    #para mudar a cor uso o continuous_scale mas ainda não está a funcionar
-    new_figure = px.imshow(scaled_data_array, animation_frame=0, binary_string=True, labels=dict(animation_frame="slice"), color_continuous_scale=colormap)
-    print(f"{colormap}")
-    new_figure.update_layout(
-        title='Different 2D images over frames',
-        xaxis_title='X',
-        yaxis_title='Y',
-        autosize=False,
-        width=600,
-        height=450,
-        paper_bgcolor='rgba(0,0,0,0)', 
-        title_font=dict(color='white'),  
-        xaxis_title_font=dict(color='white'),  
-        yaxis_title_font=dict(color='white'),
-        xaxis_tickfont=dict(color='white'),  
-        yaxis_tickfont=dict(color='white'),
-        coloraxis_showscale=False, 
-        margin=dict(l=65, r=50, b=65, t=90),
-    )
-    return new_figure
+        frame_processed = img_data[frame_index]
+        frame_processed = apply_scale(frame_processed, scale_type)
+        
+        colormap = apply_colormap(color_type)
+        print(f"Colormap: {colormap}")
+        #para mudar a cor uso o continuous_scale mas ainda não está a funcionar
+        new_figure = px.imshow(frame_processed, color_continuous_scale=colormap)
+        print(f"{colormap}")
+        new_figure.update_layout(
+            title=f'Different 2D images over frames, {frame_index} ',
+            xaxis_title='X',
+            yaxis_title='Y',
+            autosize=False,
+            width=600,
+            height=450,
+            paper_bgcolor='rgba(0,0,0,0)', 
+            title_font=dict(color='white'),  
+            xaxis_title_font=dict(color='white'),  
+            yaxis_title_font=dict(color='white'),
+            xaxis_tickfont=dict(color='white'),  
+            yaxis_tickfont=dict(color='white'),
+            coloraxis_showscale=False, 
+            margin=dict(l=65, r=50, b=65, t=90),
+        )
+        return new_figure
 
 #Gráfico com intensidade
 
@@ -623,8 +663,7 @@ def update_slice_selector(pickle_file, pathname):
     return []    """
 
 
-def none_to_string(*args):
-    return ['None' if arg is None or arg == [] else arg for arg in args]
+
 
 
 @callback(

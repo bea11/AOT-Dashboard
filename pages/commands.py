@@ -182,7 +182,6 @@ layout = html.Div([
                 {'label': 'Green', 'value': 'Green'},
                 {'label': 'Blue', 'value': 'Blue'},
                 {'label': 'Heat', 'value': 'Heat'},
-                {'label': 'Tropics', 'value': 'Tropics'},
                 {'label': 'Rainbow', 'value': 'Rainbow'},
         ],
         value='Standard',
@@ -318,8 +317,6 @@ def apply_colormap(colormap):
         return 'blues'
     elif colormap == 'Heat':
         return 'hot'
-    elif colormap == 'Tropic':
-        return 'tropic'
     elif colormap == 'Rainbow':
         return 'rainbow'
     else:
@@ -342,6 +339,7 @@ def none_to_string(*args):
     
 @callback(
     Output('command-dropdown', 'options'),
+    Output('command-dropdown', 'value'),
     [Input('url', 'pathname')],
     [State('pickle_store', 'data')]
 )
@@ -352,11 +350,14 @@ def see_commands_loop(pathname, pickle_file):
 
         loops = sys.loops
         commands = [loop.commands for loop in loops if loop.commands is not None]
-        options = [{'label': command.name, 'value': command.name} for command in commands]
-
-        return options
+        if commands:  # Ensure there are commands to process
+            options = [{'label': command.name, 'value': command.name} for command in commands]
+            initial_value = commands[0].name  # Assuming commands is a list of objects with a 'name' attribute
+            return options, initial_value
+        else:
+            return [], None  # Return empty list and None if there are no commands
     else:
-        return []
+        return [], None
     
 
 @callback(
@@ -377,6 +378,8 @@ def key_properties_comma(pickle_file, pathname, selected_command):
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
         #loop correspondente
+        if not selected_command:
+            selected_command = sys.loops[0].commands.name if sys.loops else None
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
         if loop is None:
             return ["None"] * 8
@@ -434,29 +437,39 @@ def display_stats_c(pickle_file, pathname, selected_command):
      Input('url', 'pathname'),
      Input('command-dropdown', 'value'),
      Input('aotpy_scale_c', 'value'),
+     Input('aotpy_color_c', 'value'),
      Input('imag2D_com', 'clickData')]
      
 )
-def update_image(frame_index, pickle_file, pathname, selected_command, scale_type, clickData):
+def update_image(slider_value, pickle_file, pathname, selected_command, scale_type, color_type, clickData):
     if pathname == '/commands' and pickle_file is not None:
+        ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
+
+
+        if not selected_command:
+            selected_command = sys.loops[0].commands.name if sys.loops else None
 
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
         if loop is None:
             return {}  
         
         img_data = loop.commands.data
-        if clickData is not None:
-        # cordenadas do click data 
-            x, y, z = extract_coordinates(clickData)
         
-        # o x do slider é o frame index (tempo)
+        frame_index = slider_value
+
+        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D_com':
+            # Extract frame index from clickData
+            x, y, z = extract_coordinates(clickData)
             frame_index = int(x)
+        
+     
         frame_processed = img_data[frame_index]
         frame_processed = apply_scale(frame_processed, scale_type)
       
-        fig = go.Figure(data=go.Heatmap(z=frame_processed.reshape(-1, 1), colorscale='Viridis'))
+        colormap = apply_colormap(color_type)
+        fig = go.Figure(data=go.Heatmap(z=frame_processed.reshape(-1, 1), colorscale=colormap))
 
         fig.update_layout(
             title=f'Frame {frame_index} Dimension X',
@@ -491,6 +504,8 @@ def update_slider(pickle_file, pathname, selected_command):
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
+        if not selected_command:
+            selected_command = sys.loops[0].commands.name if sys.loops else None
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
         if loop is None:
             return 0, {}, 0  
@@ -516,6 +531,8 @@ def display_commands_frame(pickle_file, pathname, selected_command):
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
+        if not selected_command:
+            selected_command = sys.loops[0].commands.name if sys.loops else None
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
         if loop is None:
             return {}  
@@ -564,6 +581,8 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
+        if not selected_command:
+            selected_command = sys.loops[0].commands.name if sys.loops else None
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
         if loop is None:
             return {}  
