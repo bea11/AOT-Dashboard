@@ -241,7 +241,7 @@ layout = html.Div([
     
             html.Label([
             "dark",
-            dbc.Checkbox(id='checkbox-2', className='custom-checkbox')
+            dbc.Checkbox(id='dark_feature', className='custom-checkbox')
     ], style={'display': 'flex', 'align-items': 'center'}),
     
             html.Label([
@@ -699,9 +699,10 @@ def update_slider_pixel(pickle_file, pathname, selected_command):
      Input('aotpy_scale', 'value'),
      Input('aotpy_color', 'value'),
      Input('imag2D', 'clickData'),
-     Input('command-dropdown_p', 'value')]  
+     Input('command-dropdown_p', 'value'),
+     Input('dark_feature', 'value'),]  
 )
-def display_detector_frame(slider_value, pickle_file, pathname, scale_type, color_type, clickData, selected_command):
+def display_detector_frame(slider_value, pickle_file, pathname, scale_type, color_type, clickData, selected_command, dark):
   
     if pathname == '/pixels' and pickle_file is not None:
         ctx = dash.callback_context
@@ -716,7 +717,13 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
         if sensor is None or sensor.detector is None:
             return  {}
 
+
+
         img_data = sensor.detector.pixel_intensities.data
+
+        if dark and sensor.detector.dark is not None:
+            img_data = img_data - sensor.detector.dark.data
+        
         print(f"Data PIXEL shape: {img_data.shape}, Data type: {type(img_data)}")
 
         frame_index = slider_value
@@ -730,6 +737,8 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
     
         frame_processed = img_data[frame_index]
         frame_processed = apply_scale(frame_processed, scale_type)
+
+    
         
         colormap = apply_colormap(color_type)
         print(f"Colormap: {colormap}")

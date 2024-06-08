@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
+#não sei se isto está bem
+from aotpy.core.wavefront_corrector import DeformableMirror
 
 dash.register_page(__name__, path='/commands', suppress_callback_exceptions=True)
 
@@ -87,10 +89,6 @@ layout = html.Div([
             html.Div(id='mc', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px', 'margin-top': '13px'}),
 
-        html.Div([
-            html.Label("Deformable Mirror Coordinates: ", style={'color': 'white'}),
-            html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
         html.Div([
             html.Label("Wavefront Corrector: ", style={'color': 'white'}),
@@ -111,6 +109,17 @@ layout = html.Div([
         html.Div([
             html.Label("tfz_num: ", style={'color': 'white'}),
             html.Div(id='tfz_num', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+
+        html.Div([
+            html.Label("Deformable Mirror actuator Coordinates: ", style={'color': 'white'}),
+            html.Div(id='dmac', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+
+        
+        html.Div([
+            html.Label("Deformable Mirror stroke: ", style={'color': 'white'}),
+            html.Div(id='dms', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
@@ -399,6 +408,41 @@ def key_properties_comma(pickle_file, pathname, selected_command):
         return loop, refcom, rescom, mc, wave_corrector, valid_act, tfz_den, tfz_num
     else: 
         return ["None"] * 8
+    
+
+    #não sei se estou a extrair corretamente
+@callback(
+    [Output('dmac', 'children'),
+    Output('dms', 'children')],
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('command-dropdown_c', 'value')]
+)
+def key_extra_comma(pickle_file, pathname, selected_command):
+    if pathname == '/commands' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        #loop correspondente
+        if not selected_command:
+            selected_command = sys.loops[0].commands.name if sys.loops else None
+        loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
+        if loop is None:
+            return ["None"] * 2
+        
+        if isinstance(loop.commanded_corrector, DeformableMirror):
+            dmac = loop.commanded_corrector.actuator_coordinates 
+            dms = loop.commanded_corrector.stroke 
+        else:
+             dmac = "Not a deformable mirror"
+             dms = "Not a deformable mirror"
+        
+        dmac, dms = none_to_string(dmac, dms)
+        
+        print(dmac, dms)
+        return dmac, dms
+    else: 
+        return ["None"] * 2
+
 """
 @callback(
     Output('stat_max_c', 'children'),
