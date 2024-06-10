@@ -78,23 +78,12 @@ layout = html.Div([
                 html.Label("Type: ", style={'color': 'white'}),
                 html.Div(id='detect_type', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-     
-            html.Div([
-                html.Label("Pyramid ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px', 'margin-top': '13px'}),
-
-            html.Div([
-                html.Label("Shack Hartman", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-
    
             html.Div([
                 html.Label("Wavelength: ", style={'color': 'white'}),
                 html.Div(id='wv', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-
+             html.Div(id='divs_type')
 
 ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '0px', 'top': '30px', 'width': '400px', 'height': '370px'}),
     
@@ -174,7 +163,7 @@ layout = html.Div([
                 html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
                 html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-
+           
 ], style={
     'background-color': '#1C2634', 
     'position': 'absolute',
@@ -453,6 +442,58 @@ def key_properties_meas(pickle_file, pathname, selected_command):
         #si = sensor.subaperture_intensities.name
         wv = sensor.wavelength
         detect_type = type(sensor).__name__
+
+
+        
+        #Assim mostra o None
+        name, dimensions, wv, detect_type = none_to_string(name, dimensions, wv, detect_type) 
+        print(f'Name: {name}, Dimensions: {dimensions}, Wavelength: {wv}, type: {detect_type}')
+        return name, dimensions, wv, detect_type
+    else: 
+        return ["None"] * 4
+    
+
+
+@callback(
+    Output('divs_type', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('command-dropdown_m', 'value')]
+)
+def specific_properties_meas(pickle_file, pathname, selected_command):
+    if pathname == '/measurements' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+        
+        if sensor is None or sensor.measurements is None:
+            return ["None"] * 1 
+        
+        if (type(sensor).__name__) == 'Pyramid':
+            n_sides = sensor.n_sides
+            modulation = sensor.modulation
+
+            return html.Div([     
+        html.Div([
+                html.Label("Number Sides", style={'color': 'white'}),
+                html.Div(n_sides, style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                 html.Div([
+                html.Label("Modulation: ", style={'color': 'white'}),
+                html.Div(modulation, style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+        ])   
+        else: #se for shack-hartman 
+            centroiding = sensor.centroiding_algorithm
+            return  html.Div([
+                html.Label("Centroiding Algorithm", style={'color': 'white'}),
+                html.Div(centroiding, style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+
 
 
         
@@ -808,6 +849,7 @@ def display_detector_frame(pickle_file, pathname, selected_command):
             width=600,
             height=350,
             margin=dict(l=65, r=50, b=65, t=90),
+            plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),
             xaxis_title_font=dict(color='white'), 

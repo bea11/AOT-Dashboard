@@ -805,6 +805,7 @@ def display_detector_frame(pickle_file, pathname, selected_command):
             width=600,
             height=350,
             margin=dict(l=65, r=50, b=65, t=90),
+            plot_bgcolor='rgba(36,51,67,1)',
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),
             xaxis_title_font=dict(color='white'), 

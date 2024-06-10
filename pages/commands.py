@@ -110,18 +110,7 @@ layout = html.Div([
             html.Label("tfz_num: ", style={'color': 'white'}),
             html.Div(id='tfz_num', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-
-        html.Div([
-            html.Label("Deformable Mirror actuator Coordinates: ", style={'color': 'white'}),
-            html.Div(id='dmac', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-
-        
-        html.Div([
-            html.Label("Deformable Mirror stroke: ", style={'color': 'white'}),
-            html.Div(id='dms', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-
+        html.Div(id='deformmirror'),
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '85px', 'width': '400px', 'height': '390px'}),
     
@@ -412,8 +401,7 @@ def key_properties_comma(pickle_file, pathname, selected_command):
 
     #não sei se estou a extrair corretamente
 @callback(
-    [Output('dmac', 'children'),
-    Output('dms', 'children')],
+    Output('deformmirror', 'children'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('command-dropdown_c', 'value')]
@@ -427,21 +415,26 @@ def key_extra_comma(pickle_file, pathname, selected_command):
             selected_command = sys.loops[0].commands.name if sys.loops else None
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
         if loop is None:
-            return ["None"] * 2
+            return None
         
         if isinstance(loop.commanded_corrector, DeformableMirror):
             dmac = loop.commanded_corrector.actuator_coordinates 
             dms = loop.commanded_corrector.stroke 
+            print(loop.commanded_corrector.uid, dmac, dms)
+            return html.Div([
+                html.Div([
+                    html.Label("Deformable Mirror actuator Coordinates: ", style={'color': 'white'}),
+                    html.Div(dmac, style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+
+                
+                html.Div([
+                    html.Label("Deformable Mirror stroke: ", style={'color': 'white'}),
+                    html.Div(dms, style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+        ])
         else:
-             dmac = "Not a deformable mirror"
-             dms = "Not a deformable mirror"
-        
-        dmac, dms = none_to_string(dmac, dms)
-        
-        print(dmac, dms)
-        return dmac, dms
-    else: 
-        return ["None"] * 2
+            return None
 
 """
 @callback(
@@ -600,6 +593,7 @@ def display_commands_frame(pickle_file, pathname, selected_command):
             width=600,
             height=350,
             margin=dict(l=65, r=50, b=65, t=90),
+            plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),
             xaxis_title_font=dict(color='white'), 
