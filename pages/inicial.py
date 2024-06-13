@@ -79,15 +79,22 @@ layout = html.Div([
 )
 def store_uploaded_file(contents):
     if contents is not None:
-        content_type, content_string = contents.split(',')
-        decoded = base64.b64decode(content_string)
-        sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
+        print("Debug: Contents start with:", contents[:100])  
 
-        with open('system.pickle', 'wb') as f:
-            pickle.dump(sys, f)
+        parts = contents.split(',')
+        if len(parts) == 2:
+            content_type, content_string = parts
+            decoded = base64.b64decode(content_string)
+            sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
 
-        #Nome do pickle file
-        return 'system.pickle'
+            with open('system.pickle', 'wb') as f:
+                pickle.dump(sys, f)
+
+            return 'system.pickle'
+        else:
+            
+            print("Uploaded file content does not have the expected format.")
+            raise PreventUpdate
     else:
         raise PreventUpdate
     

@@ -14,8 +14,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
-#não sei se isto está bem
-from aotpy.core.wavefront_corrector import DeformableMirror
+from astropy.visualization import MinMaxInterval, ZScaleInterval, PercentileInterval
 
 dash.register_page(__name__, path='/commands', suppress_callback_exceptions=True)
 
@@ -114,40 +113,48 @@ layout = html.Div([
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '85px', 'width': '400px', 'height': '390px'}),
     
-   #1 quadrante 
-    html.Div([
-        html.P("Objects", style={'text-align': 'left','margin-left': '1vw'}),
+   html.Div([
+            html.P("Objects", style={'text-align': 'left','margin-left': '1vw'}),
   
     #1 bloco
-        html.Div([
-            html.P("Source", style={'text-align': 'left', 'margin-left': '1vw'}),
             html.Div([
-                html.Label("Name: ", style={'color': 'white'}),
-                html.Button("NGS", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                html.P("Telescope", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.Div([
+                    html.Label("Name: ", style={'color': 'white'}),
+                    html.Div(id='telescope_name', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-            html.P("Type: Natural Guide Star", style={'text-align': 'left', 'margin-left': '1vw', 'color': 'white'}),
-    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'200px', 'height': '90px','margin-left': '1vw'}),
+                html.Div([
+                html.Label("Type:", style={ 'color': 'white'}),
+                html.Div(id='telescope_type', style={'background-color': '#243343', 'margin-left': '10px'}),
+                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw'}),
 
     #2 bloco
-        html.Div([
-            html.P("Detector", style={'text-align': 'left', 'margin-left': '1vw'}),
             html.Div([
-                html.Label("Name: ", style={'color': 'white'}),
-                html.Button("SAPHIRA", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                html.P("Aberration 1", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.Div([
+                    html.Label("Name: ", style={'color': 'white'}),
+                    html.Button("Example", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-            html.P("Type: CMOS", style={'text-align': 'left', 'margin-left': '1vw', 'color': 'white'}),
-    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'200px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
-
-    #3 bloco
-        html.Div([
-            html.P("Aberration 1", style={'text-align': 'left', 'margin-left': '1vw'}),
-            html.Div([
-                html.Label("Name: ", style={'color': 'white'}),
-                html.Button("Example", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                html.Div([
+                    html.Label("Type:", style={ 'color': 'white'}),
+                    html.Div("Other", style={'background-color': '#243343', 'margin-left': '10px'}),
+                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
+                
+                html.Div([
+                html.P("Aberration 2", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.Div([
+                    html.Label("Name: ", style={'color': 'white'}),
+                    html.Div("Example", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-            html.P("Type: Other", style={'text-align': 'left', 'margin-left': '1vw', 'color': 'white'}),
-    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'200px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
-
+                html.Div([
+                    html.Label("Type:", style={ 'color': 'white'}),
+                    html.Div("Other", style={'background-color': '#243343', 'margin-left': '10px'}),
+                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+    
+    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '520px', 'top': '85px', 'width': '230px', 'height': '390px'}),
@@ -187,18 +194,18 @@ layout = html.Div([
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
     dbc.Select(
-        id="aotpy_interval",
-        options=[
-            {'label': 'Interval', 'value': 'loops'},
-            {'label': 'D0', 'value': 'C0'},
-            {'label': 'D1', 'value': 'C1'},
-            {'label': 'D2', 'value': 'C2'}
+        id="aotpy_interval_c",
+            options=[
+                {'label': 'MinMax', 'value': 'MinMax'},
+                {'label': 'ZScale', 'value': 'ZScale'},
+                {'label': 'Percentile_30', 'value': 'Percentile_30'}
+                
         ],
-        value='loops',
+        value='MinMax',
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-    dcc.Graph(id='teste2_imagem', style={'position': 'absolute', 'left': '20px', 'top': '10px', 'height': '330px', 'width': '500px'}),
+    html.Div(id='teste2_imagem'),
 
     html.Div(dcc.Slider(
                 id='frame2_slider',
@@ -212,7 +219,7 @@ layout = html.Div([
                         'position': 'absolute',  
                         'left': '20px',  
                         'height': '30px',
-                        'top': '370px',  
+                        'top': '400px',  
                     }),
 
 ], style={
@@ -223,7 +230,7 @@ layout = html.Div([
     'left': '780px', 
     'top': '50px', 
     'width': '580px', 
-    'height': '420px'
+    'height': '450px'
 }),
   
   #3 quadrante
@@ -234,7 +241,7 @@ layout = html.Div([
     'background-color': '#1C2634',  
     'position': 'absolute',
     'left': '110px',
-    'top': '510px',
+    'top': '530px',
     'width': '600px',  
     'height': '330px'  
 }),
@@ -251,7 +258,7 @@ layout = html.Div([
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
     'left': '780px',
-    'top': '480px',
+    'top': '520px',
     'width': '580px',  
     'height': '330px'  
 }),
@@ -306,19 +313,41 @@ def apply_colormap(colormap):
     if colormap == 'Standard':
         return None #normal
     elif colormap == 'Grey':
-        return 'greys'
+        return 'greys_r'
     elif colormap == 'Red':
-        return 'reds'
+        return 'reds_r'
     elif colormap == 'Green':
-        return 'greens'
+        return 'greens_r'
     elif colormap == 'Blue':
-        return 'blues'
+        return 'blues_r'
     elif colormap == 'Heat':
         return 'hot'
     elif colormap == 'Rainbow':
         return 'rainbow'
     else:
         raise ValueError(f'Invalid colormap {colormap}')
+    
+    
+def apply_interval(image, interval_type):
+    if interval_type == 'MinMax':
+        interval = MinMaxInterval()
+        normalized_image = interval(image)
+
+        return normalized_image
+    elif interval_type == 'ZScale':
+        zscale_interval = ZScaleInterval(n_samples=1000, contrast=0.25, max_reject=0.5, min_npixels=5, krej=2.5, max_iterations=5)
+        normalized_image = zscale_interval(image)
+        
+        return normalized_image
+   
+    elif interval_type == 'Percentile_30':
+        percentileinterval = PercentileInterval(30.)
+        normalized_image = percentileinterval(image)
+
+        return normalized_image
+    else:
+        raise ValueError(f'Invalid interval: {interval_type}')
+
 
 def extract_coordinates(clickData):
     x = clickData['points'][0]['x']
@@ -348,12 +377,12 @@ def see_commands_loop(pathname, pickle_file):
 
         loops = sys.loops
         commands = [loop.commands for loop in loops if loop.commands is not None]
-        if commands:  # Ensure there are commands to process
+        if commands: 
             options = [{'label': command.name, 'value': command.name} for command in commands]
-            initial_value = commands[0].name  # Assuming commands is a list of objects with a 'name' attribute
+            initial_value = commands[0].name 
             return options, initial_value
         else:
-            return [], None  # Return empty list and None if there are no commands
+            return [], None
     else:
         return [], None
     
@@ -417,7 +446,8 @@ def key_extra_comma(pickle_file, pathname, selected_command):
         if loop is None:
             return None
         
-        if isinstance(loop.commanded_corrector, DeformableMirror):
+        #não sei se está correto
+        if isinstance(loop.commanded_corrector, aotpy.DeformableMirror):
             dmac = loop.commanded_corrector.actuator_coordinates 
             dms = loop.commanded_corrector.stroke 
             print(loop.commanded_corrector.uid, dmac, dms)
@@ -435,6 +465,45 @@ def key_extra_comma(pickle_file, pathname, selected_command):
         ])
         else:
             return None
+
+#para a secção dos objetos
+@callback(
+    Output('telescope_name', 'children'),
+     Output('telescope_type', 'children'),
+     #Output('detector3_name', 'children'),
+     #Output('detector3_type', 'children'),
+    #Output('meas3_name', 'children'),
+    #Output('meas3_type', 'children')],
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('command-dropdown_c', 'value')]
+)
+def key_properties_objetcs3(pickle_file, pathname, selected_command):
+    if pathname == '/commands' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        #loop correspondente
+        if not selected_command:
+            selected_command = sys.loops[0].commands.name if sys.loops else None
+        loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
+        if loop is None:
+            return ["None"] * 2
+        
+        #source3_name= sensor.source.uid
+        #source3_type= type(sensor.source).__name__
+        telescope_name= loop.commanded_corrector.telescope.uid
+        telescope_type= type(loop.commanded_corrector.telescope).__name__
+        #t_name= sensor.measurements.name
+        #meas3_type= type(sensor.measurements).__name__
+        #source3_name, source3_type, detector3_name, detector3_type, meas3_name, meas3_type = none_to_string(source3_name, source3_type, detector3_name, detector3_type, meas3_name, meas3_type)  
+        #print(f" source name: {source3_name}, source type: {source3_type}, meas name: {meas3_name}, meas type: {meas3_type}")
+        telescope_name, telescope_type = none_to_string(telescope_name, telescope_type)
+        return telescope_name, telescope_type
+        #return source3_name, source3_type, detector3_name, detector3_type, meas3_name, meas3_type
+    else: 
+        return ["None"] * 2
+
+
 
 """
 @callback(
@@ -468,17 +537,18 @@ def display_stats_c(pickle_file, pathname, selected_command):
 
 #Imagem com slide
 @callback(
-    Output('teste2_imagem', 'figure'),
+    Output('teste2_imagem', 'children'),
     [Input('frame2_slider', 'value'),
      Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('command-dropdown_c', 'value'),
      Input('aotpy_scale_c', 'value'),
      Input('aotpy_color_c', 'value'),
+     Input('aotpy_interval_c', 'value'),
      Input('imag2D_com', 'clickData')]
      
 )
-def update_image(slider_value, pickle_file, pathname, selected_command, scale_type, color_type, clickData):
+def update_image(slider_value, pickle_file, pathname, selected_command, scale_type, color_type,interval_type, clickData):
     if pathname == '/commands' and pickle_file is not None:
         ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
@@ -493,23 +563,32 @@ def update_image(slider_value, pickle_file, pathname, selected_command, scale_ty
             return {}  
         
         img_data = loop.commands.data
-        
+
+        if not loop.commanded_corrector.actuator_coordinates or img_data is None:
+            return html.Div("The image cannot be rasterized without the actuator coordinates", style={
+            'position': 'absolute',
+            'left': '200px',
+            'top': '50px',
+            'width': '140px'            
+        })
+        print(loop.commanded_corrector.actuator_coordinates) 
         frame_index = slider_value
 
         if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D_com':
-            # Extract frame index from clickData
+        
             x, y, z = extract_coordinates(clickData)
             frame_index = int(x)
         
      
         frame_processed = img_data[frame_index]
         frame_processed = apply_scale(frame_processed, scale_type)
-      
+        frame_processed = apply_interval(frame_processed, interval_type)
+        
         colormap = apply_colormap(color_type)
         fig = go.Figure(data=go.Heatmap(z=frame_processed.reshape(-1, 1), colorscale=colormap))
 
         fig.update_layout(
-            title=f'Frame {frame_index} Dimension X',
+            title=f'Frame {frame_index}',
             xaxis_title='Index',
             yaxis_title='Value',
             autosize=False,
@@ -524,9 +603,13 @@ def update_image(slider_value, pickle_file, pathname, selected_command, scale_ty
             margin=dict(l=65, r=50, b=65, t=90),
         )
 
-        return fig
-    else:
-        return {}
+        return dcc.Graph(figure=fig, style={
+                    'position': 'absolute',
+                    'left': '100px',
+                    'top': '50px',
+                    'height': '30px',
+                    'width': '400px'
+                })
 
 @callback(
     [Output('frame2_slider', 'max'),
@@ -560,11 +643,12 @@ def update_slider(pickle_file, pathname, selected_command):
     Output('differentplot', 'figure'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
+     Input('imag2D_com','clickData'),
      Input('command-dropdown_c', 'value')]
 )
-def display_commands_frame(pickle_file, pathname, selected_command):
+def display_commands_frame(pickle_file, pathname, clickData,selected_command):
     if pathname == '/commands' and pickle_file is not None:
-        
+        ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
@@ -576,24 +660,27 @@ def display_commands_frame(pickle_file, pathname, selected_command):
         
         cmd_data = loop.commands.data
 
-        # média
-        cmd_data_mean = np.mean(cmd_data, axis=1)
+        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D_com':
+           
+            x, y, z = extract_coordinates(clickData)
+            print(f"im here {x}, {y}, {z}")
+            commands_over_time = cmd_data[:,int(y)]
 
-        time_values = list(range(len(cmd_data_mean)))
+            time_values = list(range(len(commands_over_time)))
+         
 
-        fig = go.Figure()
 
-        fig.add_trace(go.Scatter(x=time_values, y=cmd_data_mean, mode='lines', name='Mean command value'))
-
-        fig.update_layout(
-            title='Mean command value over time',
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=time_values, y=commands_over_time, mode='lines', name='Intensity over time'))
+            fig.update_layout(
+            title='Intensity over time',
             xaxis_title='Time',
-            yaxis_title='Mean command value',
+            yaxis_title='Intensity',
             autosize=False,
             width=600,
             height=350,
             margin=dict(l=65, r=50, b=65, t=90),
-            plot_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(36,51,67,1)',
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),
             xaxis_title_font=dict(color='white'), 
@@ -601,10 +688,37 @@ def display_commands_frame(pickle_file, pathname, selected_command):
             xaxis_tickfont=dict(color='white'),
             yaxis_tickfont=dict(color='white')
         )
+            return fig
+        
+        else:
+            # média
+            cmd_data_mean = np.mean(cmd_data, axis=1)
 
-        return fig
-    else:
-        return {}
+            time_values = list(range(len(cmd_data_mean)))
+
+            fig = go.Figure()
+
+            fig.add_trace(go.Scatter(x=time_values, y=cmd_data_mean, mode='lines', name='Mean command value'))
+
+            fig.update_layout(
+                title='Mean command value over time',
+                xaxis_title='Time',
+                yaxis_title='Mean command value',
+                autosize=False,
+                width=600,
+                height=350,
+                margin=dict(l=65, r=50, b=65, t=90),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)', 
+                title_font=dict(color='white'),
+                xaxis_title_font=dict(color='white'), 
+                yaxis_title_font=dict(color='white'),
+                xaxis_tickfont=dict(color='white'),
+                yaxis_tickfont=dict(color='white')
+            )
+
+            return fig
+        
     
 #imagem estatica
 @callback(

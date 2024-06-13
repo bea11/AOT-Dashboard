@@ -19,7 +19,7 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import pandas as pd
-
+from astropy.visualization import MinMaxInterval, ZScaleInterval, PercentileInterval
 
 
 dash.register_page(__name__, path='/pixels', suppress_callback_exceptions=True)
@@ -142,20 +142,28 @@ layout = html.Div([
                 html.P("Source", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
-                    html.Button("NGS", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    html.Div(id='source_name', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-                html.P("Type: Natural Guide Star", style={'text-align': 'left', 'margin-left': '1vw', 'color': 'white'}),
-    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'200px', 'height': '90px','margin-left': '1vw'}),
+                html.Div([
+                html.Label("Type:", style={ 'color': 'white'}),
+                html.Div(id='source_type', style={'background-color': '#243343', 'margin-left': '10px'}),
+                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw'}),
 
     #2 bloco
             html.Div([
-                html.P("Detector", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.P("Measurement", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
-                    html.Button("SAPHIRA", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    dcc.Link(
+                    html.Button(id='meas_name', style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    , href='/measurements')
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-                html.P("Type: CMOS", style={'text-align': 'left', 'margin-left': '1vw', 'color': 'white'}),
-    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'200px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
+                html.Div([
+                html.Label("Type:", style={ 'color': 'white'}),
+                html.Div(id='meas_type', style={'background-color': '#243343', 'margin-left': '10px'}),
+                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
     #3 bloco
             html.Div([
@@ -163,9 +171,13 @@ layout = html.Div([
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
                     html.Button("Example", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-                html.P("Type: Other", style={'text-align': 'left', 'margin-left': '1vw', 'color': 'white'}),
-    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'200px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
+                html.Div([
+                html.Label("Type:", style={ 'color': 'white'}),
+                html.Div("Other", style={'background-color': '#243343', 'margin-left': '10px'}),
+                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
 
 
@@ -208,16 +220,16 @@ layout = html.Div([
         dbc.Select(
         id="aotpy_interval",
             options=[
-                {'label': 'Interval', 'value': 'loops'},
-                {'label': 'D0', 'value': 'C0'},
-                {'label': 'D1', 'value': 'C1'},
-                {'label': 'D2', 'value': 'C2'}
+                {'label': 'MinMax', 'value': 'MinMax'},
+                {'label': 'ZScale', 'value': 'ZScale'},
+                {'label': 'Percentile_30', 'value': 'Percentile_30'}
+                
         ],
-        value='loops',
+        value='MinMax',
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-    dcc.Graph(id='teste_imagem_diferente', style={'position': 'absolute', 'left': '20px', 'top': '50px', 'height': '330px', 'width': '500px'}),
+    dcc.Graph(id='teste_imagem_diferente', style={'position': 'absolute', 'left': '20px', 'top': '20px', 'height': '330px', 'width': '500px'}),
     html.Div(dcc.Slider(
                 id='frame3_slider',
                 min=0,
@@ -230,13 +242,13 @@ layout = html.Div([
                         'position': 'absolute',  
                         'left': '20px',  
                         'height': '30px',
-                        'top': '370px',  
+                        'top': '450px',  
                     }),
 
         html.Div([  
             html.Label([
             "flat_field",
-            dbc.Checkbox(id='checkbox-1', className='custom-checkbox')
+            dbc.Checkbox(id='field_feature', className='custom-checkbox')
     ], style={'display': 'flex', 'align-items': 'center'}),
     
             html.Label([
@@ -246,7 +258,7 @@ layout = html.Div([
     
             html.Label([
             "sky_background",
-            dbc.Checkbox(id='checkbox-3', className='custom-checkbox')
+            dbc.Checkbox(id='sky_feature', className='custom-checkbox')
     ], style={'display': 'flex', 'align-items': 'center'})
 
 ], style={'display': 'flex', 'justify-content': 'space-between', 'position': 'absolute', 'bottom': '0', 'width': '100%'}),
@@ -314,10 +326,10 @@ layout = html.Div([
 
             html.Div([
                 html.Label("Average values: ", style={'color': 'white'}),
-                html.Div(id='stat_aver_p', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'}),
+                html.Div(id='stat_aver_p', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
-        html.P("For the Queue: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
+        html.P("For the Pixel: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
             html.Div([
                 html.Label("Maximum value: ", style={'color': 'white'}),
                 html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
@@ -348,6 +360,8 @@ layout = html.Div([
     dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
     dcc.Store(id='teste_imagem'),
+    html.Div(id='interval_start', style={'display': 'none'}),
+    html.Div(id='interval_end', style={'display': 'none'}),
     
     #dcc.Graph(id='img_imagem', style={'width': '33%', 'display': 'inline-block'}),
 
@@ -409,13 +423,13 @@ def apply_colormap(colormap):
     if colormap == 'Standard':
         return None #normal
     elif colormap == 'Grey':
-        return 'greys'
+        return 'greys_r'
     elif colormap == 'Red':
-        return 'reds'
+        return 'reds_r'
     elif colormap == 'Green':
-        return 'greens'
+        return 'greens_r'
     elif colormap == 'Blue':
-        return 'blues'
+        return 'blues_r'
     elif colormap == 'Heat':
         return 'hot'
     elif colormap == 'Rainbow':
@@ -423,11 +437,34 @@ def apply_colormap(colormap):
     else:
         raise ValueError(f'Invalid colormap {colormap}')
     
+def apply_interval(image, interval_type):
+    if interval_type == 'MinMax':
+        interval = MinMaxInterval()
+        normalized_image = interval(image)
+
+        return normalized_image
+    elif interval_type == 'ZScale':
+        zscale_interval = ZScaleInterval(n_samples=1000, contrast=0.25, max_reject=0.5, min_npixels=5, krej=2.5, max_iterations=5)
+        normalized_image = zscale_interval(image)
+        
+        return normalized_image
+   
+    elif interval_type == 'Percentile_30':
+        percentileinterval = PercentileInterval(30.)
+        normalized_image = percentileinterval(image)
+
+        return normalized_image
+    else:
+        raise ValueError(f'Invalid interval: {interval_type}')
+
+
+    
 def extract_coordinates(clickData):
     x = clickData['points'][0]['x']
     y = clickData['points'][0]['y']
     z = clickData['points'][0]['z']
     return x, y, z
+
 
 
 
@@ -465,7 +502,7 @@ def update_output(n_clicks_timestamp1, n_clicks_timestamp2, content1, content2):
 @callback(
     Output('command-dropdown_p', 'options'),
     Output('command-dropdown_p', 'value'),
-    [Input('url', 'pathname')],
+    Input('url', 'pathname'),
     [State('pickle_store', 'data')]
 )
 def see_pixels_wfs(pathname, pickle_file):
@@ -495,7 +532,7 @@ def see_pixels_wfs(pathname, pickle_file):
     Output('quantum_efficiency', 'children'),
     Output('readout_noise', 'children'),
     Output('readout_rate', 'children'),
-    Output('sampling_technique', 'children'),],
+    Output('sampling_technique', 'children')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('command-dropdown_p', 'value')]
@@ -549,8 +586,7 @@ def key_properties(pickle_file, pathname, selected_command):
 
         if not selected_command:
             selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
-        
-        # Corrected: Iterating through sys.wavefront_sensors to find the matching sensor
+ 
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
         
         if sensor is None or sensor.detector is None:
@@ -568,6 +604,45 @@ def key_properties(pickle_file, pathname, selected_command):
     else: 
         return ["None"] * 2 
 
+#para a secção dos objetos
+
+@callback(
+    [Output('source_name', 'children'),
+     Output('source_type', 'children'),
+    Output('meas_name', 'children'),
+    Output('meas_type', 'children')],
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('command-dropdown_p', 'value')]
+)
+def key_properties_objetcs(pickle_file, pathname, selected_command):
+    if pathname == '/pixels' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return ["None"] * 4
+        
+        source_name= sensor.source.uid
+        source_type= type(sensor.source).__name__
+        meas_name= sensor.measurements.name
+        meas_type= type(sensor.measurements).__name__
+        source_name, source_type,meas_name, meas_type = none_to_string(source_name, source_type,meas_name, meas_type)  
+        print(f" source name: {source_name}, source type: {source_type}, meas name: {meas_name}, meas type: {meas_type}")
+
+        return source_name, source_type,meas_name, meas_type
+    else: 
+        return ["None"] * 4
+
+
+
+
 
 #Imagem estática
 
@@ -575,7 +650,7 @@ def key_properties(pickle_file, pathname, selected_command):
     Output('imag2D', 'figure'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
-     Input('command-dropdown_p', 'value'),]
+     Input('command-dropdown_p', 'value')]
 )
 def display_detector_frame(pickle_file, pathname, selected_command):
     if pathname == '/pixels' and pickle_file is not None:
@@ -621,42 +696,9 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         return fig
     else:
         return {}
-"""
-@callback(
-    Output('img_data', 'children'),
-    [Input('second-atmosphere-params', 'data'),
-     Input('url', 'pathname')]
-)
-def display_img_data(data, pathname):
-    if pathname == '/pixels' and data is not None:
-        img_data = data['np_image_data']
-        print(f"received {img_data}")
 
-        # Flatten a lista duas vezes se for uma lista 3D e converter para inteiros
-        if isinstance(img_data[0][0], list):
-            img_data = [item for sublist1 in img_data for sublist2 in sublist1 for item in sublist2]
-        elif isinstance(img_data[0], list):
-            img_data = [item for sublist in img_data for item in sublist]
-        else:
-            img_data = [item for item in img_data]
-
-        # Normalizar entre 0-255
-        max_val = max(img_data)
-        min_val = min(img_data)
-        img_data = [int(255 * (item - min_val) / (max_val - min_val)) for item in img_data]
-
-        # lista inteiros -> bytes
-        img_data_bytes = bytes(img_data)
-
-        # encode bytes para base64 -> para passar para cá tive que decode
-        encoded_image = base64.b64encode(img_data_bytes).decode('utf-8')
-
-        # html.Img 
-        return html.Img(src=f"data:image/jpeg;base64,{encoded_image}", style={'width': '100%'})
-    else: []"""
 
 #Imagem com slider
-
 
 @callback(
     [Output('frame3_slider', 'max'),
@@ -682,13 +724,37 @@ def update_slider_pixel(pickle_file, pathname, selected_command):
         
         img_data = sensor.detector.pixel_intensities.data
         max_frame = img_data.shape[0] - 1
-        step = max(1, max_frame // 10)  # Example: divide by 10 for more granularity
+        step = max(1, max_frame // 10)  
 
         marks = {i: str(i) for i in range(0, max_frame + 1, step)}  
-        
         return max_frame, marks, 0
     else:
-        return 0, {}, 0
+        return 0, {}, 0,
+
+"""
+estava a tentar bloquear o disabled
+@callback(
+        Output('dark_feature', 'disabled'),
+        Input('pickle_store', 'data'),
+        Input('url', 'pathname'),
+        Input('command-dropdown_p', 'value')
+)
+def block_dark(pickle_file, pathname, selected_command):
+    disable_checkbox = False
+    if pathname == '/pixels' and pickle_file is not None:
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+           disable_checkbox = False
+
+        return disable_checkbox"""
+
 
 #com slide
 @callback(
@@ -698,11 +764,14 @@ def update_slider_pixel(pickle_file, pathname, selected_command):
      Input('url', 'pathname'),
      Input('aotpy_scale', 'value'),
      Input('aotpy_color', 'value'),
+     Input('aotpy_interval', 'value'),
      Input('imag2D', 'clickData'),
      Input('command-dropdown_p', 'value'),
-     Input('dark_feature', 'value'),]  
+     Input('dark_feature', 'value'),
+     Input('sky_feature', 'value'),
+     Input('field_feature', 'value')]  
 )
-def display_detector_frame(slider_value, pickle_file, pathname, scale_type, color_type, clickData, selected_command, dark):
+def display_detector_frame(slider_value, pickle_file, pathname, scale_type, color_type,interval_type, clickData, selected_command, dark, sky, field):
   
     if pathname == '/pixels' and pickle_file is not None:
         ctx = dash.callback_context
@@ -717,15 +786,25 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
         if sensor is None or sensor.detector is None:
             return  {}
 
-
-
         img_data = sensor.detector.pixel_intensities.data
 
+        #as checkboxes
         if dark and sensor.detector.dark is not None:
             img_data = img_data - sensor.detector.dark.data
+            print(f"dark é {sensor.detector.dark.data}")
+        
+        if sky and sensor.detector.sky_background is not None:
+            img_data = img_data - sensor.detector.sky_background.data  
+            print(f"sky background é {sensor.detector.sky_background.data}")  
+
+        if field and sensor.detector.flat_field is not None:
+            img_data = img_data - sensor.detector.flat_field.data  
+            print(f"flat field é {sensor.detector.flat_field.data}") 
+
         
         print(f"Data PIXEL shape: {img_data.shape}, Data type: {type(img_data)}")
 
+        
         frame_index = slider_value
         
         if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D':
@@ -734,33 +813,32 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
             
             # o x do slider é o frame index (tempo)
                 frame_index = int(x)
-    
+        print(ctx.triggered)
+       
         frame_processed = img_data[frame_index]
+        frame_processed = apply_interval(frame_processed, interval_type)
         frame_processed = apply_scale(frame_processed, scale_type)
-
-    
         
         colormap = apply_colormap(color_type)
         print(f"Colormap: {colormap}")
-        #para mudar a cor uso o continuous_scale mas ainda não está a funcionar
+
         new_figure = px.imshow(frame_processed, color_continuous_scale=colormap)
         print(f"{colormap}")
         new_figure.update_layout(
-            title=f'Different 2D images over frames, {frame_index} ',
-            xaxis_title='X',
-            yaxis_title='Y',
-            autosize=False,
-            width=600,
-            height=450,
-            paper_bgcolor='rgba(0,0,0,0)', 
-            title_font=dict(color='white'),  
-            xaxis_title_font=dict(color='white'),  
-            yaxis_title_font=dict(color='white'),
-            xaxis_tickfont=dict(color='white'),  
-            yaxis_tickfont=dict(color='white'),
-            coloraxis_showscale=False, 
-            margin=dict(l=65, r=50, b=65, t=90),
-        )
+                title=f'Different 2D images over frames, {frame_index} ',
+                xaxis_title='X',
+                yaxis_title='Y',
+                autosize=False,
+                width=600,
+                height=450,
+                paper_bgcolor='rgba(0,0,0,0)', 
+                title_font=dict(color='white'),  
+                xaxis_title_font=dict(color='white'),  
+                yaxis_title_font=dict(color='white'),
+                xaxis_tickfont=dict(color='white'),  
+                yaxis_tickfont=dict(color='white'),
+                margin=dict(l=65, r=50, b=65, t=90),
+            )
         return new_figure
     else:
         return {}
@@ -771,11 +849,12 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
     Output('lineplot', 'figure'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
+     Input('teste_imagem_diferente', 'clickData'),
      Input('command-dropdown_p', 'value')]
 )
-def display_detector_frame(pickle_file, pathname, selected_command):
+def display_detector_frame(pickle_file, pathname, clickData, selected_command):
     if pathname == '/pixels' and pickle_file is not None:
-        
+        ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
@@ -785,19 +864,21 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
         
         if sensor is None or sensor.detector is None:
-            return  {}
+            return {}
 
         pixel_data = sensor.detector.pixel_intensities.data
-        
 
-       # media
-        pixel_data_mean = np.mean(pixel_data, axis=(1, 2))
+        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'teste_imagem_diferente':
+           
+            x, y, z = extract_coordinates(clickData)
+            print(f"im here {x}, {y}, {z}")
+            pixel_intensity_over_time = pixel_data[:, int(y), int(x)]
 
-        time_values = list(range(len(pixel_data_mean)))
+            time_values = list(range(len(pixel_intensity_over_time)))
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=time_values, y=pixel_data_mean, mode='lines', name='Mean intensity over time'))
-        fig.update_layout(
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=time_values, y=pixel_intensity_over_time, mode='lines', name='Intensity over time'))
+            fig.update_layout(
             title='Intensity over time',
             xaxis_title='Time',
             yaxis_title='Intensity',
@@ -813,11 +894,31 @@ def display_detector_frame(pickle_file, pathname, selected_command):
             xaxis_tickfont=dict(color='white'),
             yaxis_tickfont=dict(color='white')
         )
+            return fig
+        else:
+            pixel_data_mean = np.mean(pixel_data, axis=(1, 2))
 
-        return fig
-    else:
-        return {}
-
+            time_values = list(range(len(pixel_data_mean)))
+        
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=time_values, y=pixel_data_mean, mode='lines', name='Mean intensity over time'))
+            fig.update_layout(
+            title='Intensity over time',
+            xaxis_title='Time',
+            yaxis_title='Intensity',
+            autosize=False,
+            width=600,
+            height=350,
+            margin=dict(l=65, r=50, b=65, t=90),
+            plot_bgcolor='rgba(36,51,67,1)',
+            paper_bgcolor='rgba(0,0,0,0)', 
+            title_font=dict(color='white'),
+            xaxis_title_font=dict(color='white'), 
+            yaxis_title_font=dict(color='white'),
+            xaxis_tickfont=dict(color='white'),
+            yaxis_tickfont=dict(color='white')
+        )
+            return fig
 
 """@callback(
     Output('slice-selector', 'options'),
