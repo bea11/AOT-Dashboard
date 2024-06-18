@@ -26,7 +26,7 @@ option_STYLE = {
 
 
 layout = html.Div([
-    html.H1("Information", style={'text-align': 'left', 'margin-left': '12vw'}),
+    html.H1("Overview", style={'text-align': 'left', 'margin-left': '12vw'}),
     
 #nomes/blocos -Juntar os 2
     #primeiros2
@@ -35,8 +35,8 @@ layout = html.Div([
                 html.Div('System Name:', style={'margin-top': '2vw'}),
                 html.A(id='system_name', style={
                     'display': 'inline-block',
-                    'width': '170px',
-                    'height': '50px',
+                    'width': '12.25vw',
+                    'height': '3.75vw',
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
@@ -47,8 +47,8 @@ html.Div([
                 html.Div('Mode:', style={'margin-top': '2vw'}),
                 html.A(id='system_mode', style={
                     'display': 'inline-block',
-                    'width': '170px',
-                    'height': '50px',
+                    'width': '12.25vw',
+                    'height': '3.75vw',
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
@@ -60,8 +60,8 @@ html.Div([
                 html.Div('Beginning date:', style={'margin-top': '2vw'}),
                 html.A(id='beginning-date', style={
                     'display': 'inline-block',
-                    'width': '170px',
-                    'height': '50px',
+                    'width': '12.25vw',
+                    'height': '3.75vw',
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
@@ -74,8 +74,8 @@ html.Div([
                 html.Div('End date:', style={'margin-top': '2vw'}),
                 html.A(id='end-date', style={
                     'display': 'inline-block',
-                    'width': '170px',
-                    'height': '50px',
+                    'width': '12.25vw',
+                    'height': '3.75vw',
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
@@ -86,32 +86,23 @@ html.Div([
                 html.Div('Strehl Ratio:', style={'margin-top': '2vw'}),
                 html.A(id='ratio', style={
                     'display': 'inline-block',
-                    'width': '170px',
-                    'height': '50px',
+                    'width': '12.25vw',
+                    'height': '3.75vw',
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
-                #html.Div('Strehl Wavelength:', style={'margin-top': '1vw'}),
-                #html.A(id = 'wavelength', style={
-                #    'display': 'inline-block',
-                #    'width': '150px',
-                #    'height': '50px',
-                #    'background-color': '#1C2634',
-                #    'margin-top': '0vw'
-                #}),
 
             ], style={'position': 'absolute', 'margin-left': '65vw'}),
 
 ]),
 
-#quartos2
     html.Div([
             html.Div([
                 html.Div('Config:', style={'margin-top': '2vw'}),
                 html.A(id='config', style={
                     'display': 'inline-block',
-                    'width': '170px',
-                    'height': '50px',
+                    'width': '12.25vw',
+                    'height': '3.75vw',
                     'background-color': '#1C2634',
                     'margin-top': '0vw'
                 }),
@@ -119,17 +110,13 @@ html.Div([
 
             ], style={'position': 'absolute', 'margin-left': '79vw'}),
 
-
-    #importante quando quero variar entre estados
-    #html.Button('Source', id='source'),
-
 ]),
 
 
 
     #esquema AO
     html.Div([
-        html.H3("AO System", style={'text-align': 'center', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF', 'margin-bottom': '1vw'}),
+        html.H3("AO System", style={'text-align': 'center', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF', 'margin-bottom': '1vw','margin-top': '1vw'}),
 
 #SOURCES
         html.Div([
@@ -138,7 +125,7 @@ html.Div([
                 html.Div('Sources', style={'margin-left':'12vw'}),
                 html.Div(id='source_divs1',n_clicks=0, style={
                     'width': "12vw",
-                    'height': '90px',
+                    'height': '6.5vw',
                     'overflowY': 'scroll',
                     'backgroundColor': '#1C2634',
                     'color': 'white',
@@ -152,7 +139,7 @@ html.Div([
                 html.Div('Main Telescope', style={'margin-left':'2vw'}),
                 html.Div(id='main_telescope', style={
                     'width': "10vw",
-                    'height': '50px',
+                    'height': '3.75vw',
                     'backgroundColor': '#1C2634',
                     'color': 'white',
                     'margin-left': '2vw'
@@ -165,7 +152,7 @@ html.Div([
                 html.Div('Atmosphere Parameters ', style={'margin-left':'2vw'}),
                 html.Div(id='atm_divs', style={
                 'width': "12vw",
-                'height': '90px',
+                'height': '6.65vw',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
@@ -179,7 +166,7 @@ html.Div([
                 html.Div('Wavefront Sensors', style={'margin-left':'2vw'}),
                 html.Div(id='sensor_divs1', style={
                 'width': "12vw",
-                'height': '90px',
+                'height': '6.65vw',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
@@ -193,7 +180,7 @@ html.Div([
                 html.Div('Loops ', style={'margin-left':'2vw'}),
                 html.Div(id='loop_divs', style={
                 'width': "12vw",
-                'height': '90px',
+                'height': '6.65vw',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
@@ -207,7 +194,7 @@ html.Div([
                 html.Div('Wavefront Correctors', style={'margin-left':'2vw'}),
                 html.Div(id='corrector_divs1', style={
                 'width': "12vw",
-                'height': '90px',
+                'height': '6.65vw',
                 'overflowY': 'scroll',
                 'backgroundColor': '#1C2634',
                 'color': 'white',
@@ -217,7 +204,7 @@ html.Div([
 
         
         ], style={'display': 'flex', 'justifyContent': 'flex-start', 'flexWrap': 'wrap'}),
-    ], style={'position': 'absolute', 'top': '220px', 'width': '100%'}),
+    ], style={'position': 'absolute', 'top': '16vw', 'width': '100%'}),
 
 
 #3parte
@@ -259,16 +246,12 @@ html.Div([
                 html.Label('Corresponding loops: ', style={'color': 'white'}),
                 html.Div(id='verified_loop_container'),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
- #               dcc.Link(
- #                   dbc.Button('Pixels', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
- #                   href='/pixels'),
 ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '5vw', 'width': '23vw'}),
 
 #Terceiro
 
         html.Div([
-            html.Div([
-                
+            html.Div([    
                 html.Label( id='verified_corrector_container', style={'color': 'white'}),
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
     #        dcc.Link(
@@ -279,21 +262,15 @@ html.Div([
 
 
     ], style={'display': 'flex'}),
-], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '430px', 'width': '1100px', 'height': '200px'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '8vw', 'top': '31.5vw', 'width': '82.5vw', 'height': '14vw'}),
 
     dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
-    # html.Div(id='img_data2', style={'color': 'white'}),
-    #html.Div(id='mo2', style={'color': 'red'}),
-    #html.Div(id='sm2', style={'color': 'blue'}),
-    #html.Div(id='ss2', style={'color': 'black'}),
-
-
+  
     html.Div(id='just_sensors', style={'display': 'none'}),  # para poder chamar sem ter problemas
     html.Div(id='just_loops', style={'display': 'none'}),
 ])
 
-#dcc.Store(id='store-atmosphere-params', storage_type='local'),
 #returnar dados todos
 
 #Funções

@@ -29,9 +29,9 @@ navbar = dbc.Navbar(
     [
         dbc.NavItem(dbc.NavLink("Home", href="/")),
         dbc.NavItem(dbc.NavLink("Overview", href="/analise")),
-        dbc.NavItem(dbc.NavLink("Pixels", href="/pixels")),
-        dbc.NavItem(dbc.NavLink("Measurements", href="/measurements")),
-        dbc.NavItem(dbc.NavLink("Commands", href="/commands")),
+        dbc.NavItem(dbc.NavLink("Pixel", href="/pixels")),
+        dbc.NavItem(dbc.NavLink("Measurement", href="/measurements")),
+        dbc.NavItem(dbc.NavLink("Command", href="/commands")),
     ],
     color="dark",
     dark=True,
@@ -48,10 +48,3 @@ app.layout = html.Div([
 if __name__ == '__main__':
     app.run_server(debug=True)
 
-#html.Div([
-#    dcc.link(children=page['name']+" | ",href=page['path'])
-#    for page in dash.page_registry.values()
-
-#    html.Hr(),
-#    dash.page_container
-#    ])

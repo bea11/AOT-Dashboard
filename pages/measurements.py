@@ -29,27 +29,28 @@ option_STYLE = {
 
 
 layout = html.Div([
-    html.H1("Measurements", style={'text-align': 'left', 'margin-left': '12vw', 'marginBottom' : '0px'}),
-
-    html.Div([
-    dbc.Select(
-        id='command-dropdown_m',
-        options=[],
-        value=None,
-        className='custom-select', 
-        style={
-            'width': "10vw",
-            'text-color': 'white',
-            'height': '35px',
-            'backgroundColor': '#1C2634',
-            'margin-left': '25vw',
-            'display': 'flex',  
-            'position': 'absolute', 
-            #'left': '830px', 
-            #'top': '50px',
-        }
-    ),
-]),
+    html.Div(
+        style={'display': 'flex', 'alignItems': 'center', 'justifyContent': 'space-between', 'left': '0vw'},
+        children=[
+            html.H1("Measurement", style={'text-align': 'left', 'margin-left': '6.75vw'}),
+            dbc.Select(
+                id='command-dropdown_m',
+                options=[],
+                value=None,
+                className='custom-select', 
+                style={
+                    'width': "10vw",
+                    'text-color': 'white',
+                    'height': '35px',
+                    'backgroundColor': '#1C2634',
+                    'left': '28vw',
+                    'margin-top': '0px',
+                    'display': 'flex',  
+                    'position': 'absolute', 
+                }
+            ),
+        ],
+),
 
 #Buttons
     html.Div([
@@ -86,7 +87,7 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
              html.Div(id='divs_type')
 
-], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '0px', 'top': '30px', 'width': '400px', 'height': '370px'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '0vw', 'top': '30px', 'width': '400px', 'height': '370px'}),
     
    #1 quadrante 
         html.Div([
@@ -160,30 +161,47 @@ layout = html.Div([
                 html.Div(id='stat_aver_m', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'}),
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
-        html.P("For the Measurement: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
             html.Div([
-                html.Label("Maximum value: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div([
+                    html.P("For the X dimension Measurement: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
+                    html.Div([
+                        html.Label("Maximum value: ", style={'color': 'white'}),
+                        html.Div(id='stat_max_m_x', style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
+                    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                    html.Div([
+                        html.Label("Minimum value: ", style={'color': 'white'}),
+                        html.Div(id='stat_min_m_x', style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
+                    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                    html.Div([
+                        html.Label("Average values: ", style={'color': 'white'}),
+                        html.Div(id='stat_aver_m_x', style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
+                    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                ], style={'display': 'inline-block', 'vertical-align': 'top', 'margin-right': '20px'}),
 
-            html.Div([
-                html.Label("Minimum value: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div([
+                    html.P("For the Y dimension Measurement: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
+                    html.Div([
+                        html.Label("Maximum value: ", style={'color': 'white'}),
+                        html.Div(id='stat_max_m_y', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
+                    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                    html.Div([
+                        html.Label("Minimum value: ", style={'color': 'white'}),
+                        html.Div(id='stat_min_m_y', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
+                    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                    html.Div([
+                        html.Label("Average values: ", style={'color': 'white'}),
+                        html.Div(id='stat_aver_m_y', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'}),
+                    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                ], style={'display': 'inline-block', 'vertical-align': 'top'}),
+            ], style={'display': 'flex', 'justify-content': 'space-between'})
 
-            html.Div([
-                html.Label("Average values: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
-           
 ], style={
     'background-color': '#1C2634', 
     'position': 'absolute',
     'left': '0px',
     'top': '30px',
-    'width': '620px', 
-    'height': '370px',
+    'width': '42vw',  
+    'height': '27vw',  
 }),
 ]),
 
@@ -290,8 +308,8 @@ layout = html.Div([
     html.Div([
         html.Div([
             html.Div([  
-                dcc.Graph(id='x_dimension_image', style={'position': 'absolute', 'left': '0px', 'top': '5px'}),
-                dcc.Graph(id='y_dimension_image', style={'position': 'absolute', 'left': '300px', 'top': '10px'}),
+                dcc.Graph(id='x_dimension_image', style={'position': 'absolute', 'left': '0vw', 'top': '0vw'}),
+                dcc.Graph(id='y_dimension_image', style={'position': 'absolute', 'left': '28.5vw', 'top': '0vw'}),
               #  slider,
     ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
 
@@ -300,43 +318,35 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Cor ectangulo
     'position': 'absolute',
-    'left': '40px',
-    'top': '480px',
-    'width': '690px',  
-    'height': '320px'  
+    'left': '1vw',
+    'top': '34vw',
+    'width': '58vw',  
+    'height': '21vw'  
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
     #4 quadrante
 
 html.Div([
+    
     html.Div([  
-        dcc.Graph(id='scatterplot_x', style={'position': 'absolute'}),
-], style={
-    'background-color': '#1C2634',  # Cor rectangulo
-    'position': 'absolute',
-    'left': '0px',
-    'top': '0px',
-    'width': '580px',  
-    'height': '150px'  
-}),
-    html.Div([  
-            dcc.Graph(id='scatterplot_y', style={'position': 'absolute'}),
+            dcc.Graph(id='scatterplot_2dim', style={'position': 'absolute'}),
     ], style={
         'background-color': '#1C2634',  # Cor rectangulo
         'position': 'absolute',
-        'left': '0px',
-        'top': '310px',
-        'width': '580px',  
-        'height': '150px'  
+        'left': '0vw',
+        'top': '0vw',
+        'width': '15vw',  
+        'height': '17vw'  
     }),
+
     ], style={
     'background-color': '#1C2634',  # Cor ectangulo
     'position': 'absolute',
-    'left': '750px',
-    'top': '470px',
-    'width': '600px',  
-    'height': '650px'  
-}),
+    'left': '60vw',
+    'top': '34vw',
+    'width': '43vw',  
+    'height': '25vw'  
+}), 
 
 
     dcc.Store(id='pickle_store', storage_type='local'),
@@ -615,10 +625,10 @@ def load_image_data(pickle_file, pathname, selected_command):
         
         img_data = sensor.measurements.data 
         
-       # print(f'img_data shape: {img_data.shape}')
-    
         max_frame = img_data.shape[0] - 1
-        marks = {i: str(i) for i in range(0, max_frame + 1, 1000)}  
+        step_value = max(1, max_frame // 10)
+        marks = {i: str(i) for i in range(0, max_frame + 1, step_value)}  
+        print(f"max_frame: {max_frame}, marks: {marks}")
         return img_data.tolist(), max_frame, marks, 0
     else:
         return None, 0, dash.no_update, dash.no_update
@@ -705,13 +715,14 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
             yaxis_tickfont=dict(color='white'),
             coloraxis_showscale=False, 
             margin=dict(l=65, r=50, b=65, t=90),
+            coloraxis_colorbar=dict(tickfont=dict(color='white')),
         )
         return dcc.Graph(figure=fig, style={
                     'position': 'absolute',
-                    'left': '0px',
-                    'top': '50px',
-                    'height': '30px',
-                    'width': '400px'
+                    'left': '3vw',
+                    'top': '2vw',
+                    'height': '7vw',
+                    'width': '15vw'
                 })
 
 
@@ -727,7 +738,7 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
     Input('y_dimension_image', 'clickData'),
     Input('command-dropdown_m','value')]
 )
-def update_image_y(data, pickle_file, frame_index, scale_type, color_type, interval_type, clickData, selected_command):
+def update_image_y(data,pickle_file, frame_index, scale_type, color_type, interval_type, clickData, selected_command):
     with open(pickle_file, 'rb') as f:
         ctx = dash.callback_context
         sys = pickle.load(f)
@@ -795,13 +806,14 @@ def update_image_y(data, pickle_file, frame_index, scale_type, color_type, inter
             yaxis_tickfont=dict(color='white'),
             coloraxis_showscale=False, 
             margin=dict(l=65, r=50, b=65, t=90),
+            coloraxis_colorbar=dict(tickfont=dict(color='white')),
         )
         return dcc.Graph(figure=fig, style={
                     'position': 'absolute',
-                    'left': '300px',
-                    'top': '50px',
-                    'height': '30px',
-                    'width': '400px'
+                    'left': '21vw',
+                    'top': '2vw',
+                    'height': '5vw',
+                    'width': '10vw'
                 })
 #Imagem estática
 
@@ -829,36 +841,17 @@ def display_measurements(pickle_file, pathname, selected_command):
         
         measurements = sensor.measurements.data  
 
-        #subaperture_mask = sys.wavefront_sensors[0].subaperture_mask
-        #if subaperture_mask is None or subaperture_mask.data is None:
-        #    mask_flattened = None
-        #else:
-        #    subaperture_mask_data = subaperture_mask.data
-        #    mask_flattened = subaperture_mask_data.flatten()
-
 # Separar
         x_measurements = measurements[:, 0, :]
         y_measurements = measurements[:, 1, :]
 
-#  t x sv
-        #t, sv = x_measurements.shape
-
-# subaperture mask filter
-        #if mask_flattened is not None:
-        #    valid_indices = mask_flattened >= 0
-        #    x_processed = x_measurements[:, valid_indices]
-        #    y_processed = y_measurements[:, valid_indices]
-        #else:
-        #    x_processed = x_measurements
-        #    y_processed = y_measurements
-
 # 
-        fig_x = go.Figure(data=go.Heatmap(z=x_measurements.T, colorscale='Viridis'))
-        fig_y = go.Figure(data=go.Heatmap(z=y_measurements.T, colorscale='Viridis'))
+        fig_x = go.Figure(data=go.Heatmap(z=x_measurements.T, colorscale='Viridis',colorbar=dict(tickfont=dict(color='white'))))
+        fig_y = go.Figure(data=go.Heatmap(z=y_measurements.T, colorscale='Viridis',colorbar=dict(tickfont=dict(color='white'))))
 
         fig_x.update_layout(
-            title='X measurements over Time',
-            xaxis_title='Time',
+            title='X measurement per subaperture per frame',
+            xaxis_title='Frame',
             yaxis_title='Subaperture',
             autosize=False,
             width=400,
@@ -874,8 +867,8 @@ def display_measurements(pickle_file, pathname, selected_command):
         )
 
         fig_y.update_layout(
-            title='Y measurements over Time',
-            xaxis_title='Time',
+            title='Y measurement per subaperture per frame',
+            xaxis_title='Frame',
             yaxis_title='Subaperture',
             autosize=False,
             width=400,
@@ -893,93 +886,19 @@ def display_measurements(pickle_file, pathname, selected_command):
         return fig_x, fig_y
     else:
         return {}, {}
+#gráfico 
 
-#Gráfico
 @callback(
-    Output('scatterplot_x', 'figure'),
+    Output('scatterplot_2dim', 'figure'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('x_dimension_image', 'clickData'),
-     Input('command-dropdown_m', 'value')]
-)
-def display_detector_frame(pickle_file, pathname, clickData, selected_command):
-    if pathname == '/measurements' and pickle_file is not None:
-        ctx = dash.callback_context
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-
-        if not selected_command:
-            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
-        
-        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
-        
-        if sensor is None or sensor.measurements is None:
-            return {}
-
-        measurements = sensor.measurements.data
-        meas_data = measurements[:, 0, :]  
-     
-        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'x_dimension_image':
-           
-            x, y, z = extract_coordinates(clickData)
-            print(f"im here {x}, {y}, {z}")
-            meas_over_time = meas_data[:, int(y)]
-
-            time_values = list(range(len(meas_over_time)))
-
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=time_values, y=meas_over_time, mode='lines', name='Intensity over time'))
-            fig.update_layout(
-            title='specififc X over time',
-            xaxis_title='Time',
-            yaxis_title='Intensity',
-            autosize=False,
-            width=600,
-            height=350,
-            margin=dict(l=65, r=50, b=65, t=90),
-            plot_bgcolor='rgba(36,51,67,1)',
-            paper_bgcolor='rgba(0,0,0,0)', 
-            title_font=dict(color='white'),
-            xaxis_title_font=dict(color='white'), 
-            yaxis_title_font=dict(color='white'),
-            xaxis_tickfont=dict(color='white'),
-            yaxis_tickfont=dict(color='white')
-        )
-            return fig      
-        else:         
-            meas_data_mean = np.mean(meas_data, axis=0)
-
-            time_values = list(range(len(meas_data_mean)))
-
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=time_values, y=meas_data_mean, mode='lines', name='Mean intensity over time'))
-            fig.update_layout(
-                title='DensityX over time',
-                xaxis_title='Time',
-                yaxis_title='Density',
-                autosize=False,
-                width=600,
-                height=350,
-                margin=dict(l=65, r=50, b=65, t=90),
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)', 
-                title_font=dict(color='white'),
-                xaxis_title_font=dict(color='white'), 
-                yaxis_title_font=dict(color='white'),
-                xaxis_tickfont=dict(color='white'),
-                yaxis_tickfont=dict(color='white')
-            )
-
-            return fig
-        
-@callback(
-    Output('scatterplot_y', 'figure'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname'),
      Input('y_dimension_image', 'clickData'),
+     Input('testes_imagem1', 'clickData'),
+     Input('testes_imagem2', 'clickData'),
      Input('command-dropdown_m', 'value')]
 )
-def display_detector_frame(pickle_file, pathname, clickData, selected_command):
+def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first_clickData,second_clickData, selected_command):
     if pathname == '/measurements' and pickle_file is not None:
         ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
@@ -994,21 +913,58 @@ def display_detector_frame(pickle_file, pathname, clickData, selected_command):
             return {}
 
         measurements = sensor.measurements.data
-        meas_data = measurements[:, 1, :]    
+        meas_data_x = measurements[:, 0, :]
+        meas_data_y = measurements[:, 1, :]
      
-        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'y_dimension_image':
-           
-            x, y, z = extract_coordinates(clickData)
-            print(f"im here {x}, {y}, {z}")
-            meas_over_time = meas_data[:, int(y)]
-            
-            time_values = list(range(len(meas_over_time)))
+        meas_data_mean_x = np.mean(meas_data_x, axis=0)
+        meas_data_mean_y = np.mean(meas_data_y, axis=0)
 
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=time_values, y=meas_over_time, mode='lines', name='Intensity over time'))
-            fig.update_layout(
-            title='specific Y over time',
-            xaxis_title='Time',
+        time_values_x = list(range(len(meas_data_mean_x)))
+        time_values_y = list(range(len(meas_data_mean_y)))
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=time_values_x, y=meas_data_mean_x, mode='lines', name='Mean X Intensity'))
+        fig.add_trace(go.Scatter(x=time_values_y, y=meas_data_mean_y, mode='lines', name='Mean Y Intensity'))
+
+        time_values_x, time_values_y, time_values_1, time_values_2, meas_over_time_x, meas_over_time_y, meas_over_time_1,meas_over_time_2,x_x, x_y, y_x,y_y = [None] * 12
+
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+
+        if trigger_id == 'x_dimension_image':
+           
+            x_x, y_x, z_x = extract_coordinates(x_clickData)
+            meas_over_time_x = meas_data_x[:, int(y_x)]
+            time_values_x = list(range(len(meas_over_time_x)))
+
+
+        if trigger_id == 'y_dimension_image':
+            x_y, y_y, z_y = extract_coordinates(y_clickData)
+            meas_over_time_y = meas_data_y[:, int(y_y)]  
+            time_values_y = list(range(len(meas_over_time_y)))
+
+#estes nao dao
+
+        if trigger_id == 'testes_imagem1':
+            x_1, y_1, z_1 = extract_coordinates(first_clickData)
+            meas_over_time_1 = meas_data_y[:, int(y_1)]  
+            time_values_1 = list(range(len(meas_over_time_1)))
+        
+        if trigger_id == 'testes_imagem2':
+            x_2, y_2, z_2 = extract_coordinates(second_clickData)
+            meas_over_time_2 = meas_data_y[:, int(y_2)]  
+            time_values_2 = list(range(len(meas_over_time_2)))
+        
+
+        print(f" o trigger é {trigger_id}")
+        
+        fig.add_trace(go.Scatter(x=time_values_x, y=meas_over_time_x, mode='lines', name=f'X Intensity x={x_x},y={y_x}'))    
+        fig.add_trace(go.Scatter(x=time_values_y, y=meas_over_time_y, mode='lines', name=f'Y Intensity x={x_y},y={y_y}'))
+        fig.add_trace(go.Scatter(x=time_values_1, y=meas_over_time_1, mode='lines', name='X Intensity 2D'))
+        fig.add_trace(go.Scatter(x=time_values_2, y=meas_over_time_2, mode='lines', name='Y Intensity 2D'))
+
+        fig.update_layout(
+            title='Intensities per measurement per frame',
+            xaxis_title='Frame',
             yaxis_title='Intensity',
             autosize=False,
             width=600,
@@ -1020,34 +976,17 @@ def display_detector_frame(pickle_file, pathname, clickData, selected_command):
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),
-            yaxis_tickfont=dict(color='white')
-        )
-            return fig           
-        else:    
-            meas_data_mean = np.mean(meas_data, axis=0)
-
-            time_values = list(range(len(meas_data_mean)))
-
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=time_values, y=meas_data_mean, mode='lines', name='Mean intensity over time'))
-            fig.update_layout(
-                title='Density Y over time',
-                xaxis_title='Time',
-                yaxis_title='Density',
-                autosize=False,
-                width=600,
-                height=350,
-                margin=dict(l=65, r=50, b=65, t=90),
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)', 
-                title_font=dict(color='white'),
-                xaxis_title_font=dict(color='white'), 
-                yaxis_title_font=dict(color='white'),
-                xaxis_tickfont=dict(color='white'),
-                yaxis_tickfont=dict(color='white')
+            yaxis_tickfont=dict(color='white'),
+            legend=dict(
+            font=dict(
+                color="white"
             )
-
-            return fig
+        )
+        )
+        return fig      
+    else:
+        return {}
+            
    
 
 @callback(
@@ -1078,7 +1017,83 @@ def display_stats_m(pickle_file, pathname, selected_command):
         min_value = np.min(meas_data)
         average = np.mean(meas_data)
 
-        return f'{max_value}', f'{min_value}', f'{average}'
+        return f'{max_value:.5f}', f'{min_value:.5f}', f'{average:.5f}'
+    else:
+        return ["None"] *3
+
+@callback(
+    Output('stat_max_m_x', 'children'),
+    Output('stat_min_m_x', 'children'),
+    Output('stat_aver_m_x', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('x_dimension_image', 'clickData'),
+     Input('command-dropdown_m', 'value')]
+)
+def display_stats_m_spe_x(pickle_file, pathname, clickData, selected_command):
+    if pathname == '/measurements' and pickle_file is not None:
+        ctx = dash.callback_context
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+     
+        measurements = sensor.measurements.data
+        meas_data_x = measurements[:, 0, :]
+        meas_over_time = 0
+
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+
+        if trigger_id == 'x_dimension_image':
+           
+            x, y, z = extract_coordinates(clickData)
+            meas_over_time = meas_data_x[:, int(y)]
+    
+        max_value = np.max(meas_over_time)
+        min_value = np.min(meas_over_time)
+        average = np.mean(meas_over_time)
+        return f'{max_value:.5f}', f'{min_value:.5f}', f'{average:.5f}'
+    else:
+        return ["None"] *3
+
+@callback(
+    Output('stat_max_m_y', 'children'),
+    Output('stat_min_m_y', 'children'),
+    Output('stat_aver_m_y', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('y_dimension_image', 'clickData'),
+     Input('command-dropdown_m', 'value')]
+)
+def display_stats_m_spe_y(pickle_file, pathname, clickData, selected_command):
+    if pathname == '/measurements' and pickle_file is not None:
+        ctx = dash.callback_context
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
+     
+        measurements = sensor.measurements.data
+        meas_data_y = measurements[:, 1, :]
+        meas_over_time = 0
+
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+
+        if trigger_id == 'y_dimension_image':
+           
+            x, y, z = extract_coordinates(clickData)
+            meas_over_time = meas_data_y[:, int(y)]
+    
+        max_value = np.max(meas_over_time)
+        min_value = np.min(meas_over_time)
+        average = np.mean(meas_over_time)
+        return f'{max_value:.5f}', f'{min_value:.5f}', f'{average:.5f}'
     else:
         return ["None"] *3
 

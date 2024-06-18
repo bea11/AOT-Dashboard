@@ -38,27 +38,28 @@ option_STYLE = {
 
 
 layout = html.Div([
-    html.H1("Commands", style={'text-align': 'left', 'margin-left': '12vw', 'marginBottom' : '0px'}),
-
-    html.Div([
-    dbc.Select(
-        id='command-dropdown_c',
-        options=[],
-        value=None,
-        className='custom-select', 
-        style={
-            'width': "10vw",
-            'text-color': 'white',
-            'height': '28px',
-            'backgroundColor': '#1C2634',
-            'margin-left': '12vw',
-            'display': 'flex',  
-            'position': 'absolute', 
-            #'left': '830px', 
-            #'top': '50px',
-        }
-    ),
-]),
+    html.Div(
+        style={'display': 'flex', 'alignItems': 'center', 'justifyContent': 'space-between', 'left': '0vw'},
+        children=[
+            html.H1("Command", style={'text-align': 'left', 'margin-left': '6.75vw'}),
+            dbc.Select(
+                id='command-dropdown_c',
+                options=[],
+                value=None,
+                className='custom-select', 
+                style={
+                    'width': "10vw",
+                    'text-color': 'white',
+                    'height': '35px',
+                    'backgroundColor': '#1C2634',
+                    'left': '28vw',
+                    'margin-top': '0px',
+                    'display': 'flex',  
+                    'position': 'absolute', 
+                }
+            ),
+        ],
+),
     
 
    #1 quadrante
@@ -111,7 +112,7 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
         html.Div(id='deformmirror'),
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '110px', 'top': '85px', 'width': '400px', 'height': '390px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '6.75vw', 'top': '5vw', 'width': '37vw', 'height': '32vw'}),
     
    html.Div([
             html.P("Objects", style={'text-align': 'left','margin-left': '1vw'}),
@@ -157,7 +158,7 @@ layout = html.Div([
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '520px', 'top': '85px', 'width': '230px', 'height': '390px'}),
+     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '37vw', 'top': '5vw', 'width': '20vw', 'height': '32vw'}),
 
     #2 quadrante 
     #imagem
@@ -215,7 +216,7 @@ layout = html.Div([
                 value=0,
                 marks={},
             ), style={
-                        'width': '600px',  
+                        'width': '450px',  
                         'position': 'absolute',  
                         'left': '20px',  
                         'height': '30px',
@@ -227,10 +228,10 @@ layout = html.Div([
     'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
-    'left': '780px', 
-    'top': '50px', 
-    'width': '580px', 
-    'height': '450px'
+    'left': '58vw',
+    'top': '3vw',
+    'width': '39vw', 
+    'height': '35.5vw'
 }),
   
   #3 quadrante
@@ -240,10 +241,10 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  
     'position': 'absolute',
-    'left': '110px',
-    'top': '530px',
-    'width': '600px',  
-    'height': '330px'  
+    'left': '8vw',
+    'top': '39vw',
+    'width': '44vw',  
+    'height': '25vw' 
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
  
@@ -257,10 +258,10 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
-    'left': '780px',
-    'top': '520px',
-    'width': '580px',  
-    'height': '330px'  
+    'left': '53vw',
+    'top': '39vw',
+    'width': '44.5vw',  
+    'height': '25vw'  
 }),
         dcc.Store(id='pickle_store', storage_type='local'),
 
@@ -375,7 +376,7 @@ def see_commands_loop(pathname, pickle_file):
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        loops = sys.loops
+        loops = [loop for loop in sys.loops if not isinstance(loop, aotpy.OffloadLoop)]
         commands = [loop.commands for loop in loops if loop.commands is not None]
         if commands: 
             options = [{'label': command.name, 'value': command.name} for command in commands]
@@ -450,6 +451,7 @@ def key_extra_comma(pickle_file, pathname, selected_command):
         if isinstance(loop.commanded_corrector, aotpy.DeformableMirror):
             dmac = loop.commanded_corrector.actuator_coordinates 
             dms = loop.commanded_corrector.stroke 
+            dmac, dms = none_to_string(dmac, dms)
             print(loop.commanded_corrector.uid, dmac, dms)
             return html.Div([
                 html.Div([
@@ -504,37 +506,6 @@ def key_properties_objetcs3(pickle_file, pathname, selected_command):
         return ["None"] * 2
 
 
-
-"""
-@callback(
-    Output('stat_max_c', 'children'),
-    Output('stat_min_c', 'children'),
-    Output('stat_aver_c', 'children'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname'),
-     Input('command-dropdown_c', 'value')]
-)
-def display_stats_c(pickle_file, pathname, selected_command):
-    if pathname == '/commands' and pickle_file is not None:
-       
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-
-        loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
-        if loop is None:
-            return ["None"] * 8
-
-        img_data = loop.commands.data
-    
-        max_value = np.max(img_data)
-        min_value = np.min(img_data)
-        average = np.mean(img_data)
-
-        return f'{max_value}', f'{min_value}', f'{average}'
-    else:
-        return ["None"] *3"""
-
-
 #Imagem com slide
 @callback(
     Output('teste2_imagem', 'children'),
@@ -554,7 +525,6 @@ def update_image(slider_value, pickle_file, pathname, selected_command, scale_ty
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-
         if not selected_command:
             selected_command = sys.loops[0].commands.name if sys.loops else None
 
@@ -564,13 +534,13 @@ def update_image(slider_value, pickle_file, pathname, selected_command, scale_ty
         
         img_data = loop.commands.data
 
-        if not loop.commanded_corrector.actuator_coordinates or img_data is None:
+        if not hasattr(loop.commanded_corrector, 'actuator_coordinates') or not loop.commanded_corrector.actuator_coordinates or img_data is None:
             return html.Div("The image cannot be rasterized without the actuator coordinates", style={
-            'position': 'absolute',
-            'left': '200px',
-            'top': '50px',
-            'width': '140px'            
-        })
+                'position': 'absolute',
+                'left': '200px',
+                'top': '50px',
+                'width': '140px'            
+            })
         print(loop.commanded_corrector.actuator_coordinates) 
         frame_index = slider_value
 
@@ -601,6 +571,7 @@ def update_image(slider_value, pickle_file, pathname, selected_command, scale_ty
             xaxis_tickfont=dict(color='white'),  
             yaxis_tickfont=dict(color='white'),
             margin=dict(l=65, r=50, b=65, t=90),
+            coloraxis_colorbar=dict(tickfont=dict(color='white')),
         )
 
         return dcc.Graph(figure=fig, style={
@@ -659,6 +630,14 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
             return {}  
         
         cmd_data = loop.commands.data
+        
+        cmd_data_mean = np.mean(cmd_data, axis=1)
+        time_values = list(range(len(cmd_data_mean)))
+
+        time_values, commands_over_time, x,y =[None] *4
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=time_values, y=cmd_data_mean, mode='lines', name='Mean command value'))
 
         if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D_com':
            
@@ -668,12 +647,10 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
 
             time_values = list(range(len(commands_over_time)))
          
-
-
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=time_values, y=commands_over_time, mode='lines', name='Intensity over time'))
-            fig.update_layout(
-            title='Intensity over time',
+        fig.add_trace(go.Scatter(x=time_values, y=commands_over_time, mode='lines', name=f'Intensity x={x},y={y}'))
+        
+        fig.update_layout(
+            title='Actuator motion per frame',
             xaxis_title='Time',
             yaxis_title='Intensity',
             autosize=False,
@@ -686,38 +663,17 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),
-            yaxis_tickfont=dict(color='white')
-        )
-            return fig
-        
-        else:
-            # média
-            cmd_data_mean = np.mean(cmd_data, axis=1)
-
-            time_values = list(range(len(cmd_data_mean)))
-
-            fig = go.Figure()
-
-            fig.add_trace(go.Scatter(x=time_values, y=cmd_data_mean, mode='lines', name='Mean command value'))
-
-            fig.update_layout(
-                title='Mean command value over time',
-                xaxis_title='Time',
-                yaxis_title='Mean command value',
-                autosize=False,
-                width=600,
-                height=350,
-                margin=dict(l=65, r=50, b=65, t=90),
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)', 
-                title_font=dict(color='white'),
-                xaxis_title_font=dict(color='white'), 
-                yaxis_title_font=dict(color='white'),
-                xaxis_tickfont=dict(color='white'),
-                yaxis_tickfont=dict(color='white')
+            yaxis_tickfont=dict(color='white'),
+            legend=dict(
+            font=dict(
+                color="white"
             )
-
-            return fig
+        )
+        )
+        return fig
+        
+    else:
+        return {}
         
     
 #imagem estatica
@@ -745,23 +701,22 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         swapped = np.swapaxes(cmd_data, 0, 1)
 
     
-        fig = go.Figure(data=go.Heatmap(z=swapped, colorscale='Viridis'))
+        fig = go.Figure(data=go.Heatmap(z=swapped, colorscale='Viridis',colorbar=dict(tickfont=dict(color='white'))))
 
         fig.update_layout(
-            title='ACtuators with frame index',
-            xaxis_title='Time',
-            yaxis_title='Index',
+            title='Motion per actuator per frame',
+            xaxis_title='Frame',
+            yaxis_title='Actuator Index',
             autosize=False,
             width=600,
             height=350,
             margin=dict(l=65, r=50, b=65, t=90),
-            #plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),  # texto cor
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),  # label
-            yaxis_tickfont=dict(color='white')
+            yaxis_tickfont=dict(color='white'),
         )
 
         return fig

@@ -34,27 +34,28 @@ option_STYLE = {
 
 layout = html.Div([
 
-
-    html.H1("Pixels", style={'text-align': 'left', 'margin-left': '8vw', 'marginBottom' : '0px'}),
-    html.Div([
-    dbc.Select(
-        id='command-dropdown_p',
-        options=[],
-        value=None,
-        className='custom-select', 
-        style={
-            'width': "10vw",
-            'text-color': 'white',
-            'height': '35px',
-            'backgroundColor': '#1C2634',
-            'margin-left': '25vw',
-            'display': 'flex',  
-            'position': 'absolute', 
-            #'left': '830px', 
-            #'top': '50px',
-        }
-    ),
-]),
+    html.Div(
+        style={'display': 'flex', 'alignItems': 'center', 'justifyContent': 'space-between', 'left': '0vw'},
+        children=[
+            html.H1("Pixel", style={'text-align': 'left', 'margin-left': '6.75vw'}),
+            dbc.Select(
+                id='command-dropdown_p',
+                options=[],
+                value=None,
+                className='custom-select', 
+                style={
+                    'width': "10vw",
+                    'text-color': 'white',
+                    'height': '35px',
+                    'backgroundColor': '#1C2634',
+                    'left': '28vw',
+                    'margin-top': '0px',
+                    'display': 'flex',  
+                    'position': 'absolute', 
+                }
+            ),
+        ],
+),
 #Buttons
     html.Div([
     html.Button('Properties', id='button-1', n_clicks=0, style={'background-color': '#1C2634', 'color': 'white', 'text-align': 'center'},),
@@ -62,7 +63,7 @@ layout = html.Div([
     dcc.Store(id='store_data'),
     html.Div(id='output_data')
 
-], style={'position': 'absolute', 'left': '90px','display': 'flex', 'justify-content': 'space-between', 'top': '50px', 'width': '20px', 'height': '25px'}),
+], style={'position': 'absolute', 'left': '6.75vw','display': 'flex', 'justify-content': 'space-between', 'top': '4vw', 'width': '8vw', 'height': '2vw'}),
   
   
    #1 quadrante
@@ -72,72 +73,72 @@ layout = html.Div([
            
             html.Div([
                 html.Label("Name of Detector: ", style={'color': 'white'}),
-                html.Div(id='name_ns', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='name_ns', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
     
             html.Div([
                 html.Label("Shutter Type: ", style={'color': 'white'}),
-                html.Div(id='shuttert', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='shuttert', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Subeapertures Size: ", style={'color': 'white'}),
-                html.Div(id='ss', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='ss', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
      
             html.Div([
-                html.Label("Mask Ofset: ", style={'color': 'white'}),
-                html.Div(id='mo', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Label("Mask Offset: ", style={'color': 'white'}),
+                html.Div(id='mo', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Frame Rate: ", style={'color': 'white'}),
-                html.Div(id='frame_rate', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='frame_rate', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Gain: ", style={'color': 'white'}),
-                html.Div(id='gain', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='gain', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Integration Time: ", style={'color': 'white'}),
-                html.Div(id='integration_time', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='integration_time', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Pixel Scale: ", style={'color': 'white'}),
-                html.Div(id='pixel_scale', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='pixel_scale', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
    
             html.Div([
                 html.Label("Quantum Efficiency: ", style={'color': 'white'}),
-                html.Div(id='quantum_efficiency', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='quantum_efficiency', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Readout Noise: ", style={'color': 'white'}),
-                html.Div(id='readout_noise', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='readout_noise', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Readout Rate: ", style={'color': 'white'}),
-                html.Div(id='readout_rate', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='readout_rate', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Sampling Technique: ", style={'color': 'white'}),
-                html.Div(id='sampling_technique', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
+                html.Div(id='sampling_technique', style={'background-color': '#243343','width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
 
-], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '0px', 'top': '30px', 'width': '400px', 'height': '390px'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '0vw', 'top': '2.25vw', 'width': '30.25vw', 'height': '10vw'}),
     
    #1 quadrante 
         html.Div([
-            html.P("Objects", style={'text-align': 'left','margin-left': '1vw'}),
-  
-    #1 bloco
+            html.P("Objects", style={'text-align': 'left','margin-left': '0vw'}),
+
+             #1 bloco
             html.Div([
                 html.P("Source", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
@@ -181,7 +182,7 @@ layout = html.Div([
 
 
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '310px', 'top': '30px', 'width': '280px', 'height': '470px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '23vw', 'top': '2.25vw', 'width': '20vw', 'height': '36.25vw'}),
 ]),
     #2 quadrante 
     #imagem
@@ -200,7 +201,7 @@ layout = html.Div([
     ],
     value='Linear',
     className='custom-select',
-    style={'width': "10vw",'color': 'white', 'height':'35px' }
+    style={'width': "10vw",'color': 'white', 'height':'2.5vw' }
 ),
         dbc.Select(
         id="aotpy_color",
@@ -215,7 +216,7 @@ layout = html.Div([
         ],
         value='Standard',
         className='custom-select',
-        style={'width': "10vw",'color': 'white', 'height':'35px' }
+        style={'width': "10vw",'color': 'white', 'height':'2.5vw' }
     ),
         dbc.Select(
         id="aotpy_interval",
@@ -227,7 +228,7 @@ layout = html.Div([
         ],
         value='MinMax',
         className='custom-select',
-        style={'width': "10vw",'color': 'white', 'height':'35px' }
+        style={'width': "10vw",'color': 'white', 'height':'2.5vw' }
     ),
     dcc.Graph(id='teste_imagem_diferente', style={'position': 'absolute', 'left': '20px', 'top': '20px', 'height': '330px', 'width': '500px'}),
     html.Div(dcc.Slider(
@@ -268,10 +269,10 @@ layout = html.Div([
     'justify-content': 'space-between',  
     'background-color': '#1C2634', 
     'position': 'absolute', 
-    'left': '700px', 
-    'top': '50px', 
-    'width': '600px', 
-    'height': '520px'
+    'left': '51.25vw',
+    'top': '3vw',
+    'width': '44.5vw', 
+    'height': '39.25vw'
 }),
   
   #3 quadrante
@@ -284,12 +285,11 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Corectangulo
     'position': 'absolute',
-    'left': '90px',
-    'top': '580px',
-    'width': '590px',  
-    'height': '350px'  
+    'left': '7vw',
+    'top': '43vw',
+    'width': '43vw',  
+    'height': '25vw'  
 }),
- #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
  
     #4 quadrante
         html.Div([
@@ -302,10 +302,10 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
-    'left': '700px',
-    'top': '580px',
-    'width': '590px',  
-    'height': '350px'  
+    'left': '51.25vw',
+    'top': '43vw',
+    'width': '44.5vw',  
+    'height': '25vw'  
 }),
 
 #5quadrante
@@ -332,18 +332,17 @@ layout = html.Div([
         html.P("For the Pixel: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
             html.Div([
                 html.Label("Maximum value: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='stat_max_p_spe', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Minimum value: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
+                html.Div(id='stat_min_p_spe', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
             html.Div([
                 html.Label("Average values: ", style={'color': 'white'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
-                html.Div([], style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
+                html.Div(id='stat_aver_p_spe', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'}),
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 ], style={
@@ -351,8 +350,8 @@ layout = html.Div([
     'position': 'absolute',
     'left': '0px',
     'top': '30px',
-    'width': '650px',  
-    'height': '390px',  
+    'width': '42vw',  
+    'height': '35vw',  
 }),
 ]),
 
@@ -392,7 +391,7 @@ def apply_scale(image, scale_type):
     if scale_type == 'Linear':
         return image
     elif scale_type == 'Log':
-        return np.log1p(image)  # log(1 + imagem)
+        return np.log1p(image)  
     elif scale_type == 'Power':
         return np.power(image, 2)
     elif scale_type == 'Square Root':
@@ -404,14 +403,10 @@ def apply_scale(image, scale_type):
     elif scale_type == 'SINH':
         return np.sinh(image)
     elif scale_type == 'Histogram Equalization':
-        #conta histograma
         img_array = np.array(image)
-
         histogram, bins = np.histogram(img_array.flatten(), bins=256, density=True)
-        cdf = histogram.cumsum()  # função distribuição cumulativa
-        cdf = 255 * cdf / cdf[-1]  # normalizar
-
-    # interpolação linear
+        cdf = histogram.cumsum()  
+        cdf = 255 * cdf / cdf[-1]  
         image_equalized = np.interp(img_array.flatten(), bins[:-1], cdf)
         return image_equalized.reshape(img_array.shape)
     elif scale_type == 'Log Exponent':
@@ -421,7 +416,7 @@ def apply_scale(image, scale_type):
 
 def apply_colormap(colormap):
     if colormap == 'Standard':
-        return None #normal
+        return None 
     elif colormap == 'Grey':
         return 'greys_r'
     elif colormap == 'Red':
@@ -440,20 +435,21 @@ def apply_colormap(colormap):
 def apply_interval(image, interval_type):
     if interval_type == 'MinMax':
         interval = MinMaxInterval()
-        normalized_image = interval(image)
-
-        return normalized_image
+        modified_image = interval(image)
+        return modified_image
     elif interval_type == 'ZScale':
-        zscale_interval = ZScaleInterval(n_samples=1000, contrast=0.25, max_reject=0.5, min_npixels=5, krej=2.5, max_iterations=5)
-        normalized_image = zscale_interval(image)
-        
-        return normalized_image
-   
+        zscale_interval = ZScaleInterval(n_samples=1000,
+                                         contrast=0.25,
+                                         max_reject=0.5, 
+                                         min_npixels=5, 
+                                         krej=2.5, 
+                                         max_iterations=5)
+        modified_image = zscale_interval(image)
+        return modified_image
     elif interval_type == 'Percentile_30':
         percentileinterval = PercentileInterval(30.)
-        normalized_image = percentileinterval(image)
-
-        return normalized_image
+        modified_image = percentileinterval(image)
+        return modified_image
     else:
         raise ValueError(f'Invalid interval: {interval_type}')
 
@@ -597,7 +593,8 @@ def key_properties(pickle_file, pathname, selected_command):
         ss = sensor.subaperture_size
 
          #Assim mostra o None
-        mo, ss = none_to_string( mo, ss)  
+        ss = none_to_string(ss)
+        mo = ", ".join(map(str, mo)) if isinstance(mo, (list, tuple)) else str(mo)  
         print(f" Mask offsets: {mo}, Subaperture size: {ss}")
 
         return mo, ss
@@ -674,23 +671,22 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         swapped = np.swapaxes(reshaped, 0, 1)
 
     
-        fig = go.Figure(data=go.Heatmap(z=swapped, colorscale='Viridis'))
+        fig = go.Figure(data=go.Heatmap(z=swapped, colorscale='Viridis', colorbar=dict(tickfont=dict(color='white')) ))
 
         fig.update_layout(
-            title='Pixel with frame index',
-            xaxis_title='Frame Index',
-            yaxis_title='Pixel',
+            title='Pixel Intensities per Frame',
+            xaxis_title='Frame',
+            yaxis_title='Pixel Intensity',
             autosize=False,
             width=600,
             height=350,
             margin=dict(l=65, r=50, b=65, t=90),
-            #plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),  # texto cor
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),  # label
-            yaxis_tickfont=dict(color='white')
+            yaxis_tickfont=dict(color='white'),
         )
 
         return fig
@@ -760,7 +756,7 @@ def block_dark(pickle_file, pathname, selected_command):
 @callback(
     Output('teste_imagem_diferente', 'figure'),
     [Input('frame3_slider', 'value'),
-    Input('pickle_store', 'data'),
+     Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('aotpy_scale', 'value'),
      Input('aotpy_color', 'value'),
@@ -788,44 +784,31 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
 
         img_data = sensor.detector.pixel_intensities.data
 
-        #as checkboxes
         if dark and sensor.detector.dark is not None:
             img_data = img_data - sensor.detector.dark.data
-            print(f"dark é {sensor.detector.dark.data}")
         
         if sky and sensor.detector.sky_background is not None:
             img_data = img_data - sensor.detector.sky_background.data  
-            print(f"sky background é {sensor.detector.sky_background.data}")  
 
         if field and sensor.detector.flat_field is not None:
             img_data = img_data - sensor.detector.flat_field.data  
-            print(f"flat field é {sensor.detector.flat_field.data}") 
-
-        
-        print(f"Data PIXEL shape: {img_data.shape}, Data type: {type(img_data)}")
-
         
         frame_index = slider_value
         
         if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D':
-            # cordenadas do click data 
                 x, y, z = extract_coordinates(clickData)
-            
-            # o x do slider é o frame index (tempo)
                 frame_index = int(x)
-        print(ctx.triggered)
        
         frame_processed = img_data[frame_index]
         frame_processed = apply_interval(frame_processed, interval_type)
         frame_processed = apply_scale(frame_processed, scale_type)
         
         colormap = apply_colormap(color_type)
-        print(f"Colormap: {colormap}")
 
         new_figure = px.imshow(frame_processed, color_continuous_scale=colormap)
         print(f"{colormap}")
         new_figure.update_layout(
-                title=f'Different 2D images over frames, {frame_index} ',
+                title=f'Frame: {frame_index} of detector {selected_command} ',
                 xaxis_title='X',
                 yaxis_title='Y',
                 autosize=False,
@@ -838,6 +821,7 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
                 xaxis_tickfont=dict(color='white'),  
                 yaxis_tickfont=dict(color='white'),
                 margin=dict(l=65, r=50, b=65, t=90),
+                coloraxis_colorbar=dict(tickfont=dict(color='white')), 
             )
         return new_figure
     else:
@@ -850,9 +834,10 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('teste_imagem_diferente', 'clickData'),
+     Input('imag2D', 'clickData'),
      Input('command-dropdown_p', 'value')]
 )
-def display_detector_frame(pickle_file, pathname, clickData, selected_command):
+def display_detector_frame(pickle_file, pathname, clickData, second_clickData, selected_command):
     if pathname == '/pixels' and pickle_file is not None:
         ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
@@ -868,19 +853,40 @@ def display_detector_frame(pickle_file, pathname, clickData, selected_command):
 
         pixel_data = sensor.detector.pixel_intensities.data
 
-        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'teste_imagem_diferente':
+        pixel_data_mean = np.mean(pixel_data, axis=(1, 2))
+
+        time_values = list(range(len(pixel_data_mean)))
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=time_values, y=pixel_data_mean, mode='lines', name='Mean Intensity of detector'))
+
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+        time_values_1, time_values_2, pixel_intensity_over_time_1, pixel_intensity_over_time_2, x_1, y_1, x_2,y_2 = [None] *8
+
+        if trigger_id == 'teste_imagem_diferente':
            
-            x, y, z = extract_coordinates(clickData)
-            print(f"im here {x}, {y}, {z}")
-            pixel_intensity_over_time = pixel_data[:, int(y), int(x)]
+            x_1, y_1, z_1 = extract_coordinates(clickData)
+            
+            pixel_intensity_over_time_1 = pixel_data[:, int(y_1), int(x_1)]
 
-            time_values = list(range(len(pixel_intensity_over_time)))
+            time_values_1 = list(range(len(pixel_intensity_over_time_1)))
 
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=time_values, y=pixel_intensity_over_time, mode='lines', name='Intensity over time'))
-            fig.update_layout(
-            title='Intensity over time',
-            xaxis_title='Time',
+        """if trigger_id == 'imag2D':
+           
+            x_2, y_2, z_2 = extract_coordinates(second_clickData)
+            print(f"X2: {x_2}, Y2: {y_2}")
+            pixel_intensity_over_time_2 = pixel_data[:, int(y_2), int(x_2)]
+            print(f"pixel_intensity_over_time_2: {pixel_intensity_over_time_2}")
+            time_values_2 = list(range(len(pixel_intensity_over_time_2)))
+            print(f"Time values 2: {time_values_2}")"""
+       
+        print(f"it triggers {trigger_id}")
+        fig.add_trace(go.Scatter(x=time_values_1, y=pixel_intensity_over_time_1, mode='lines', name = f'Pixel Intensity of x={x_1}, y={y_1}'))
+        fig.add_trace(go.Scatter(x=time_values_2, y=pixel_intensity_over_time_2, mode='lines', name= f'Pixel Intensity of x={x_2}, y={y_2}'))
+            
+        fig.update_layout(
+            title='Intensity per pixel per frame',
+            xaxis_title='Frame',
             yaxis_title='Intensity',
             autosize=False,
             width=600,
@@ -892,54 +898,19 @@ def display_detector_frame(pickle_file, pathname, clickData, selected_command):
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),
-            yaxis_tickfont=dict(color='white')
+            yaxis_tickfont=dict(color='white'),
+            legend=dict(
+            font=dict(
+                color="white"
+            )
         )
-            return fig
-        else:
-            pixel_data_mean = np.mean(pixel_data, axis=(1, 2))
-
-            time_values = list(range(len(pixel_data_mean)))
         
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=time_values, y=pixel_data_mean, mode='lines', name='Mean intensity over time'))
-            fig.update_layout(
-            title='Intensity over time',
-            xaxis_title='Time',
-            yaxis_title='Intensity',
-            autosize=False,
-            width=600,
-            height=350,
-            margin=dict(l=65, r=50, b=65, t=90),
-            plot_bgcolor='rgba(36,51,67,1)',
-            paper_bgcolor='rgba(0,0,0,0)', 
-            title_font=dict(color='white'),
-            xaxis_title_font=dict(color='white'), 
-            yaxis_title_font=dict(color='white'),
-            xaxis_tickfont=dict(color='white'),
-            yaxis_tickfont=dict(color='white')
         )
-            return fig
-
-"""@callback(
-    Output('slice-selector', 'options'),
-    Input('pickle_store', 'data'),
-    Input('url', 'pathname')
-)
-def update_slice_selector(pickle_file, pathname):
-    if pathname == '/pixels' and pickle_file:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-        
-     
-        num_pixels = sys.wavefront_sensors[0].detector.pixel_intensities.data.shape[1] * sys.wavefront_sensors[0].detector.pixel_intensities.data.shape[2]
-        
-        options = [{'label': f'Pixel {i}', 'value': i} for i in range(num_pixels)]
-        return options
-    return []    """
-
-
-
-
+        return fig
+    else:
+        return {}
+            
+            
 
 @callback(
     Output('stat_max_p', 'children'),
@@ -969,6 +940,48 @@ def display_stats_p(pickle_file, pathname, selected_command):
         min_value = np.min(pixel_data)
         average = np.mean(pixel_data)
 
-        return f'{max_value}', f'{min_value}', f'{average}'
+        return f'{max_value:.5f}', f'{min_value:.5f}', f'{average:.5f}'
+    else:
+        return ["None"] *3
+    
+    
+@callback(
+    Output('stat_max_p_spe', 'children'),
+    Output('stat_min_p_spe', 'children'),
+    Output('stat_aver_p_spe', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname'),
+     Input('teste_imagem_diferente', 'clickData'),
+     Input('command-dropdown_p', 'value')]
+)
+def display_stats_p_spe(pickle_file, pathname, clickData, selected_command):
+    if pathname == '/pixels' and pickle_file is not None:
+        ctx = dash.callback_context
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
+        
+        if not selected_command:
+            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
+        
+        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
+        
+        if sensor is None or sensor.detector is None:
+            return  ["None"] *3 
+        
+        pixel_data = sensor.detector.pixel_intensities.data
+        pixel_intensity_over_time =0
+
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+
+        if trigger_id == 'teste_imagem_diferente':
+            x, y, z = extract_coordinates(clickData)
+
+            pixel_intensity_over_time= pixel_data[:, int(y), int(x)]
+    
+        max_value = np.max(pixel_intensity_over_time)
+        min_value = np.min(pixel_intensity_over_time)
+        average = np.mean(pixel_intensity_over_time)
+
+        return f'{max_value:.5f}', f'{min_value:.5f}', f'{average:.5f}'
     else:
         return ["None"] *3

@@ -27,21 +27,23 @@ dash.register_page(__name__, path='/')
 
 #estilo
 DRAG_STYLE = {
-    'width': '885px',
-    'height': '108px',
-    'left': '400px', 
-    'top': '60px',
+    'width': '55vw',
+    'height': '7vw',
+    'left': '25vw', 
+    'top': '3vw',
     'borderRadius': '5px',
     'display': 'flex',
     'backgroundColor': '#8CE397',
     'color': 'white',
 }
 
+
+
 #layout
 layout = html.Div([
     html.H1("Dashboard AOTPY", style={'textAlign': 'left', 'marginLeft': '12vw'}),
     html.Div([
-        html.Div(["Upload the FITS File"], style={'textAlign': 'left', 'textDecoration': 'underline', 'textDecorationColor': '#8CE397', 'fontSize':'18px','marginLeft':'20vw', 'marginTop':'5vw'}),
+        html.Div(["Upload the FITS File"], style={'textAlign': 'left', 'textDecoration': 'underline', 'textDecorationColor': '#8CE397', 'fontSize':'1.25vw','marginLeft':'20vw', 'marginTop':'5vw'}),
         #Fazer upload
         
         dcc.Upload(
