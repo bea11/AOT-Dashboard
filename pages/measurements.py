@@ -106,35 +106,36 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw'}),
 
-    #2 bloco
+        #2 bloco
             html.Div([
-                html.P("Detector", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.Div([
+                    html.Label("Name: ", style={'color': 'white'}),
+                    html.Div(id='wfs2_name', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+                html.Div([
+                html.Label("Type:", style={ 'color': 'white'}),
+                html.Div(id='wfs2_type', style={'background-color': '#243343', 'margin-left': '10px'}),
+                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
+
+
+    #3 bloco
+            html.Div([
+                html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
                     dcc.Link(
                     html.Button(id='detector_name', style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
                     , href='/pixels')
-            
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
                 html.Div([
                 html.Label("Type:", style={ 'color': 'white'}),
-                html.Div(id='detector_type', style={'background-color': '#243343', 'margin-left': '10px'}),
+                html.Div("Detector", style={'background-color': '#243343', 'margin-left': '10px'}),
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
-    #3 bloco
-            html.Div([
-                html.P("Aberration 1", style={'text-align': 'left', 'margin-left': '1vw'}),
-                html.Div([
-                    html.Label("Name: ", style={'color': 'white'}),
-                    html.Button("Example", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
-            ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-                html.Div([
-                html.Label("Type:", style={ 'color': 'white'}),
-                html.Div("Other", style={'background-color': '#243343', 'margin-left': '10px'}),
-                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
-
+    
 
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '310px', 'top': '30px', 'width': '280px', 'height': '370px'}),
@@ -513,7 +514,8 @@ def key_properties_meas(pickle_file, pathname, selected_command):
     [Output('source2_name', 'children'),
      Output('source2_type', 'children'),
     Output('detector_name', 'children'),
-    Output('detector_type', 'children')],
+    Output('wfs2_name', 'children'),
+    Output('wfs2_type', 'children')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('command-dropdown_m', 'value')]
@@ -529,7 +531,7 @@ def key_properties_objects1(pickle_file, pathname, selected_command):
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
         
         if sensor is None or sensor.measurements is None:
-            return ["None"] * 4 
+            return ["None"] * 5 
         
         #print(vars(sensor.detector))  # attributos do detetor muito util
         #print(dir(sensor.detector)) #basicamente quais sao os topicos que existem
@@ -537,13 +539,13 @@ def key_properties_objects1(pickle_file, pathname, selected_command):
         source_name= sensor.source.uid
         source_type= type(sensor.source).__name__
         detector_name= sensor.detector.uid
-        detector_type= sensor.detector.type
-        source_name, source_type,detector_name, detector_type = none_to_string(source_name, source_type,detector_name, detector_type)  
-        print(f" source name: {source_name}, source type: {source_type}, meas name: {detector_name}, meas type: {detector_type}")
+        wfs_name= sensor.uid
+        wfs_type= type(sensor).__name__
+        source_name, source_type,detector_name, wfs_name, wfs_type = none_to_string(source_name, source_type,detector_name, wfs_name, wfs_type)  
 
-        return source_name, source_type,detector_name, detector_type
+        return source_name, source_type,detector_name, wfs_name, wfs_type 
     else: 
-        return ["None"] * 4
+        return ["None"] * 5
 
 
 

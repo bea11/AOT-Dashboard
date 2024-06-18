@@ -132,27 +132,30 @@ layout = html.Div([
 
     #2 bloco
             html.Div([
-                html.P("Aberration 1", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
-                    html.Button("Example", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
-                    
+                    dcc.Link(
+                    html.Button(id='detector2_name', style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    , href='/pixels')
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Type:", style={ 'color': 'white'}),
-                    html.Div("Other", style={'background-color': '#243343', 'margin-left': '10px'}),
+                    html.Div("Detector", style={'background-color': '#243343', 'margin-left': '10px'}),
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
                 
                 html.Div([
-                html.P("Aberration 2", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
-                    html.Div("Example", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    dcc.Link(
+                    html.Button(id='meas2_name', style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
+                    , href='/measurements')
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Type:", style={ 'color': 'white'}),
-                    html.Div("Other", style={'background-color': '#243343', 'margin-left': '10px'}),
+                    html.Div("Measurement", style={'background-color': '#243343', 'margin-left': '10px'}),
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
@@ -471,11 +474,9 @@ def key_extra_comma(pickle_file, pathname, selected_command):
 #para a secção dos objetos
 @callback(
     Output('telescope_name', 'children'),
-     Output('telescope_type', 'children'),
-     #Output('detector3_name', 'children'),
-     #Output('detector3_type', 'children'),
-    #Output('meas3_name', 'children'),
-    #Output('meas3_type', 'children')],
+    Output('telescope_type', 'children'),
+    Output('detector2_name', 'children'),
+    Output('meas2_name', 'children'),
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('command-dropdown_c', 'value')]
@@ -489,21 +490,18 @@ def key_properties_objetcs3(pickle_file, pathname, selected_command):
             selected_command = sys.loops[0].commands.name if sys.loops else None
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
         if loop is None:
-            return ["None"] * 2
+            return ["None"] * 4
         
-        #source3_name= sensor.source.uid
-        #source3_type= type(sensor.source).__name__
         telescope_name= loop.commanded_corrector.telescope.uid
         telescope_type= type(loop.commanded_corrector.telescope).__name__
-        #t_name= sensor.measurements.name
-        #meas3_type= type(sensor.measurements).__name__
-        #source3_name, source3_type, detector3_name, detector3_type, meas3_name, meas3_type = none_to_string(source3_name, source3_type, detector3_name, detector3_type, meas3_name, meas3_type)  
-        #print(f" source name: {source3_name}, source type: {source3_type}, meas name: {meas3_name}, meas type: {meas3_type}")
-        telescope_name, telescope_type = none_to_string(telescope_name, telescope_type)
-        return telescope_name, telescope_type
+        detector_name= loop.input_sensor.detector.uid
+        meas_name= loop.input_sensor.measurements.name
+        
+        telescope_name, telescope_type, detector_name,meas_name = none_to_string(telescope_name, telescope_type, detector_name,meas_name)
+        return telescope_name, telescope_type, detector_name, meas_name
         #return source3_name, source3_type, detector3_name, detector3_type, meas3_name, meas3_type
     else: 
-        return ["None"] * 2
+        return ["None"] * 4
 
 
 #Imagem com slide

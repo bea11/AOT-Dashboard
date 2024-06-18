@@ -152,8 +152,22 @@ layout = html.Div([
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw'}),
 
     #2 bloco
+          
             html.Div([
-                html.P("Measurement", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
+                html.Div([
+                    html.Label("Name: ", style={'color': 'white'}),
+                    html.Div(id='wfs_name', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+                html.Div([
+                html.Label("Type:", style={ 'color': 'white'}),
+                html.Div(id='wfs_type', style={'background-color': '#243343', 'margin-left': '10px'}),
+                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
+    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
+
+      #3 bloco
+            html.Div([
+                html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
                     html.Label("Name: ", style={'color': 'white'}),
                     dcc.Link(
@@ -162,23 +176,11 @@ layout = html.Div([
             ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
                 html.Div([
                 html.Label("Type:", style={ 'color': 'white'}),
-                html.Div(id='meas_type', style={'background-color': '#243343', 'margin-left': '10px'}),
+                html.Div('Measurement', style={'background-color': '#243343', 'margin-left': '10px'}),
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
-    #3 bloco
-            html.Div([
-                html.P("Aberration 1", style={'text-align': 'left', 'margin-left': '1vw'}),
-                html.Div([
-                    html.Label("Name: ", style={'color': 'white'}),
-                    html.Button("Example", style={'border-radius': '10%', 'border': '1.5px solid blue', 'background-color': '#1C2634', 'color':'white','font-size':'15px', 'width': '150px', 'height': '20px', 'margin-left': '10px'})
-                    
-            ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-                html.Div([
-                html.Label("Type:", style={ 'color': 'white'}),
-                html.Div("Other", style={'background-color': '#243343', 'margin-left': '10px'}),
-                ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
-    ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
+    
 
 
 
@@ -607,7 +609,8 @@ def key_properties(pickle_file, pathname, selected_command):
     [Output('source_name', 'children'),
      Output('source_type', 'children'),
     Output('meas_name', 'children'),
-    Output('meas_type', 'children')],
+    Output('wfs_name', 'children'),
+    Output('wfs_type', 'children')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('command-dropdown_p', 'value')]
@@ -624,18 +627,18 @@ def key_properties_objetcs(pickle_file, pathname, selected_command):
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
         
         if sensor is None or sensor.detector is None:
-            return ["None"] * 4
+            return ["None"] * 5
         
         source_name= sensor.source.uid
         source_type= type(sensor.source).__name__
         meas_name= sensor.measurements.name
-        meas_type= type(sensor.measurements).__name__
-        source_name, source_type,meas_name, meas_type = none_to_string(source_name, source_type,meas_name, meas_type)  
-        print(f" source name: {source_name}, source type: {source_type}, meas name: {meas_name}, meas type: {meas_type}")
-
-        return source_name, source_type,meas_name, meas_type
+        wfs_name= sensor.uid
+        wfs_type= type(sensor).__name__
+        source_name, source_type,meas_name, wfs_name,wfs_type = none_to_string(source_name, source_type,meas_name, wfs_name,wfs_type)  
+       
+        return source_name, source_type,meas_name, wfs_name,wfs_type
     else: 
-        return ["None"] * 4
+        return ["None"] * 5
 
 
 
