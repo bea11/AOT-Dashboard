@@ -49,7 +49,7 @@ layout = html.Div([
         dcc.Upload(
             id='upload-data',
             children=html.Div([
-                        html.Div(['Drag and Drop file here (.FITS)'],style={'display': 'inline-block', 'color': 'white','fontWeight': 'bold', 'position': 'absolute', 'marginLeft': '4vw', 'marginTop': '2.5vw'}),
+                        html.Div(['Drag and Drop file here (.fits)'],style={'display': 'inline-block', 'color': 'white','fontWeight': 'bold', 'position': 'absolute', 'marginLeft': '4vw', 'marginTop': '2.5vw'}),
                          html.A('Browse Files', style={
                             'display': 'inline-block',
                             'padding': '10px 20px',
@@ -74,27 +74,32 @@ layout = html.Div([
 ])
 
 
-#LOOP
 @callback(
     Output('pickle_store', 'data'),
-    [Input('upload-data', 'contents')]
+    [Input('upload-data', 'contents'),
+     Input('upload-data', 'filename')]
 )
-def store_uploaded_file(contents):
+def store_uploaded_file(contents, filename):
     if contents is not None:
         print("Debug: Contents start with:", contents[:100])  
 
         parts = contents.split(',')
         if len(parts) == 2:
             content_type, content_string = parts
-            decoded = base64.b64decode(content_string)
-            sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
+            file_extension = content_type.split('/')[-1]  
+            print(f"File extension is {file_extension}")
+            print(f"File extension.lower is {file_extension.lower()}")
+            if filename.lower().endswith('.fits'):
+                decoded = base64.b64decode(content_string)
+                sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
+                
+                with open('system.pickle', 'wb') as f:
+                    pickle.dump(sys, f)
 
-            with open('system.pickle', 'wb') as f:
-                pickle.dump(sys, f)
-
-            return 'system.pickle'
+                return 'system.pickle'
+            else:
+                raise PreventUpdate
         else:
-            
             print("Uploaded file content does not have the expected format.")
             raise PreventUpdate
     else:
@@ -108,20 +113,13 @@ def store_uploaded_file(contents):
 )
 def display_uploaded_filename(filename):
     if filename is not None:
-        return html.Div([
-            html.H6(f"Uploaded FITS file: {filename}", style={'textAlign': 'left', 'marginLeft': '20vw', 'marginTop': '6vw'})
-        ])
+        if filename.lower().endswith('.fits'):
+            return html.Div([
+                html.H6(f"Uploaded FITS file: {filename}", style={'textAlign': 'left', 'marginLeft': '20vw', 'marginTop': '6vw'})
+            ])
+        else:
+            return html.Div([
+                html.H6("Uploaded file is not a .fits file.", style={'textAlign': 'left', 'marginLeft': '20vw', 'marginTop': '6vw', 'color': 'red'})
+            ])
     else:
         return html.Div()
-    
-
-
-
-#mais funções: sys.wavefront_sensors
-        # len(sys.atmosphere_sensors)
-        # wfs = sys.wavefront_sensors[0]
-        #det = wfs.detector
-        #pixels = det.pixel_intensities
-        #pixels.data
-        #frame= pixels.data[0]
-        #frame.shape

@@ -213,39 +213,18 @@ html.Div([
     
         # Primeiro
 
- html.Div([
+  
+        html.Div([
             html.Div([
-                html.Label('Corresponding Wavefront Sensor', id='sensor_source_div', style={'color': 'white'}),
-                html.Div([
-                #    html.Label('Measurements: ', style={'color': 'white'}),
-                #    dcc.Link(
-                #        dbc.Button(id='image_name_ws', style={'background-color':'#1C2634', 'color': 'white','width': '7vw'}),
-                #        href='/measurements'
-                #            )
-            ], style={'display': 'flex', 'flex-direction': 'row', 'align-items': 'center'}),
-
-                #html.Div([
-                 #   html.Label('Detector: ', style={'color': 'white'}),
-                    #dcc.Link(
-                     #   dbc.Button(id='detector_name_ws', style={'background-color':'#1C2634', 'color': 'white','width': '7vw'}),
-                     #   href='/pixels'
-                  #          )
-            #], style={'display': 'flex', 'flex-direction': 'row', 'align-items': 'center'}),
-                
-    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
-#                dcc.Link(
-#                    dbc.Button('Measurements', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
-#                    href='/measurements'),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '1vw', 'width': '20vw'}),
-
+                html.Div(id='sensor_source_div'),
+    ], style={'display': 'flex', 'flex-direction': 'column', 'margin-top':'1vw'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '2vw', 'width': '23vw'}),
        # Segundo
-       
         
         html.Div([
             html.Div([
-                html.Label('Corresponding loops: ', style={'color': 'white'}),
                 html.Div(id='verified_loop_container'),
-    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
+    ], style={'display': 'flex', 'flex-direction': 'column', 'margin-top':'1vw'}),
 ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '5vw', 'width': '23vw'}),
 
 #Terceiro
@@ -253,14 +232,9 @@ html.Div([
         html.Div([
             html.Div([    
                 html.Label( id='verified_corrector_container', style={'color': 'white'}),
-    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'flex-start'}),
-    #        dcc.Link(
-    #            dbc.Button('Commands', id='submit-button', style={'background-color':'#243343', 'color': 'white','margin-left':'2vw', 'width': '10vw'}),
-     #           href='/commands'),
+    ], style={'display': 'flex', 'flex-direction': 'column', 'margin-top':'1vw'}),
 ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center','margin-left': '5vw', 'width': '25vw'}),
     
-
-
     ], style={'display': 'flex'}),
 ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '8vw', 'top': '31.5vw', 'width': '82.5vw', 'height': '14vw'}),
 
@@ -572,7 +546,23 @@ def display_sensor1(pickle_file, pathname):
     else:
         return []
 
+#LOOPS
+@callback(
+    Output('loop_divs', 'children'),
+    [Input('pickle_store', 'data'),
+     Input('url', 'pathname')]
+)
+def display_loop(pickle_file, pathname):
+    if pathname == '/analise' and pickle_file is not None:
+        #pickle file
+        with open(pickle_file, 'rb') as f:
+            sys = pickle.load(f)
 
+        loops2 = [loop_to_dict(loop) for loop in sys.loops]
+        loop_buttons = [html.Button(loop['uid'], id={'type': 'loop-button', 'index': loop['uid']}, className='option', n_clicks=0, style=option_STYLE) for loop in loops2]
+        return loop_buttons
+    else:
+        return []
     
 @callback(
     [Output('sensor_source_div', 'children'),
@@ -609,13 +599,13 @@ def update_wavefront_sensor_and_display_names(n_clicks, pathname, pickle_file):
                 detector_name = detector_name_labels[i] if i < len(detector_name_labels) else 'N/A'
                 labels.append(
                     html.Div([
-                        html.Span(f'Sensor: {sensor}, Measurements: '),
+                        html.Span(f'Wavefront Sensor: {sensor}, Measurements: '),
                         dcc.Link(f'{image_name}', href='/measurements'),
                         html.Span(', Detector: '),
                         dcc.Link(f'{detector_name}', href='/pixels'),
                         ], id=f'verified_sensor[{i+1}]', style={'color': 'white'})
             )
-
+            print(f"associated_sensors: {associated_sensors}")
             return labels, associated_sensors
     else:
         return [], []
@@ -647,30 +637,12 @@ def update_verified_loop(just_sensors, pathname, pickle_file):
                     dcc.Link(f'{command}', href='/commands'),
             ], id=f'verified_loop[{i+1}]', style={'color': 'white'})
             )
-
+        print(f"associated_loops: {associated_loops}")
         return labels, associated_loops
     else:
         return [], []
       
 
-
-#LOOPS
-@callback(
-    Output('loop_divs', 'children'),
-    [Input('pickle_store', 'data'),
-     Input('url', 'pathname')]
-)
-def display_loop(pickle_file, pathname):
-    if pathname == '/analise' and pickle_file is not None:
-        #pickle file
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-
-        loops2 = [loop_to_dict(loop) for loop in sys.loops]
-        loop_buttons = [html.Button(loop['uid'], id={'type': 'loop-button', 'index': loop['uid']}, className='option', n_clicks=0, style=option_STYLE) for loop in loops2]
-        return loop_buttons
-    else:
-        return []
     
 #WAVEFRONT CORRECTORS
 @callback(
@@ -681,50 +653,28 @@ def display_loop(pickle_file, pathname):
 )
 def update_corrector_labels(loops, pathname, pickle_file):
     if pathname == '/analise' and pickle_file is not None:
-        #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
-        other_WC_loops = create_dict_lp(sys)
+        command_wfc_mapping = create_dict_lp(sys)
+
         labels = []
-        for loop, correctors in other_WC_loops.items():
-            for corrector in correctors:
-                labels.append(html.Label(f'For the Loop {loop}, the corrector is {corrector}.', style={'color': 'white'}))
+        for i, loop_id in enumerate(loops):  # Assuming loops is a list of loop IDs
+            loop = next((l for l in sys.loops if l.uid == loop_id), None)
+            if loop:
+                # Assuming command_wfc_mapping maps loop UID to a list of corrector UIDs
+                corrector_uids = command_wfc_mapping.get(loop.uid, [])
+                for corrector_uid in corrector_uids:
+                    labels.append(
+                        html.Div([
+                            html.Span(f'Wavefront Corrector: {corrector_uid}, Loop: {loop_id}'),
+                        ], id=f'loop-{i+1}', style={'color': 'white'})
+                    )
 
         return labels
     else:
         return []
 
-#@callback(
-#    Output('loop_corrector_div', 'children'),
-#    [Input({'type': 'loop-button', 'index': ALL}, 'n_clicks')],
-#    [State('store-atmosphere-params', 'data')]
-#)
-#def update_corrector(n_clicks, data):
-#    ctx = dash.callback_context
-#    if not ctx.triggered or data is None:
-#        return None
-#    else:
-#        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-#        loop_id = json.loads(button_id)['index']
-#        corrector = data['other_WC_lopps'][loop_id]
-#        return corrector
-
-#Para já não preciso de mostrar os control loops
-#@callback(
-#    Output('control_loop', 'children'),
-#    [Input('store-atmosphere-params', 'data'),
-#     Input('url', 'pathname')]
-#)
-#def display_controloop(data, pathname):
-#    if pathname == '/analise' and data is not None:
-#        control_loops = data.get('control_loops')
-#        if control_loops is None:
-#            return []  
-#        control_loop_divs = [html.Div(control_loop['uid'], id=control_loop['uid'], className='option', n_clicks=0, style=option_STYLE) for control_loop in control_loops]
-#        return control_loop_divs
-#    else:
-#        return []
 
 
 #WAVEFRONT CORRECTORS
