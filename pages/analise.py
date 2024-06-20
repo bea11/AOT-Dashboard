@@ -218,25 +218,17 @@ html.Div([
             html.Div([
                 html.Div(id='sensor_source_div'),
     ], style={'display': 'flex', 'flex-direction': 'column', 'margin-top':'1vw'}),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '2vw', 'width': '23vw'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '2vw', 'width': '30vw'}),
        # Segundo
         
         html.Div([
             html.Div([
                 html.Div(id='verified_loop_container'),
     ], style={'display': 'flex', 'flex-direction': 'column', 'margin-top':'1vw'}),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '5vw', 'width': '23vw'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '5vw', 'width': '43vw'}),
 
-#Terceiro
-
-        html.Div([
-            html.Div([    
-                html.Label( id='verified_corrector_container', style={'color': 'white'}),
-    ], style={'display': 'flex', 'flex-direction': 'column', 'margin-top':'1vw'}),
-], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center','margin-left': '5vw', 'width': '25vw'}),
-    
     ], style={'display': 'flex'}),
-], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '8vw', 'top': '31.5vw', 'width': '82.5vw', 'height': '14vw'}),
+], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '8vw', 'top': '31.5vw', 'width': '82.5vw', 'height': '13vw'}),
 
     dcc.Store(id='pickle_store', storage_type='local'),
     html.Div(id='output-atmosphere-params'),
@@ -350,19 +342,6 @@ def atmosphere_params_to_dict(atmosphere_param):
     return {
         'uid': atmosphere_param.uid,
     }
-
-#@callback(
-#    Output('beginning-date', 'children'),
-#    [Input('store-atmosphere-params', 'data'),
-#    Input('url', 'pathname')]
-#)
-#def display_beginning_date(data, pathname):
-#    if pathname == '/analise' and data is not None:
-        
-#        beginning_date = data['date_beginning']
-#        return f'{beginning_date}'
-#    else:
-#        return ''   
 
 #Callbacks    
 
@@ -494,20 +473,6 @@ def display_data(pickle_file, pathname):
         return ''
 
 
-
-#Main Telescope
-#@callback(
-#    Output('main_telescope1', 'children'),
-#    [Input('store-atmosphere-params', 'data')]
-#)
-#def display_main_data(data):
-#    if data is not None:
-#        main_telescope = data
-#        main_telescope_dict = html.Div(main_telescope['uid'], id=main_telescope['uid'], className='option', n_clicks=0, style=option_STYLE)
-#        return [main_telescope_dict]
-#    else:
-#        return []
-
 #SOURCES
 
 @callback(
@@ -612,8 +577,7 @@ def update_wavefront_sensor_and_display_names(n_clicks, pathname, pickle_file):
     
 #verificar os loops com os wavefront sensor correspondentes:
 @callback(
-    [Output('verified_loop_container', 'children'),
-     Output('just_loops', 'children')],
+    Output('verified_loop_container', 'children'),
     [Input('just_sensors', 'children'),
      Input('url', 'pathname')],
     [State('pickle_store', 'data')]
@@ -628,23 +592,34 @@ def update_verified_loop(just_sensors, pathname, pickle_file):
         command_loop_mapping = create_dict_command(sys)
 
         associated_loops = [loop for loop, sensors in ws_loops.items() if any(sensor in sensors['input_sensors'] for sensor in just_sensors)]
-        labels = []
+    
         for i, loop in enumerate(associated_loops):
             command = next((cmd for cmd, loops in command_loop_mapping.items() if loop in loops), None)
-            labels.append(
-                html.Div([
-                    html.Span(f'Loop: {loop}, Command: '),
-                    dcc.Link(f'{command}', href='/commands'),
-            ], id=f'verified_loop[{i+1}]', style={'color': 'white'})
-            )
-        print(f"associated_loops: {associated_loops}")
-        return labels, associated_loops
+
+        command_wfc_mapping = create_dict_lp(sys)
+        labels_wfc = []
+        for i, loop_id in enumerate(associated_loops):  # Assuming loops is a list of loop IDs
+            loop = next((l for l in sys.loops if l.uid == loop_id), None)
+            if loop:
+                # Assuming command_wfc_mapping maps loop UID to a list of corrector UIDs
+                corrector_uids = command_wfc_mapping.get(loop.uid, [])
+                for corrector_uid in corrector_uids:
+                    # Find the command associated with this loop
+                    command = next((cmd for cmd, loops in command_loop_mapping.items() if loop_id in loops), None)
+                    labels_wfc.append(
+                        html.Div([
+                            html.Span(f'Wavefront Corrector: {corrector_uid}, Loop: {loop_id}, Command: '),
+                            dcc.Link(f'{command}', href='/commands'),
+                        ], id=f'loop-{i+1}', style={'color': 'white'})
+                    )
+        return labels_wfc
     else:
-        return [], []
+        return []
       
 
     
 #WAVEFRONT CORRECTORS
+"""
 @callback(
     Output('verified_corrector_container', 'children'),
     [Input('just_loops', 'children'),
@@ -673,7 +648,7 @@ def update_corrector_labels(loops, pathname, pickle_file):
 
         return labels
     else:
-        return []
+        return []"""
 
 
 

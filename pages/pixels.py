@@ -73,37 +73,37 @@ layout = html.Div([
            
             html.Div([
                 html.Label("Name of Detector: ", style={'color': 'white'}),
-                html.Div(id='name_ns', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+                html.Div(id='name_ns', style={'background-color': '#243343', 'width': '11vw', 'height': '1.6vw', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
     
             html.Div([
                 html.Label("Shutter Type: ", style={'color': 'white'}),
-                html.Div(id='shuttert', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+                html.Div(id='shuttert', style={'background-color': '#243343', 'width': '11vw', 'height': '1.6vw', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
-                html.Label("Subeapertures Size: ", style={'color': 'white'}),
-                html.Div(id='ss', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+                html.Label("Subapertures Size: ", style={'color': 'white'}),
+                html.Div(id='ss', style={'background-color': '#243343', 'width': '11vw', 'height': '1.6vw', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
      
             html.Div([
                 html.Label("Mask Offset: ", style={'color': 'white'}),
-                html.Div(id='mo', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+                html.Div(id='mo', style={'background-color': '#243343', 'width': '14vw', 'height': '1.6vw', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Frame Rate: ", style={'color': 'white'}),
-                html.Div(id='frame_rate', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+                html.Div(id='frame_rate', style={'background-color': '#243343', 'width': '11vw', 'height': '1.6vw', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Gain: ", style={'color': 'white'}),
-                html.Div(id='gain', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+                html.Div(id='gain', style={'background-color': '#243343', 'width': '11vw', 'height': '1.6vw', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
                 html.Label("Integration Time: ", style={'color': 'white'}),
-                html.Div(id='integration_time', style={'background-color': '#243343', 'width': '9.5vw', 'height': '1.6vw', 'margin-left': '10px'})
+                html.Div(id='integration_time', style={'background-color': '#243343', 'width': '11vw', 'height': '1.6vw', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '0.5vw'}),
 
             html.Div([
@@ -363,21 +363,7 @@ layout = html.Div([
     dcc.Store(id='teste_imagem'),
     html.Div(id='interval_start', style={'display': 'none'}),
     html.Div(id='interval_end', style={'display': 'none'}),
-    
-    #dcc.Graph(id='img_imagem', style={'width': '33%', 'display': 'inline-block'}),
 
-
-    #dcc.Dropdown(id='slice-selector', options=[], placeholder="Select Pixel Slice"),
-    #dcc.Graph(id='selected_slice', style={'width': '33%', 'display': 'inline-block'}),
-   
-    
-    #dcc.Graph(id='imag2D', style={'width': '33%', 'display': 'inline-block'}),
-    #dcc.Slider(id='frameindex', min=0, max=100, step=1, value=0, marks={0: '0', 100: '100'}),
-
-
-   # html.Div(id='mo', style={'color': 'red'}),
-    #html.Div(id='sm', style={'color': 'blue'}),
-    #html.Div(id='ss', style={'color': 'black'}),
 
 ], style={'position': 'relative'})
     
@@ -861,7 +847,7 @@ def display_detector_frame(pickle_file, pathname, clickData, second_clickData, s
         time_values = list(range(len(pixel_data_mean)))
         
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=time_values, y=pixel_data_mean, mode='lines', name='Mean Intensity of detector'))
+        fig.add_trace(go.Scatter(x=time_values, y=pixel_data_mean, mode='lines', name='Mean Intensity of detector', line=dict(dash='dash')))
 
         trigger_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
         time_values_1, time_values_2, pixel_intensity_over_time_1, pixel_intensity_over_time_2, x_1, y_1, x_2,y_2 = [None] *8
@@ -902,6 +888,7 @@ def display_detector_frame(pickle_file, pathname, clickData, second_clickData, s
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),
             yaxis_tickfont=dict(color='white'),
+            showlegend=True,
             legend=dict(
             font=dict(
                 color="white"

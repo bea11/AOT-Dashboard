@@ -70,12 +70,12 @@ layout = html.Div([
     #Strings    
         html.Div([
             html.Label("Loop: ", style={'color': 'white'}),
-            html.Div(id='loop', style={'background-color': '#243343', 'width': '160px', 'height': '18px', 'margin-left': '10px'})
+            html.Div(id='loop', style={'background-color': '#243343', 'width': '160px', 'height': '19px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
     
         html.Div([
             html.Label("Reference Commmands: ", style={'color': 'white'}),
-            html.Div(id='refcom', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            html.Div(id='refcom', style={'background-color': '#243343', 'width': '200px', 'height': '40px', 'margin-left': '10px', 'white-space': 'normal','word-wrap': 'break-word'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
         html.Div([
@@ -83,11 +83,10 @@ layout = html.Div([
             html.Div(id='rescom', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
      
-    #Integers
         html.Div([
             html.Label("Modal Coefficients: ", style={'color': 'white'}),
             html.Div(id='mc', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
-    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px', 'margin-top': '13px'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
         html.Div([
@@ -112,7 +111,7 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
         html.Div(id='deformmirror'),
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '6.75vw', 'top': '5vw', 'width': '37vw', 'height': '32vw'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '6.75vw', 'top': '5vw', 'width': '37vw', 'height': '31vw'}),
     
    html.Div([
             html.P("Objects", style={'text-align': 'left','margin-left': '1vw'}),
@@ -161,7 +160,7 @@ layout = html.Div([
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
 
-     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '37vw', 'top': '5vw', 'width': '20vw', 'height': '32vw'}),
+     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '37vw', 'top': '5vw', 'width': '20vw', 'height': '31vw'}),
 
     #2 quadrante 
     #imagem
@@ -211,20 +210,26 @@ layout = html.Div([
     ),
     html.Div(id='teste2_imagem'),
 
-    html.Div(dcc.Slider(
-                id='frame2_slider',
-                min=0,
-                max=1,
-                step=1,
-                value=0,
-                marks={},
-            ), style={
-                        'width': '450px',  
-                        'position': 'absolute',  
-                        'left': '20px',  
-                        'height': '30px',
-                        'top': '400px',  
-                    }),
+    html.Div(
+    id='slider-container',
+    children=[
+        dcc.Slider(
+            id='frame2_slider',
+            min=0,
+            max=1,
+            step=1,
+            value=0,
+            marks={},
+        )
+    ],
+    style={
+        'width': '450px',
+        'position': 'absolute',
+        'left': '20px',
+        'height': '30px',
+        'top': '400px',
+    },
+)
 
 ], style={
     'display': 'flex',  
@@ -234,7 +239,7 @@ layout = html.Div([
     'left': '58vw',
     'top': '3vw',
     'width': '39vw', 
-    'height': '35.5vw'
+    'height': '33vw'
 }),
   
   #3 quadrante
@@ -244,9 +249,9 @@ layout = html.Div([
 ], style={
     'background-color': '#1C2634',  
     'position': 'absolute',
-    'left': '8vw',
-    'top': '39vw',
-    'width': '44vw',  
+    'left': '7vw',
+    'top': '37vw',
+    'width': '45vw',  
     'height': '25vw' 
 }),
  #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
@@ -262,7 +267,7 @@ layout = html.Div([
     'background-color': '#1C2634',  # Cor rectangulo
     'position': 'absolute',
     'left': '53vw',
-    'top': '39vw',
+    'top': '37vw',
     'width': '44.5vw',  
     'height': '25vw'  
 }),
@@ -583,7 +588,8 @@ def update_image(slider_value, pickle_file, pathname, selected_command, scale_ty
 @callback(
     [Output('frame2_slider', 'max'),
      Output('frame2_slider', 'marks'), 
-     Output('frame2_slider', 'value')],
+     Output('frame2_slider', 'value'),
+     Output('slider-container', 'style')],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
      Input('command-dropdown_c', 'value')]
@@ -596,15 +602,15 @@ def update_slider(pickle_file, pathname, selected_command):
         if not selected_command:
             selected_command = sys.loops[0].commands.name if sys.loops else None
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
-        if loop is None:
-            return 0, {}, 0  
+        if loop or not hasattr(loop.commanded_corrector, 'actuator_coordinates') or not loop.commanded_corrector.actuator_coordinates:
+            return 0, {}, 0, {'display': 'none'}  
         
         img_data = loop.commands.data
         max_frame = img_data.shape[0] - 1
         marks = {i: str(i) for i in range(0, max_frame + 1, 1000)}  
-        return max_frame, marks, 0
+        return max_frame, marks, 0, {}
     else:
-        return 0, {}, 0
+        return 0, {}, 0,{'display': 'none'}
     
 #Gráfico
 
@@ -635,7 +641,7 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
         time_values, commands_over_time, x,y =[None] *4
 
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=time_values, y=cmd_data_mean, mode='lines', name='Mean command value'))
+        fig.add_trace(go.Scatter(x=time_values, y=cmd_data_mean, mode='lines', name='Mean command value', line=dict(dash='dash')))
 
         if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D_com':
            
@@ -649,7 +655,7 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
         
         fig.update_layout(
             title='Actuator motion per frame',
-            xaxis_title='Time',
+            xaxis_title='Frame',
             yaxis_title='Intensity',
             autosize=False,
             width=600,
@@ -662,6 +668,7 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),
             yaxis_tickfont=dict(color='white'),
+            showlegend=True,
             legend=dict(
             font=dict(
                 color="white"

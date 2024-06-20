@@ -183,15 +183,15 @@ layout = html.Div([
                     html.P("For the Y dimension Measurement: ", style={'color': 'white', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF'}),
                     html.Div([
                         html.Label("Maximum value: ", style={'color': 'white'}),
-                        html.Div(id='stat_max_m_y', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
+                        html.Div(id='stat_max_m_y', style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
                     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
                     html.Div([
                         html.Label("Minimum value: ", style={'color': 'white'}),
-                        html.Div(id='stat_min_m_y', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'})
+                        html.Div(id='stat_min_m_y', style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'})
                     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
                     html.Div([
                         html.Label("Average values: ", style={'color': 'white'}),
-                        html.Div(id='stat_aver_m_y', style={'background-color': '#243343', 'width': '180px', 'height': '20px', 'margin-left': '10px'}),
+                        html.Div(id='stat_aver_m_y', style={'background-color': '#243343', 'width': '60px', 'height': '20px', 'margin-left': '10px'}),
                     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
                 ], style={'display': 'inline-block', 'vertical-align': 'top'}),
             ], style={'display': 'flex', 'justify-content': 'space-between'})
@@ -237,7 +237,6 @@ layout = html.Div([
                 {'label': 'Green', 'value': 'Green'},
                 {'label': 'Blue', 'value': 'Blue'},
                 {'label': 'Heat', 'value': 'Heat'},
-                {'label': 'Tropics', 'value': 'Tropics'},
                 {'label': 'Rainbow', 'value': 'Rainbow'},
         ],
         value='Standard',
@@ -256,31 +255,26 @@ layout = html.Div([
         className='custom-select',
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
-       # html.Div(id='image', style={'position': 'absolute', 'left': '160px', 'top': '50px', 'width': '600px', 'height': '420px'}),
-        #dcc.Graph(id='teste_meas', style={'position': 'absolute', 'left': '20px', 'top': '50px'}),
-        #dcc.Graph(id='measnovo', style={'position': 'absolute', 'left': '10px', 'top': '50px'}),
         
         
         html.Div([  
             
             html.Div(id='testes_imagem1'),
-            #dcc.Graph(id='testes_imagem2', style={
-            #    'position': 'absolute',
-            #    'left': '200px',
-            #    'top': '50px',
-            #    'height': '30px',
-            #    'width': '400px'
-            #}),
             html.Div(id='testes_imagem2'),
 
-            html.Div(dcc.Slider(
-                id='frame_slider',
-                min=0,
-                max=1,
-                step=1,
-                value=0,
-                marks={},
-            ), style={
+            html.Div(
+                id='slider2-container',
+                children=[
+                    dcc.Slider(
+                    id='frame_slider',
+                    min=0,
+                    max=1,
+                    step=1,
+                    value=0,
+                    marks={},
+                     )
+                ],
+             style={
                         'width': '600px',  
                         'position': 'absolute',  
                         'left': '20px',  
@@ -411,8 +405,6 @@ def apply_colormap(colormap):
         return 'blues_r'
     elif colormap == 'Heat':
         return 'hot'
-    elif colormap == 'Tropic':
-        return 'tropic'
     elif colormap == 'Rainbow':
         return 'rainbow'
     else:
@@ -608,6 +600,7 @@ def specific_properties_meas(pickle_file, pathname, selected_command):
     Output('frame_slider', 'max'),
     Output('frame_slider', 'marks'), 
     Output('frame_slider', 'value'),
+    Output('slider2-container', 'style'),
     [Input('pickle_store', 'data'),
     Input('url', 'pathname'),
     Input('command-dropdown_m', 'value')]
@@ -621,9 +614,11 @@ def load_image_data(pickle_file, pathname, selected_command):
             selected_command = sys.wavefront_sensors[0].measurements.name if sys.wavefront_sensors else None
         
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
-        
+        subaperture_mask = sensor.subaperture_mask
         if sensor is None or sensor.measurements is None:
-            return None, 0, dash.no_update, dash.no_update
+            subaperture_mask = sensor.subaperture_mask 
+        if sensor is None or subaperture_mask is None or subaperture_mask.data is None:
+            return 0, {}, 0, {'display': 'none'}  
         
         img_data = sensor.measurements.data 
         
@@ -633,7 +628,7 @@ def load_image_data(pickle_file, pathname, selected_command):
         print(f"max_frame: {max_frame}, marks: {marks}")
         return img_data.tolist(), max_frame, marks, 0
     else:
-        return None, 0, dash.no_update, dash.no_update
+        return 0, {}, 0, {'display': 'none'}  
 
 @callback(
     Output('testes_imagem1', 'children'),
@@ -707,15 +702,14 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
             #xaxis_title='X',
             #yaxis_title='Y',
             autosize=False,
-            width=250,
-            height=300,
+            width=300,
+            height=350,
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),  
             xaxis_title_font=dict(color='white'),  
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),  
             yaxis_tickfont=dict(color='white'),
-            coloraxis_showscale=False, 
             margin=dict(l=65, r=50, b=65, t=90),
             coloraxis_colorbar=dict(tickfont=dict(color='white')),
         )
@@ -798,15 +792,14 @@ def update_image_y(data,pickle_file, frame_index, scale_type, color_type, interv
             #xaxis_title='X',
             #yaxis_title='Y',
             autosize=False,
-            width=250,
-            height=300,
+            width=300,
+            height=350,
             paper_bgcolor='rgba(0,0,0,0)', 
             title_font=dict(color='white'),  
             xaxis_title_font=dict(color='white'),  
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),  
             yaxis_tickfont=dict(color='white'),
-            coloraxis_showscale=False, 
             margin=dict(l=65, r=50, b=65, t=90),
             coloraxis_colorbar=dict(tickfont=dict(color='white')),
         )
@@ -925,8 +918,8 @@ def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first
         time_values_y = list(range(len(meas_data_mean_y)))
 
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=time_values_x, y=meas_data_mean_x, mode='lines', name='Mean X Intensity'))
-        fig.add_trace(go.Scatter(x=time_values_y, y=meas_data_mean_y, mode='lines', name='Mean Y Intensity'))
+        fig.add_trace(go.Scatter(x=time_values_x, y=meas_data_mean_x, mode='lines', name='Mean X Intensity', line=dict(dash='dash')))
+        fig.add_trace(go.Scatter(x=time_values_y, y=meas_data_mean_y, mode='lines', name='Mean Y Intensity',line=dict(dash='dash')))
 
         time_values_x, time_values_y, time_values_1, time_values_2, meas_over_time_x, meas_over_time_y, meas_over_time_1,meas_over_time_2,x_x, x_y, y_x,y_y = [None] * 12
 
@@ -937,13 +930,13 @@ def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first
             x_x, y_x, z_x = extract_coordinates(x_clickData)
             meas_over_time_x = meas_data_x[:, int(y_x)]
             time_values_x = list(range(len(meas_over_time_x)))
+            fig.add_trace(go.Scatter(x=time_values_x, y=meas_over_time_x, mode='lines', name=f'X Intensity y={y_x}'))    
 
-
-        if trigger_id == 'y_dimension_image':
+        elif trigger_id == 'y_dimension_image':
             x_y, y_y, z_y = extract_coordinates(y_clickData)
             meas_over_time_y = meas_data_y[:, int(y_y)]  
             time_values_y = list(range(len(meas_over_time_y)))
-
+            fig.add_trace(go.Scatter(x=time_values_y, y=meas_over_time_y, mode='lines', name=f'Y Intensity y={y_y}'))  
 #estes nao dao
 
         if trigger_id == 'testes_imagem1':
@@ -959,8 +952,6 @@ def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first
 
         print(f" o trigger é {trigger_id}")
         
-        fig.add_trace(go.Scatter(x=time_values_x, y=meas_over_time_x, mode='lines', name=f'X Intensity x={x_x},y={y_x}'))    
-        fig.add_trace(go.Scatter(x=time_values_y, y=meas_over_time_y, mode='lines', name=f'Y Intensity x={x_y},y={y_y}'))
         fig.add_trace(go.Scatter(x=time_values_1, y=meas_over_time_1, mode='lines', name='X Intensity 2D'))
         fig.add_trace(go.Scatter(x=time_values_2, y=meas_over_time_2, mode='lines', name='Y Intensity 2D'))
 
@@ -979,6 +970,7 @@ def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),
             yaxis_tickfont=dict(color='white'),
+            showlegend=True,
             legend=dict(
             font=dict(
                 color="white"
