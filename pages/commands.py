@@ -656,7 +656,7 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
         fig.update_layout(
             title='Actuator motion per frame',
             xaxis_title='Frame',
-            yaxis_title='Intensity',
+            yaxis_title='Intensity (m)',
             autosize=False,
             width=600,
             height=350,

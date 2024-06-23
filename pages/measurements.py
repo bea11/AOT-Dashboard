@@ -262,22 +262,17 @@ layout = html.Div([
             html.Div(id='testes_imagem1'),
             html.Div(id='testes_imagem2'),
 
-            html.Div(
-                id='slider2-container',
-                children=[
-                    dcc.Slider(
-                    id='frame_slider',
-                    min=0,
-                    max=1,
-                    step=1,
-                    value=0,
-                    marks={},
-                     )
-                ],
-             style={
+            html.Div(dcc.Slider(
+                id='frame_slider',
+                min=0,
+                max=1,
+                step=1,
+                value=0,
+                marks={},
+            ), style={
                         'width': '600px',  
                         'position': 'absolute',  
-                        'left': '20px',  
+                        'left': '1vw',  
                         'height': '30px',
                         'top': '360px', 
                     }),
@@ -600,7 +595,6 @@ def specific_properties_meas(pickle_file, pathname, selected_command):
     Output('frame_slider', 'max'),
     Output('frame_slider', 'marks'), 
     Output('frame_slider', 'value'),
-    Output('slider2-container', 'style'),
     [Input('pickle_store', 'data'),
     Input('url', 'pathname'),
     Input('command-dropdown_m', 'value')]
@@ -615,10 +609,9 @@ def load_image_data(pickle_file, pathname, selected_command):
         
         sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.measurements.name == selected_command), None)
         subaperture_mask = sensor.subaperture_mask
-        if sensor is None or sensor.measurements is None:
-            subaperture_mask = sensor.subaperture_mask 
+
         if sensor is None or subaperture_mask is None or subaperture_mask.data is None:
-            return 0, {}, 0, {'display': 'none'}  
+            return 0, 0, {}, 0  
         
         img_data = sensor.measurements.data 
         
@@ -628,7 +621,7 @@ def load_image_data(pickle_file, pathname, selected_command):
         print(f"max_frame: {max_frame}, marks: {marks}")
         return img_data.tolist(), max_frame, marks, 0
     else:
-        return 0, {}, 0, {'display': 'none'}  
+        return 0,0, {}, 0
 
 @callback(
     Output('testes_imagem1', 'children'),
@@ -699,8 +692,8 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
         fig = px.imshow(frame_processed, color_continuous_scale=colormap)
         fig.update_layout(
             title=f'Frame {frame_index} Dimension X',
-            #xaxis_title='X',
-            #yaxis_title='Y',
+            xaxis_title='X',
+            yaxis_title='Y',
             autosize=False,
             width=300,
             height=350,
@@ -715,7 +708,7 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
         )
         return dcc.Graph(figure=fig, style={
                     'position': 'absolute',
-                    'left': '3vw',
+                    'left': '0vw',
                     'top': '2vw',
                     'height': '7vw',
                     'width': '15vw'
@@ -789,8 +782,8 @@ def update_image_y(data,pickle_file, frame_index, scale_type, color_type, interv
         fig = px.imshow(frame_processed, color_continuous_scale=colormap)
         fig.update_layout(
             title=f'Frame {frame_index} Dimension Y',
-            #xaxis_title='X',
-            #yaxis_title='Y',
+            xaxis_title='X',
+            yaxis_title='Y',
             autosize=False,
             width=300,
             height=350,
@@ -958,7 +951,7 @@ def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first
         fig.update_layout(
             title='Intensities per measurement per frame',
             xaxis_title='Frame',
-            yaxis_title='Intensity',
+            yaxis_title='Intensity (ud)',
             autosize=False,
             width=600,
             height=350,

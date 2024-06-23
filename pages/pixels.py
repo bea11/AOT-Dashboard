@@ -665,7 +665,7 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         fig.update_layout(
             title='Pixel Intensities per Frame',
             xaxis_title='Frame',
-            yaxis_title='Pixel Intensity',
+            yaxis_title='Pixel Intensity Index',
             autosize=False,
             width=600,
             height=350,
@@ -876,7 +876,7 @@ def display_detector_frame(pickle_file, pathname, clickData, second_clickData, s
         fig.update_layout(
             title='Intensity per pixel per frame',
             xaxis_title='Frame',
-            yaxis_title='Intensity',
+            yaxis_title='Intensity (adu)',
             autosize=False,
             width=600,
             height=350,
