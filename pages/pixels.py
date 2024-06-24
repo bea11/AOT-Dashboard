@@ -780,7 +780,7 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
             img_data = img_data - sensor.detector.sky_background.data  
 
         if field and sensor.detector.flat_field is not None:
-            img_data = img_data - sensor.detector.flat_field.data  
+            img_data = img_data * sensor.detector.flat_field.data  
         
         frame_index = slider_value
         
