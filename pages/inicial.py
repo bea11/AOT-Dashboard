@@ -91,12 +91,16 @@ def store_uploaded_file(contents, filename):
             print(f"File extension.lower is {file_extension.lower()}")
             if filename.lower().endswith('.fits'):
                 decoded = base64.b64decode(content_string)
-                sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
-                
-                with open('system.pickle', 'wb') as f:
-                    pickle.dump(sys, f)
+                try:
+                    sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
+                    
+                    with open('system.pickle', 'wb') as f:
+                        pickle.dump(sys, f)
 
-                return 'system.pickle'
+                    return 'system.pickle'
+                except ValueError as e:
+                    print("NOT A AOT:", e)
+                    raise PreventUpdate
             else:
                 raise PreventUpdate
         else:
@@ -114,12 +118,13 @@ def store_uploaded_file(contents, filename):
 def display_uploaded_filename(filename):
     if filename is not None:
         if filename.lower().endswith('.fits'):
+            
             return html.Div([
                 html.H6(f"Uploaded FITS file: {filename}", style={'textAlign': 'left', 'marginLeft': '20vw', 'marginTop': '6vw'})
             ])
         else:
             return html.Div([
-                html.H6("Uploaded file is not a .fits file.", style={'textAlign': 'left', 'marginLeft': '20vw', 'marginTop': '6vw', 'color': 'red'})
+                html.H6("Uploaded file is not a AOT fits file.", style={'textAlign': 'left', 'marginLeft': '20vw', 'marginTop': '6vw', 'color': 'red'})
             ])
     else:
         return html.Div()

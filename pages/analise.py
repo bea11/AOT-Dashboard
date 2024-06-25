@@ -598,13 +598,12 @@ def update_verified_loop(just_sensors, pathname, pickle_file):
 
         command_wfc_mapping = create_dict_lp(sys)
         labels_wfc = []
-        for i, loop_id in enumerate(associated_loops):  # Assuming loops is a list of loop IDs
+        for i, loop_id in enumerate(associated_loops):  
             loop = next((l for l in sys.loops if l.uid == loop_id), None)
             if loop:
-                # Assuming command_wfc_mapping maps loop UID to a list of corrector UIDs
+                
                 corrector_uids = command_wfc_mapping.get(loop.uid, [])
                 for corrector_uid in corrector_uids:
-                    # Find the command associated with this loop
                     command = next((cmd for cmd, loops in command_loop_mapping.items() if loop_id in loops), None)
                     labels_wfc.append(
                         html.Div([
