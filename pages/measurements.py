@@ -840,7 +840,7 @@ def display_measurements(pickle_file, pathname, selected_command):
         fig_x.update_layout(
             title='X measurement per subaperture per frame',
             xaxis_title='Frame',
-            yaxis_title='Subaperture',
+            yaxis_title='Subaperture Index',
             autosize=False,
             width=400,
             height=300,
@@ -857,7 +857,7 @@ def display_measurements(pickle_file, pathname, selected_command):
         fig_y.update_layout(
             title='Y measurement per subaperture per frame',
             xaxis_title='Frame',
-            yaxis_title='Subaperture',
+            yaxis_title='Subaperture Index',
             autosize=False,
             width=400,
             height=300,

@@ -52,7 +52,7 @@ layout = html.Div([
                     'text-color': 'white',
                     'height': '35px',
                     'backgroundColor': '#1C2634',
-                    'left': '28vw',
+                    'left': '26vw',
                     'margin-top': '0px',
                     'display': 'flex',  
                     'position': 'absolute', 
@@ -651,7 +651,7 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
 
             time_values = list(range(len(commands_over_time)))
          
-        fig.add_trace(go.Scatter(x=time_values, y=commands_over_time, mode='lines', name=f'Intensity x={x},y={y}'))
+        fig.add_trace(go.Scatter(x=time_values, y=commands_over_time, mode='lines', name=f'Intensity y={y}'))
         
         fig.update_layout(
             title='Actuator motion per frame',
