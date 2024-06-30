@@ -8,7 +8,9 @@ import datetime
 from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
 
 
-app = dash.Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+app = dash.Dash(__name__, use_pages=True, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
 server = app.server
 
 #estilo
@@ -24,30 +26,22 @@ SIDEBAR_STYLE = {
 }
 
 
-
-sidebar = dbc.Nav(
+navbar = dbc.Navbar(
     [
-        dbc.NavLink("Home", href="/", active="exact"),
-        dbc.NavLink("Analise", href="/analise", active="exact"),
-        dbc.NavLink("Overview", href="/overview", active="exact"),
-        dbc.NavLink("Sensor", href="/sensor", active="exact"),
-      
+        dbc.NavItem(dbc.NavLink("Home", href="/")),
+        dbc.NavItem(dbc.NavLink("Overview", href="/analise")),
+        dbc.NavItem(dbc.NavLink("Pixel", href="/pixels")),
+        dbc.NavItem(dbc.NavLink("Measurement", href="/measurements")),
+        dbc.NavItem(dbc.NavLink("Command", href="/commands")),
     ],
-    vertical=True,
-    pills=True,
-    style=SIDEBAR_STYLE,
+    color="dark",
+    dark=True,
 )
-            
 
 app.layout = html.Div([
     dcc.Store(id='store'),
     dcc.Location(id='url', refresh=False),
-    html.Div([
-        html.Div(
-            dcc.Link(f"{page['name']}", href=page["relative_path"])
-        ) for page in dash.page_registry.values()
-    ], 
-    style=SIDEBAR_STYLE),
+    navbar,
     dash.page_container
 ])
 
@@ -55,10 +49,3 @@ app.layout = html.Div([
 if __name__ == '__main__':
     app.run_server(debug=True)
 
-#html.Div([
-#    dcc.link(children=page['name']+" | ",href=page['path'])
-#    for page in dash.page_registry.values()
-
-#    html.Hr(),
-#    dash.page_container
-#    ])

@@ -3,3 +3,9 @@ pandas==2.2.0
 aotpy==1.0.0
 dash_bootstrap_components==1.5.0
 gunicorn==21.2.0
+numpy==1.25.2
+flask==3.0.2
+plotly==5.18.0
+matplotlib==3.8.2
+astropy==6.0.0
+pillow==10.0.0

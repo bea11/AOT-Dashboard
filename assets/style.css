@@ -27,3 +27,26 @@ body {
 .tree-view li {
     margin-bottom: 0.5em;
 }
+
+.navbar {
+    background-color: #1C2634 !important;
+    padding: 0;
+}
+
+.nav-link {
+    padding: 10px 10px;
+    height: 100%; 
+}
+
+.nav-link:hover {
+    background-color: #8CE397;
+    color: #FFFFFF;
+}
+
+#pages_content{
+    padding-top: 20px;
+}
+
+.slider-step-label {
+    color: white !important;
+}
