@@ -37,7 +37,8 @@ You can test the dashboard using the following files from the [ESO Science Archi
    ```bash
    cd AOT-Dashboard
 3. **Run the application:**
-   ```bash python3 app.py
+   ```bash
+   python3 app.py
 4.**Open the Dashboard:**
   After running the application, open your browser and go to the link provided (usually http://127.0.0.1:8050/).
    
