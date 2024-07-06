@@ -66,7 +66,7 @@ layout = html.Div([
 ], style={'position': 'absolute', 'left': '6.75vw','display': 'flex', 'justify-content': 'space-between', 'top': '4vw', 'width': '8vw', 'height': '2vw'}),
   
   
-   #1 quadrante
+   #1 quadrante -> Values of the detector
     dcc.Store(id='1-quadrante-content', data=[
         html.Div([
             html.P("Properties", style={'text-align': 'left', 'margin-left': '1vw'}),
@@ -134,7 +134,7 @@ layout = html.Div([
 
 ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '0vw', 'top': '2.25vw', 'width': '30.25vw', 'height': '10vw'}),
     
-   #1 quadrante 
+   #Objects associated with the detector 
         html.Div([
             html.P("Objects", style={'text-align': 'left','margin-left': '0vw'}),
 
@@ -180,14 +180,11 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
-    
-
-
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '23vw', 'top': '2.25vw', 'width': '20vw', 'height': '36.25vw'}),
 ]),
-    #2 quadrante 
-    #imagem
+   
+    #Manipulation of the image
         html.Div([
             dbc.Select(
     id="aotpy_scale",
@@ -234,6 +231,7 @@ layout = html.Div([
     ),
     dcc.Graph(id='teste_imagem_diferente', style={'position': 'absolute', 'left': '20px', 'top': '20px', 'height': '330px', 'width': '500px'}),
     html.Div(dcc.Slider(
+        #rasterized image
                 id='frame3_slider',
                 min=0,
                 max=1,
@@ -285,7 +283,7 @@ layout = html.Div([
     ], style={'display': 'flex', 'align-items': 'left'}),
 
 ], style={
-    'background-color': '#1C2634',  # Corectangulo
+    'background-color': '#1C2634',  #Rectangle cor
     'position': 'absolute',
     'left': '7vw',
     'top': '43vw',
