@@ -15,7 +15,7 @@ from dash.dependencies import Input, Output, State, ALL
 dash.register_page(__name__, path='/analise')
 
 
-#para editar cada quadro do AOT:
+#Edit each space on AOT:
 option_STYLE = {
     'width': '100%',
     'background-color': '#1C2634',
@@ -28,8 +28,8 @@ option_STYLE = {
 layout = html.Div([
     html.H1("Overview", style={'text-align': 'left', 'margin-left': '12vw'}),
     
-#nomes/blocos -Juntar os 2
-    #primeiros2
+#Blocks
+ 
     html.Div([
             
                 html.Div('System Name:', style={'margin-top': '2vw'}),
@@ -54,7 +54,7 @@ html.Div([
                 }),
                  ], style={'position': 'absolute', 'margin-left': '23vw'}),
 
-    #segundos2
+
     
             html.Div([
                 html.Div('Beginning date:', style={'margin-top': '2vw'}),
@@ -80,7 +80,7 @@ html.Div([
                     'margin-top': '0vw'
                 }),
                  ], style={'position': 'absolute', 'margin-left': '51vw'}),
-#terceiros2
+
     html.Div([
             html.Div([
                 html.Div('Strehl Ratio:', style={'margin-top': '2vw'}),
@@ -114,7 +114,7 @@ html.Div([
 
 
 
-    #esquema AO
+#AO Scheme details
     html.Div([
         html.H3("AO System", style={'text-align': 'center', 'text-decoration': 'underline', 'text-decoration-color': '#C17FEF', 'margin-bottom': '1vw','margin-top': '1vw'}),
 
@@ -207,19 +207,18 @@ html.Div([
     ], style={'position': 'absolute', 'top': '16vw', 'width': '100%'}),
 
 
-#3parte
+#Hierarchy Section
 html.Div([
         html.Div([
-    
-        # Primeiro
 
+#Wavefront sensors associated with the clicked source
   
         html.Div([
             html.Div([
                 html.Div(id='sensor_source_div'),
     ], style={'display': 'flex', 'flex-direction': 'column', 'margin-top':'1vw'}),
 ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'margin-left': '2vw', 'width': '30vw'}),
-       # Segundo
+#Wavefront corrector and loops associated with the wavefront sensor
         
         html.Div([
             html.Div([
@@ -237,10 +236,10 @@ html.Div([
     html.Div(id='just_loops', style={'display': 'none'}),
 ])
 
-#returnar dados todos
 
-#Funções
 
+#Functions
+#Dictionary of the source
 def source_to_dict(source):
     return {
         'uid': source.uid,
@@ -250,7 +249,7 @@ def source_to_dict(source):
         'azimuth_offset': source.azimuth_offset,
         'width': source.width
     }
-
+#Dictionary of the wavefront sensor
 def wavefront_sensors_to_dict(wavefront_sensor):
     return {
         'uid': wavefront_sensor.uid,
@@ -258,7 +257,23 @@ def wavefront_sensors_to_dict(wavefront_sensor):
         'subaperture_size': wavefront_sensor.subaperture_size,
         'wavelength': wavefront_sensor.wavelength,
     }
-
+#Dictionary of the loops
+def loop_to_dict(loop):
+    return {
+        'uid': loop.uid, 
+        'commands':loop.commands.name if loop.commands is not None else None,
+    }
+#Dictionary of the wavefront corrector
+def wavefront_correctors_to_dict(wavefront_corrector):
+    return {
+        'uid': wavefront_corrector.uid,
+    }
+#Dictionary of the atmosphere parameters
+def atmosphere_params_to_dict(atmosphere_param):
+    return {
+        'uid': atmosphere_param.uid,
+    }
+#Iterate over the sources of the wavefront sensor and add its associated sources
 def create_dict_ws(sys):
     e = {}
     for wavefront_sensor in sys.wavefront_sensors:
@@ -268,7 +283,7 @@ def create_dict_ws(sys):
     print(f"e:{e} type :{type(e)}")
     return e
 
-
+#Names of the measurements of the wavefront sensor
 def create_dict_image(sys):
     f = {}
     for wavefront_sensor in sys.wavefront_sensors:
@@ -280,7 +295,7 @@ def create_dict_image(sys):
     print(f"f: {f} type: {type(f)}")
     return f
 
-#wavefront sensors dos loops -> eu ao certificar me que são control loops uso a instancia da função input_sensor
+#first compare the loop to check if its control loop, if it is add the corresponding input sensors to the list
 def create_dict_wc(sys):
     k = {}
     for loop in sys.loops:
@@ -291,7 +306,7 @@ def create_dict_wc(sys):
     print(f"k: {k}, type: {type(k)}")        
     return k
 
-#comandos dos loops
+#loops commands
 def create_dict_command(sys):
     l = {}
     for loop in sys.loops:
@@ -303,7 +318,7 @@ def create_dict_command(sys):
     print(f"l: {l} type: {type(l)}")
     return l
 
-#detetores
+#Detectors of the wavefront sensors, iterate for each wavefront sensor
 def create_dict_detector(sys):
     h = {}
     for wavefront_sensor in sys.wavefront_sensors:
@@ -315,14 +330,7 @@ def create_dict_detector(sys):
     print(f"h: {h} type: {type(h)}")
     return h
 
-#LOOP
-def loop_to_dict(loop):
-    return {
-        'uid': loop.uid, 
-        'commands':loop.commands.name if loop.commands is not None else None,
-    }
-
-#correctores dos loops
+#Iterate over each loop and add the associated wavefront corrector for that loop
 def create_dict_lp(sys):
     d = {}
     for loop in sys.loops:
@@ -333,15 +341,6 @@ def create_dict_lp(sys):
         print(f"d: {d}, type: {type(d)}")
     return d
 
-def wavefront_correctors_to_dict(wavefront_corrector):
-    return {
-        'uid': wavefront_corrector.uid,
-    }
-
-def atmosphere_params_to_dict(atmosphere_param):
-    return {
-        'uid': atmosphere_param.uid,
-    }
 
 #Callbacks    
 
@@ -374,11 +373,9 @@ def display_end_data(pickle_file, pathname):
         #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-
         date_end = sys.date_end
 
-        return f"{date_end}"
-        
+        return f"{date_end}"    
     else:
         return ''
 
@@ -389,14 +386,11 @@ def display_end_data(pickle_file, pathname):
 )
 def display_config_data(pickle_file, pathname):
     if pathname == '/analise' and pickle_file is not None:
-        #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-
         config = sys.config
 
-        return f"{config}"
-        
+        return f"{config}"    
     else:
         return ''
 
@@ -407,14 +401,12 @@ def display_config_data(pickle_file, pathname):
 )
 def display_ratio_data(pickle_file, pathname):
     if pathname == '/analise' and pickle_file is not None:
-        #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
         ratio = sys.strehl_ratio
 
-        return f"{ratio}"
-        
+        return f"{ratio}"        
     else:
         return ''
     
@@ -428,11 +420,9 @@ def display_name_data(pickle_file, pathname):
         #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-
         system_name = sys.name
 
-        return f"{system_name}"
-        
+        return f"{system_name}"        
     else:
         return ''
 
@@ -446,11 +436,9 @@ def display_main_data(pickle_file, pathname):
         #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-
         main_telescope = sys.main_telescope.uid
 
-        return f"{main_telescope}"
-        
+        return f"{main_telescope}"        
     else:
         return ''
     
@@ -464,16 +452,14 @@ def display_data(pickle_file, pathname):
         #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-
         system_mode = sys.ao_mode
 
-        return f"{system_mode}"
-        
+        return f"{system_mode}"        
     else:
         return ''
 
 
-#SOURCES
+#SOURCES, need to create a button for the user to select and source (hierarchy section)
 
 @callback(
     Output('source_divs1', 'children'),
@@ -528,7 +514,8 @@ def display_loop(pickle_file, pathname):
         return loop_buttons
     else:
         return []
-    
+
+#All in one section, display the detector and measurements associated with the wavefront sensor
 @callback(
     [Output('sensor_source_div', 'children'),
      Output('just_sensors', 'children')],
@@ -541,7 +528,7 @@ def update_wavefront_sensor_and_display_names(n_clicks, pathname, pickle_file):
         #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-
+#trigger detected, if the trigger is from the button it continues with the function
         ctx = dash.callback_context
         if not ctx.triggered:
             return [], []
@@ -575,7 +562,7 @@ def update_wavefront_sensor_and_display_names(n_clicks, pathname, pickle_file):
     else:
         return [], []
     
-#verificar os loops com os wavefront sensor correspondentes:
+#All in one, wavefront correctors, loops and commands
 @callback(
     Output('verified_loop_container', 'children'),
     [Input('just_sensors', 'children'),
@@ -587,7 +574,7 @@ def update_verified_loop(just_sensors, pathname, pickle_file):
         #pickle file
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-
+#Lists for loops and comanded loops
         ws_loops = create_dict_wc(sys)
         command_loop_mapping = create_dict_command(sys)
 
@@ -600,8 +587,7 @@ def update_verified_loop(just_sensors, pathname, pickle_file):
         labels_wfc = []
         for i, loop_id in enumerate(associated_loops):  
             loop = next((l for l in sys.loops if l.uid == loop_id), None)
-            if loop:
-                
+            if loop:               
                 corrector_uids = command_wfc_mapping.get(loop.uid, [])
                 for corrector_uid in corrector_uids:
                     command = next((cmd for cmd, loops in command_loop_mapping.items() if loop_id in loops), None)
@@ -615,41 +601,6 @@ def update_verified_loop(just_sensors, pathname, pickle_file):
     else:
         return []
       
-
-    
-#WAVEFRONT CORRECTORS
-"""
-@callback(
-    Output('verified_corrector_container', 'children'),
-    [Input('just_loops', 'children'),
-     Input('url', 'pathname')],
-    [State('pickle_store', 'data')]
-)
-def update_corrector_labels(loops, pathname, pickle_file):
-    if pathname == '/analise' and pickle_file is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-
-        command_wfc_mapping = create_dict_lp(sys)
-
-        labels = []
-        for i, loop_id in enumerate(loops):  # Assuming loops is a list of loop IDs
-            loop = next((l for l in sys.loops if l.uid == loop_id), None)
-            if loop:
-                # Assuming command_wfc_mapping maps loop UID to a list of corrector UIDs
-                corrector_uids = command_wfc_mapping.get(loop.uid, [])
-                for corrector_uid in corrector_uids:
-                    labels.append(
-                        html.Div([
-                            html.Span(f'Wavefront Corrector: {corrector_uid}, Loop: {loop_id}'),
-                        ], id=f'loop-{i+1}', style={'color': 'white'})
-                    )
-
-        return labels
-    else:
-        return []"""
-
-
 
 #WAVEFRONT CORRECTORS
 
@@ -669,18 +620,7 @@ def display_corrector1(pickle_file, pathname):
         return corrector_divs
     else:
         return []
-#@callback(
-#    Output('corrector_divs2', 'children'),
-#    [Input('store-atmosphere-params', 'data')]
-#)
-#def display_corrector2(data):
-#    if data is not None:
-#        correctors = data['wavefront_correctors']
-#        corrector_divs = [html.Div(corrector['uid'], id=corrector['uid'], className='option', n_clicks=0, style=option_STYLE) for corrector in correctors]
-#        return corrector_divs
-#    else:
-#        return []
-    
+#Atmosphere Parameters
 @callback(
     Output('atm_divs', 'children'),
     [Input('pickle_store', 'data'),
