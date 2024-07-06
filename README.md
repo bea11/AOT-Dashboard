@@ -1,6 +1,6 @@
 # Advanced Visualization for Deep Space Telemetry Applications
 
-This is the project for my dissertation, "Advanced Visualization for Deep Space Telemetry Applications." This Python dashboard uses Dash to visualize Adaptive Optics Telemetry (AOT) data. The project leverages the `aotpy` Python package, along with Numpy and Plotly, and utilizes datasets from the European Southern Observatory (ESO).
+This is the project for my dissertation, "Advanced Visualization for Deep Space Telemetry Applications". This Python dashboard uses Dash to visualize Adaptive Optics Telemetry (AOT) data. The project leverages the `aotpy` Python package, along with Numpy and Plotly, and utilizes datasets from the European Southern Observatory (ESO).
 
 ## Datasets
 
@@ -16,7 +16,7 @@ You can test the dashboard using the following files from the [ESO Science Archi
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/bea11/AOT-Dashboard.git '''
+   git clone https://github.com/bea11/AOT-Dashboard.git bash'''
 
 2. **Navigate to the Project Directory:**
    """cd AOT-Dashboard"""
