@@ -16,12 +16,14 @@ You can test the dashboard using the following files from the [ESO Science Archi
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/bea11/AOT-Dashboard.git bash'''
+   git clone https://github.com/bea11/AOT-Dashboard.git 
 
 2. **Navigate to the Project Directory:**
-   """cd AOT-Dashboard"""
+   ```bash
+   cd AOT-Dashboard
 3. **Run the application:**
-  ''' python app.py'''
+   ```bash
+    python app.py
 4.**Open the Dashboard:**
   After running the application, open your browser and go to the link provided (usually http://127.0.0.1:8050/).
    
@@ -29,14 +31,15 @@ You can test the dashboard using the following files from the [ESO Science Archi
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/bea11/AOT-Dashboard.git '''
+   git clone https://github.com/bea11/AOT-Dashboard.git 
 
 2. **Navigate to the Project Directory:**
-   """cd AOT-Dashboard"""
+   ```bash
+   cd AOT-Dashboard
 3. **Run the application:**
-  ''' python3 app.py'''
+   ```bash python3 app.py
 4.**Open the Dashboard:**
   After running the application, open your browser and go to the link provided (usually http://127.0.0.1:8050/).
    
 ### Notes:
-Ensure you have Python and the necessary libraries (Dash, Numpy, Plotly, aotpy) installed. The complete versions are available on the requirements.txt of this git
+Ensure you have Python and the necessary libraries (Dash, Numpy, Plotly, aotpy) installed. The complete versions are available on the requirements.txt of this repository.
