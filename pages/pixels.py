@@ -66,7 +66,7 @@ layout = html.Div([
 ], style={'position': 'absolute', 'left': '6.75vw','display': 'flex', 'justify-content': 'space-between', 'top': '4vw', 'width': '8vw', 'height': '2vw'}),
   
   
-   #1 quadrante -> Values of the detector
+   #1 quadrante
     dcc.Store(id='1-quadrante-content', data=[
         html.Div([
             html.P("Properties", style={'text-align': 'left', 'margin-left': '1vw'}),
@@ -134,7 +134,7 @@ layout = html.Div([
 
 ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '0vw', 'top': '2.25vw', 'width': '30.25vw', 'height': '10vw'}),
     
-   #Objects associated with the detector 
+   #1 quadrante 
         html.Div([
             html.P("Objects", style={'text-align': 'left','margin-left': '0vw'}),
 
@@ -180,11 +180,14 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
+    
+
+
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '23vw', 'top': '2.25vw', 'width': '20vw', 'height': '36.25vw'}),
 ]),
-   
-    #Manipulation of the image
+    #2 quadrante 
+    #imagem
         html.Div([
             dbc.Select(
     id="aotpy_scale",
@@ -231,7 +234,6 @@ layout = html.Div([
     ),
     dcc.Graph(id='teste_imagem_diferente', style={'position': 'absolute', 'left': '20px', 'top': '20px', 'height': '330px', 'width': '500px'}),
     html.Div(dcc.Slider(
-        #rasterized image
                 id='frame3_slider',
                 min=0,
                 max=1,
@@ -283,7 +285,7 @@ layout = html.Div([
     ], style={'display': 'flex', 'align-items': 'left'}),
 
 ], style={
-    'background-color': '#1C2634',  #Rectangle cor
+    'background-color': '#1C2634',  # Corectangulo
     'position': 'absolute',
     'left': '7vw',
     'top': '43vw',
@@ -574,15 +576,17 @@ def key_properties(pickle_file, pathname, selected_command):
         if sensor is None or sensor.detector is None:
             return ["None"] * 2 
         
-        #sm = sys.wavefront_sensors[0].subaperture_mask.name if sys.wavefront_sensors[0].subaperture_mask else None
+       
         mo = sensor.mask_offsets
         ss = sensor.subaperture_size
 
-         #Assim mostra o None
+
         ss = none_to_string(ss)
         mo = ", ".join(map(str, mo)) if isinstance(mo, (list, tuple)) else str(mo)  
+        
+        if mo in [None, "", [], {}]:
+            mo = "None"
         print(f" Mask offsets: {mo}, Subaperture size: {ss}")
-
         return mo, ss
     else: 
         return ["None"] * 2 
@@ -653,7 +657,6 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         
         pixel_data = sensor.detector.pixel_intensities.data
 
-        # poder ter uma imagem 2D por tempo
         reshaped = pixel_data.reshape(pixel_data.shape[0], -1)
         swapped = np.swapaxes(reshaped, 0, 1)
 
@@ -686,13 +689,15 @@ def display_detector_frame(pickle_file, pathname, selected_command):
 @callback(
     [Output('frame3_slider', 'max'),
      Output('frame3_slider', 'marks'), 
-     Output('frame3_slider', 'value')],
+     Output('frame3_slider', 'value'),],
     [Input('pickle_store', 'data'),
      Input('url', 'pathname'),
+     Input('imag2D', 'clickData'),
      Input('command-dropdown_p', 'value')]
 )
-def update_slider_pixel(pickle_file, pathname, selected_command):
+def update_slider_pixel(pickle_file, pathname, clickedData, selected_command):
     if pathname == '/pixels' and pickle_file is not None:
+        ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
         
@@ -709,34 +714,15 @@ def update_slider_pixel(pickle_file, pathname, selected_command):
         max_frame = img_data.shape[0] - 1
         step = max(1, max_frame // 10)  
 
+        value = 0  # Default
+        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'imag2D':
+                x, y, z = extract_coordinates(clickedData)
+                value = int(x)
+
         marks = {i: str(i) for i in range(0, max_frame + 1, step)}  
-        return max_frame, marks, 0
+        return max_frame, marks, value
     else:
         return 0, {}, 0,
-
-"""
-estava a tentar bloquear o disabled
-@callback(
-        Output('dark_feature', 'disabled'),
-        Input('pickle_store', 'data'),
-        Input('url', 'pathname'),
-        Input('command-dropdown_p', 'value')
-)
-def block_dark(pickle_file, pathname, selected_command):
-    disable_checkbox = False
-    if pathname == '/pixels' and pickle_file is not None:
-        with open(pickle_file, 'rb') as f:
-            sys = pickle.load(f)
-        
-        if not selected_command:
-            selected_command = sys.wavefront_sensors[0].detector.uid if sys.wavefront_sensors else None
-        
-        sensor = next((sensor for sensor in sys.wavefront_sensors if sensor.detector.uid == selected_command), None)
-        
-        if sensor is None or sensor.detector is None:
-           disable_checkbox = False
-
-        return disable_checkbox"""
 
 
 #com slide
@@ -858,14 +844,6 @@ def display_detector_frame(pickle_file, pathname, clickData, second_clickData, s
 
             time_values_1 = list(range(len(pixel_intensity_over_time_1)))
 
-        """if trigger_id == 'imag2D':
-           
-            x_2, y_2, z_2 = extract_coordinates(second_clickData)
-            print(f"X2: {x_2}, Y2: {y_2}")
-            pixel_intensity_over_time_2 = pixel_data[:, int(y_2), int(x_2)]
-            print(f"pixel_intensity_over_time_2: {pixel_intensity_over_time_2}")
-            time_values_2 = list(range(len(pixel_intensity_over_time_2)))
-            print(f"Time values 2: {time_values_2}")"""
        
         print(f"it triggers {trigger_id}")
         fig.add_trace(go.Scatter(x=time_values_1, y=pixel_intensity_over_time_1, mode='lines', name = f'Pixel Intensity of x={x_1}, y={y_1}'))
