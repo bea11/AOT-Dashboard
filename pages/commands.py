@@ -18,6 +18,7 @@ from astropy.visualization import MinMaxInterval, ZScaleInterval, PercentileInte
 
 dash.register_page(__name__, path='/commands', suppress_callback_exceptions=True)
 
+#Drag and options style
 DRAG_STYLE = {
     'width': '885px',
     'height': '108px',
@@ -62,12 +63,11 @@ layout = html.Div([
 ),
     
 
-   #1 quadrante
+# First quadrant: Display properties
     html.Div([
-
         html.P("Properties", style={'text-align': 'left', 'margin-left': '1vw'}),
         
-    #Strings    
+     # String properties   
         html.Div([
             html.Label("Loop: ", style={'color': 'white'}),
             html.Div(id='loop', style={'background-color': '#243343', 'width': '160px', 'height': '19px', 'margin-left': '10px'})
@@ -88,13 +88,11 @@ layout = html.Div([
             html.Div(id='mc', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
-
         html.Div([
             html.Label("Wavefront Corrector: ", style={'color': 'white'}),
             html.Div(id='wave_corrector', style={'background-color': '#243343', 'width': '220px', 'height': '43px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
-    #Floats
         html.Div([
             html.Label("Valid Actuators: ", style={'color': 'white'}),
             html.Div(id='valid_act', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
@@ -112,11 +110,12 @@ layout = html.Div([
         html.Div(id='deformmirror'),
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '6.75vw', 'top': '5vw', 'width': '37vw', 'height': '32vw'}),
-    
+
+# Second quadrant: Display objects
    html.Div([
             html.P("Objects", style={'text-align': 'left','margin-left': '1vw'}),
   
-    #1 bloco
+# First block: Telescope object
             html.Div([
                 html.P("Telescope", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
@@ -129,7 +128,7 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw'}),
 
-    #2 bloco
+    # Second block: Wavefront Sensor object
             html.Div([
                 html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
@@ -162,8 +161,7 @@ layout = html.Div([
 
      ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '37vw', 'top': '5vw', 'width': '20vw', 'height': '32vw'}),
 
-    #2 quadrante 
-    #imagem
+    # Second quadrant: rasterized image
     html.Div([
      dbc.Select(
         id="aotpy_scale_c",
@@ -242,7 +240,7 @@ layout = html.Div([
     'height': '34vw'
 }),
   
-  #3 quadrante
+  # Third quadrant: vectorized image
   html.Div([
     dcc.Graph(id='imag2D_com', style={'position': 'absolute', 'left': '10px', 'height': '320px', 'width': '500px'}),
     
