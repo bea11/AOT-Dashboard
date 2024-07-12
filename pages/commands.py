@@ -91,7 +91,7 @@ layout = html.Div([
 
         html.Div([
             html.Label("Wavefront Corrector: ", style={'color': 'white'}),
-            html.Div(id='wave_corrector', style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
+            html.Div(id='wave_corrector', style={'background-color': '#243343', 'width': '220px', 'height': '43px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
     #Floats
@@ -111,7 +111,7 @@ layout = html.Div([
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
         html.Div(id='deformmirror'),
 
-    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '6.75vw', 'top': '5vw', 'width': '37vw', 'height': '31vw'}),
+    ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '6.75vw', 'top': '5vw', 'width': '37vw', 'height': '32vw'}),
     
    html.Div([
             html.P("Objects", style={'text-align': 'left','margin-left': '1vw'}),
@@ -160,7 +160,7 @@ layout = html.Div([
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
 
-     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '37vw', 'top': '5vw', 'width': '20vw', 'height': '31vw'}),
+     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '37vw', 'top': '5vw', 'width': '20vw', 'height': '32vw'}),
 
     #2 quadrante 
     #imagem
@@ -239,7 +239,7 @@ layout = html.Div([
     'left': '58vw',
     'top': '3vw',
     'width': '39vw', 
-    'height': '33vw'
+    'height': '34vw'
 }),
   
   #3 quadrante
@@ -250,11 +250,10 @@ layout = html.Div([
     'background-color': '#1C2634',  
     'position': 'absolute',
     'left': '7vw',
-    'top': '37vw',
+    'top': '38vw',
     'width': '45vw',  
     'height': '25vw' 
 }),
- #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
  
     #4 quadrante
     html.Div([
@@ -264,10 +263,10 @@ layout = html.Div([
 
    
 ], style={
-    'background-color': '#1C2634',  # Cor rectangulo
+    'background-color': '#1C2634',  
     'position': 'absolute',
     'left': '53vw',
-    'top': '37vw',
+    'top': '38vw',
     'width': '44.5vw',  
     'height': '25vw'  
 }),
@@ -307,10 +306,10 @@ def apply_scale(image, scale_type):
         img_array = np.array(image)
 
         histogram, bins = np.histogram(img_array.flatten(), bins=256, density=True)
-        cdf = histogram.cumsum()  # função distribuição cumulativa
-        cdf = 255 * cdf / cdf[-1]  # normalizar
+        cdf = histogram.cumsum() 
+        cdf = 255 * cdf / cdf[-1]  
 
-    # interpolação linear
+   
         image_equalized = np.interp(img_array.flatten(), bins[:-1], cdf)
         return image_equalized.reshape(img_array.shape)
     elif scale_type == 'Log Exponent':
@@ -363,7 +362,6 @@ def extract_coordinates(clickData):
     y = clickData['points'][0]['y']
     z = clickData['points'][0]['z']
     return x, y, z
-
 
 
 #Callbacks
@@ -424,7 +422,7 @@ def key_properties_comma(pickle_file, pathname, selected_command):
         rescom = loop.residual_commands.name if loop.residual_commands else None
         mc = loop.modal_coefficients.name if loop.modal_coefficients else None
         wave_corrector = loop.commanded_corrector.uid if loop.commanded_corrector else None
-        #acttuators = loop.commanded_corrector.n_valid_actuators if loop.commanded_corrector else None
+       
         valid_act = loop.commanded_corrector.n_valid_actuators if loop.commanded_corrector else None
         tfz_den = loop.commanded_corrector.tfz_den if loop.commanded_corrector else None
         tfz_num = loop.commanded_corrector.tfz_num if loop.commanded_corrector else None
@@ -437,7 +435,7 @@ def key_properties_comma(pickle_file, pathname, selected_command):
         return ["None"] * 8
     
 
-    #não sei se estou a extrair corretamente
+
 @callback(
     Output('deformmirror', 'children'),
     [Input('pickle_store', 'data'),
@@ -448,14 +446,13 @@ def key_extra_comma(pickle_file, pathname, selected_command):
     if pathname == '/commands' and pickle_file is not None:
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
-        #loop correspondente
+  
         if not selected_command:
             selected_command = sys.loops[0].commands.name if sys.loops else None
         loop = next((loop for loop in sys.loops if loop.commands.name == selected_command), None)
         if loop is None:
             return None
         
-        #não sei se está correto
         if isinstance(loop.commanded_corrector, aotpy.DeformableMirror):
             dmac = loop.commanded_corrector.actuator_coordinates 
             dms = loop.commanded_corrector.stroke 
@@ -476,7 +473,6 @@ def key_extra_comma(pickle_file, pathname, selected_command):
         else:
             return None
 
-#para a secção dos objetos
 @callback(
     Output('telescope_name', 'children'),
     Output('telescope_type', 'children'),
@@ -504,7 +500,7 @@ def key_properties_objetcs3(pickle_file, pathname, selected_command):
         
         telescope_name, telescope_type, detector_name,meas_name = none_to_string(telescope_name, telescope_type, detector_name,meas_name)
         return telescope_name, telescope_type, detector_name, meas_name
-        #return source3_name, source3_type, detector3_name, detector3_type, meas3_name, meas3_type
+    
     else: 
         return ["None"] * 4
 
@@ -651,12 +647,12 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
 
             time_values = list(range(len(commands_over_time)))
          
-        fig.add_trace(go.Scatter(x=time_values, y=commands_over_time, mode='lines', name=f'Intensity x={x},y={y}'))
+        fig.add_trace(go.Scatter(x=time_values, y=commands_over_time, mode='lines', name=f'Intensity y={y}'))
         
         fig.update_layout(
             title='Actuator motion per frame',
             xaxis_title='Frame',
-            yaxis_title='Intensity (m)',
+            yaxis_title='Intensity (µ)',
             autosize=False,
             width=600,
             height=350,
@@ -717,10 +713,10 @@ def display_detector_frame(pickle_file, pathname, selected_command):
             height=350,
             margin=dict(l=65, r=50, b=65, t=90),
             paper_bgcolor='rgba(0,0,0,0)', 
-            title_font=dict(color='white'),  # texto cor
+            title_font=dict(color='white'),  
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
-            xaxis_tickfont=dict(color='white'),  # label
+            xaxis_tickfont=dict(color='white'),  
             yaxis_tickfont=dict(color='white'),
         )
 
