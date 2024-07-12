@@ -256,30 +256,26 @@ layout = html.Div([
         style={'width': "10vw",'color': 'white', 'height':'35px' }
     ),
         
-        
-        html.Div([  
-            
-            html.Div(id='testes_imagem1'),
-            html.Div(id='testes_imagem2'),
+   html.Div([  
+    html.Div(id='testes_imagem1'),
+    html.Div(id='testes_imagem2'),
 
-            html.Div(dcc.Slider(
-                id='frame_slider',
-                min=0,
-                max=1,
-                step=1,
-                value=0,
-                marks={},
-            ), style={
-                        'width': '600px',  
-                        'position': 'absolute',  
-                        'left': '1vw',  
-                        'height': '30px',
-                        'top': '360px', 
-                    }),
-      
-            dcc.Store(id='image_data_store'),  
-                
-    ]),
+    html.Div(
+        dcc.Slider(
+            id='frame_slider',
+            min=0,
+            max=1,
+            step=1,
+            value=0,
+            marks={},
+        ),
+        id='frame_slider_container',  # Add a container div
+        style={'display': 'none'}  # Default to hidden
+    ),
+  
+    dcc.Store(id='image_data_store'),  
+]),
+
 
 ], style={
     'display': 'flex',  
@@ -595,12 +591,16 @@ def specific_properties_meas(pickle_file, pathname, selected_command):
     Output('frame_slider', 'max'),
     Output('frame_slider', 'marks'), 
     Output('frame_slider', 'value'),
+    Output('frame_slider_container', 'style'),
     [Input('pickle_store', 'data'),
     Input('url', 'pathname'),
+    Input('x_dimension_image', 'clickData'),
+    Input('y_dimension_image', 'clickData'),
     Input('command-dropdown_m', 'value')]
 )
-def load_image_data(pickle_file, pathname, selected_command):
+def load_image_data(pickle_file, pathname, x_clickedData, y_clickedData, selected_command):
     if pathname == '/measurements' and pickle_file is not None:
+        ctx = dash.callback_context
         with open(pickle_file, 'rb') as f:
             sys = pickle.load(f)
 
@@ -611,17 +611,34 @@ def load_image_data(pickle_file, pathname, selected_command):
         subaperture_mask = sensor.subaperture_mask
 
         if sensor is None or subaperture_mask is None or subaperture_mask.data is None:
-            return 0, 0, {}, 0  
+            return [], 0, {}, 0, {'display': 'none'}  
         
         img_data = sensor.measurements.data 
         
         max_frame = img_data.shape[0] - 1
         step_value = max(1, max_frame // 10)
+
+        value = 0  # Default
+        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'x_dimension_image':
+                x, y, z = extract_coordinates(x_clickedData)
+                value = int(x)
+        if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'y_dimension_image':
+                x, y, z = extract_coordinates(y_clickedData)
+                value = int(x)
+
+
         marks = {i: str(i) for i in range(0, max_frame + 1, step_value)}  
         print(f"max_frame: {max_frame}, marks: {marks}")
-        return img_data.tolist(), max_frame, marks, 0
+        return img_data.tolist(), max_frame, marks, value, {
+            'width': '600px',  
+            'position': 'absolute',  
+            'left': '1vw',  
+            'height': '30px',
+            'top': '360px', 
+            'display': 'block' 
+        } 
     else:
-        return 0,0, {}, 0
+        return [],0, {}, 0,  {'display': 'none'}
 
 @callback(
     Output('testes_imagem1', 'children'),
@@ -671,13 +688,10 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
         for i in range(measurements_x.shape[0]):
             output[row_indices, col_indices] = measurements_x[i, measurement_indices]
             a.append(output.copy())
-        #plt.imshow(output)
 
         if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'x_dimension_image':
-            # cordenadas do click data 
                 x, y, z = extract_coordinates(clickData)
             
-            # o x do slider é o frame index (tempo)
                 frame_index = int(x)
 
         frame_processed = a[frame_index]
@@ -685,10 +699,7 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
         frame_processed = apply_scale(frame_processed, scale_type)
         colormap = apply_colormap(color_type)
 
-        #frame_processed = frame_processed.reshape(-1, 1)
 
-
-        #fig = go.Figure(data=go.Heatmap(z=frame_processed, colorscale='Viridis'))
         fig = px.imshow(frame_processed, color_continuous_scale=colormap)
         fig.update_layout(
             title=f'Frame {frame_index} Dimension X',
@@ -715,7 +726,6 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
                 })
 
 
-#at 2 cima
 @callback(
     Output('testes_imagem2', 'children'),
     [Input('image_data_store', 'data'),
@@ -755,9 +765,8 @@ def update_image_y(data,pickle_file, frame_index, scale_type, color_type, interv
         measurements_y = measurements[:, 1, :]
         mask = sensor.subaperture_mask.data
 
-        #meter nos espaços none
+
         output = np.full(mask.shape, np.nan)
-        #onde não tem -1
         row_indices, col_indices = np.where(mask != -1)
         measurement_indices = mask[row_indices, col_indices]
 
@@ -765,12 +774,12 @@ def update_image_y(data,pickle_file, frame_index, scale_type, color_type, interv
         for i in range(measurements_y.shape[0]):
             output[row_indices, col_indices] = measurements_y[i, measurement_indices]
             a.append(output.copy())
-        #plt.imshow(output)
+
         if ctx.triggered and ctx.triggered[0]['prop_id'].split('.')[0] == 'y_dimension_image':
-            # cordenadas do click data 
+  
                 x, y, z = extract_coordinates(clickData)
             
-            # o x do slider é o frame index (tempo)
+
                 frame_index = int(x)
 
         frame_processed = a[frame_index]
@@ -778,7 +787,7 @@ def update_image_y(data,pickle_file, frame_index, scale_type, color_type, interv
         frame_processed = apply_scale(frame_processed, scale_type)
         colormap = apply_colormap(color_type)
 
-        #fig = go.Figure(data=go.Heatmap(z=frame_processed, colorscale='Viridis'))
+    
         fig = px.imshow(frame_processed, color_continuous_scale=colormap)
         fig.update_layout(
             title=f'Frame {frame_index} Dimension Y',
@@ -829,11 +838,11 @@ def display_measurements(pickle_file, pathname, selected_command):
         
         measurements = sensor.measurements.data  
 
-# Separar
+# Separate
         x_measurements = measurements[:, 0, :]
         y_measurements = measurements[:, 1, :]
 
-# 
+
         fig_x = go.Figure(data=go.Heatmap(z=x_measurements.T, colorscale='Viridis',colorbar=dict(tickfont=dict(color='white'))))
         fig_y = go.Figure(data=go.Heatmap(z=y_measurements.T, colorscale='Viridis',colorbar=dict(tickfont=dict(color='white'))))
 
@@ -847,7 +856,7 @@ def display_measurements(pickle_file, pathname, selected_command):
             margin=dict(l=65, r=50, b=65, t=90),
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)' , 
-            title_font=dict(color='white'),  # texto cor
+            title_font=dict(color='white'),  
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),  # label
@@ -864,7 +873,7 @@ def display_measurements(pickle_file, pathname, selected_command):
             margin=dict(l=65, r=50, b=65, t=90),
             paper_bgcolor='rgba(0,0,0,0)',  
             plot_bgcolor='rgba(0,0,0,0)',  
-            title_font=dict(color='white'),  # texto cor
+            title_font=dict(color='white'), 
             xaxis_title_font=dict(color='white'), 
             yaxis_title_font=dict(color='white'),
             xaxis_tickfont=dict(color='white'),  # label
@@ -874,7 +883,7 @@ def display_measurements(pickle_file, pathname, selected_command):
         return fig_x, fig_y
     else:
         return {}, {}
-#gráfico 
+#graphic
 
 @callback(
     Output('scatterplot_2dim', 'figure'),
@@ -930,7 +939,7 @@ def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first
             meas_over_time_y = meas_data_y[:, int(y_y)]  
             time_values_y = list(range(len(meas_over_time_y)))
             fig.add_trace(go.Scatter(x=time_values_y, y=meas_over_time_y, mode='lines', name=f'Y Intensity y={y_y}'))  
-#estes nao dao
+#not
 
         if trigger_id == 'testes_imagem1':
             x_1, y_1, z_1 = extract_coordinates(first_clickData)
