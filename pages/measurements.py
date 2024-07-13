@@ -27,7 +27,6 @@ option_STYLE = {
     'border': '1px solid #243343',
 }
 
-
 layout = html.Div([
     html.Div(
         style={'display': 'flex', 'alignItems': 'center', 'justifyContent': 'space-between', 'left': '0vw'},
@@ -106,7 +105,6 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw'}),
 
-        #2 bloco
             html.Div([
                 html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
@@ -120,7 +118,6 @@ layout = html.Div([
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
 
-    #3 bloco
             html.Div([
                 html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
@@ -135,13 +132,10 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
-    
-
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '310px', 'top': '30px', 'width': '280px', 'height': '370px'}),
 ]),
 
-#5quadrante
     dcc.Store(id='5-quadrante-content2', data=[
     
         html.Div([
@@ -207,9 +201,7 @@ layout = html.Div([
 ]),
 
 
-
-
-    #2 quadrante 
+    #2 quadrante - rasterized image
     #imagem
         html.Div([
             dbc.Select(
@@ -276,7 +268,6 @@ layout = html.Div([
     dcc.Store(id='image_data_store'),  
 ]),
 
-
 ], style={
     'display': 'flex',  
     'justify-content': 'space-between',  
@@ -287,10 +278,8 @@ layout = html.Div([
     'width': '600px', 
     'height': '400px'
 }),
-  
-
-  
-#3 quadrante ->1 cube
+   
+#3 quadrante - vectorized image
     html.Div([
         html.Div([
             html.Div([  
@@ -309,8 +298,7 @@ layout = html.Div([
     'width': '58vw',  
     'height': '21vw'  
 }),
- #'left': '160px', 'top': '80px', 'width': '400px', 'height': '390px'
-    #4 quadrante
+    #4 quadrante - line plot
 
 html.Div([
     
@@ -340,8 +328,8 @@ html.Div([
     #html.Div(id='s_s'),
 ], style={'position': 'relative'})
 
- #Funções
-#WAVEFRONT SENSORS
+ #Functions
+
 def wavefront_sensors_to_dict(wavefront_sensor):
     return {
         'uid': wavefront_sensor.uid,
@@ -491,8 +479,7 @@ def key_properties_meas(pickle_file, pathname, selected_command):
     else: 
         return ["None"] * 4
     
-#para a secção dos objetos
-
+#Objects
 @callback(
     [Output('source2_name', 'children'),
      Output('source2_type', 'children'),
@@ -565,7 +552,7 @@ def specific_properties_meas(pickle_file, pathname, selected_command):
                 html.Div(modulation, style={'background-color': '#243343', 'width': '160px', 'height': '20px', 'margin-left': '10px'})
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
         ])   
-        else: #se for shack-hartman 
+        else: #if it is shack-hartmann
             centroiding = sensor.centroiding_algorithm
             print(f'Centroiding: {centroiding}')
             centroiding= none_to_string(centroiding)
@@ -575,16 +562,12 @@ def specific_properties_meas(pickle_file, pathname, selected_command):
     ], style={'background-color': '#1C2634', 'color': 'white', 'display': 'flex', 'align-items': 'center', 'padding': '6px'}),
 
 
-
-        
-        #Assim mostra o None
         name, dimensions, wv, detect_type = none_to_string(name, dimensions, wv, detect_type) 
-        print(f'Name: {name}, Dimensions: {dimensions}, Wavelength: {wv}, type: {detect_type}')
         return name, dimensions, wv, detect_type
     else: 
         return ["None"] * 4
 
-#Imagem com slider
+#Slider properties
 
 @callback(
     Output('image_data_store', 'data'),
@@ -640,6 +623,7 @@ def load_image_data(pickle_file, pathname, x_clickedData, y_clickedData, selecte
     else:
         return [],0, {}, 0,  {'display': 'none'}
 
+#Rasterized image X dimension
 @callback(
     Output('testes_imagem1', 'children'),
     [Input('image_data_store', 'data'),
@@ -678,7 +662,7 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
         measurements_x = measurements[:, 0, :]
         mask = sensor.subaperture_mask.data
 
-        #meter nos espaços none
+        #put spaces on none
         output = np.full(mask.shape, np.nan)
         #onde não tem -1
         row_indices, col_indices = np.where(mask != -1)
@@ -725,7 +709,7 @@ def update_image_x(data, pickle_file, frame_index, scale_type,color_type,interva
                     'width': '15vw'
                 })
 
-
+#Rasterized image Y dimension
 @callback(
     Output('testes_imagem2', 'children'),
     [Input('image_data_store', 'data'),
@@ -779,7 +763,6 @@ def update_image_y(data,pickle_file, frame_index, scale_type, color_type, interv
   
                 x, y, z = extract_coordinates(clickData)
             
-
                 frame_index = int(x)
 
         frame_processed = a[frame_index]
@@ -812,7 +795,7 @@ def update_image_y(data,pickle_file, frame_index, scale_type, color_type, interv
                     'height': '5vw',
                     'width': '10vw'
                 })
-#Imagem estática
+#Vectorized image
 
 #Measurements from the sensor over time. Each of its Sv subapertures is able to measure in d dimensions. (Dimensions t×d×Sv, in user defined units, using data type flt)
 
@@ -883,8 +866,8 @@ def display_measurements(pickle_file, pathname, selected_command):
         return fig_x, fig_y
     else:
         return {}, {}
-#graphic
 
+#Line plot
 @callback(
     Output('scatterplot_2dim', 'figure'),
     [Input('pickle_store', 'data'),
@@ -951,8 +934,6 @@ def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first
             meas_over_time_2 = meas_data_y[:, int(y_2)]  
             time_values_2 = list(range(len(meas_over_time_2)))
         
-
-        print(f" o trigger é {trigger_id}")
         
         fig.add_trace(go.Scatter(x=time_values_1, y=meas_over_time_1, mode='lines', name='X Intensity 2D'))
         fig.add_trace(go.Scatter(x=time_values_2, y=meas_over_time_2, mode='lines', name='Y Intensity 2D'))
@@ -984,7 +965,7 @@ def display_detector_frame(pickle_file, pathname, x_clickData, y_clickData,first
         return {}
             
    
-
+#Statistics
 @callback(
     Output('stat_max_m', 'children'),
     Output('stat_min_m', 'children'),
@@ -1093,7 +1074,7 @@ def display_stats_m_spe_y(pickle_file, pathname, clickData, selected_command):
     else:
         return ["None"] *3
 
-
+#Divisions between properties and statistics
 
 @callback(
     Output('store3', 'data'),
