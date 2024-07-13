@@ -10,7 +10,6 @@ import json
 import aotpy
 from dash.dependencies import Input, Output, State, ALL
 
-#import plotly.graph_objects as go
 
 dash.register_page(__name__, path='/analise')
 
