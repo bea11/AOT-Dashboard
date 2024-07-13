@@ -11,7 +11,6 @@ from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import callback
 import matplotlib
-#matplotlib.use('Agg')
 import pickle
 import numpy as np
 from flask import session
@@ -150,8 +149,6 @@ layout = html.Div([
                 html.Div(id='source_type', style={'background-color': '#243343', 'margin-left': '10px'}),
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw'}),
-
-    #2 bloco
           
             html.Div([
                 html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
@@ -165,7 +162,6 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
-      #3 bloco
             html.Div([
                 html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
@@ -180,13 +176,10 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw', 'margin-top': '15px'}),
 
-    
-
-
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '23vw', 'top': '2.25vw', 'width': '20vw', 'height': '36.25vw'}),
 ]),
-    #2 quadrante 
+    #2 quadrante - rasterized image
     #imagem
         html.Div([
             dbc.Select(
@@ -277,7 +270,7 @@ layout = html.Div([
     'height': '39.25vw'
 }),
   
-  #3 quadrante
+  #3 quadrante - vectorized image
         html.Div([
             #html.P("Data", style={'text-align': 'left','margin-left': '1vw'}),
             html.Div([  
@@ -293,7 +286,7 @@ layout = html.Div([
     'height': '25vw'  
 }),
  
-    #4 quadrante
+    #4 quadrante - line plot
         html.Div([
             html.Div([  
                 dcc.Graph(id='lineplot',style={'position': 'absolute', 'left': '20px', 'top': '0px', 'height': '330px', 'width': '500px'}),
@@ -367,10 +360,8 @@ layout = html.Div([
 
 ], style={'position': 'relative'})
     
-
-#Funções
-
 #CALLBACKS
+
 #Intensity detected in each pixel, for each data frame. This is a sequence of t images, each spanning x pixels horizontally and y pixels vertically. (Dimensions t×h×w, in ADU units, using data type flt)
 def none_to_string(*args):
     return ['None' if arg is None or arg == [] else arg for arg in args]
@@ -448,8 +439,6 @@ def extract_coordinates(clickData):
     y = clickData['points'][0]['y']
     z = clickData['points'][0]['z']
     return x, y, z
-
-
 
 
 @callback(
@@ -534,7 +523,6 @@ def key_properties_2(pickle_file, pathname, selected_command):
         if sensor is None or sensor.detector is None:
             return ["None"] * 10  
         
-        #detect_ui = sys.wavefront_sensors[0].uid
         name_ns = sensor.detector.uid
         shuttert = sensor.detector.shutter_type 
         frame_rate = sensor.detector.frame_rate
@@ -549,7 +537,6 @@ def key_properties_2(pickle_file, pathname, selected_command):
    
         properties = [name_ns, shuttert, frame_rate, gain, integration_time, pixel_scale, quantum_efficiency, readout_noise, readout_rate, sampling_technique]
         properties = none_to_string(*properties) 
-        print(f"Properties: {properties}")
         
         return properties
     else: 
@@ -576,7 +563,6 @@ def key_properties(pickle_file, pathname, selected_command):
         if sensor is None or sensor.detector is None:
             return ["None"] * 2 
         
-       
         mo = sensor.mask_offsets
         ss = sensor.subaperture_size
 
@@ -591,7 +577,7 @@ def key_properties(pickle_file, pathname, selected_command):
     else: 
         return ["None"] * 2 
 
-#para a secção dos objetos
+#Objects sections
 
 @callback(
     [Output('source_name', 'children'),
@@ -629,10 +615,7 @@ def key_properties_objetcs(pickle_file, pathname, selected_command):
         return ["None"] * 5
 
 
-
-
-
-#Imagem estática
+#Vectorized image
 
 @callback(
     Output('imag2D', 'figure'),
@@ -684,7 +667,7 @@ def display_detector_frame(pickle_file, pathname, selected_command):
         return {}
 
 
-#Imagem com slider
+#Slider properties
 
 @callback(
     [Output('frame3_slider', 'max'),
@@ -725,7 +708,7 @@ def update_slider_pixel(pickle_file, pathname, clickedData, selected_command):
         return 0, {}, 0,
 
 
-#com slide
+#Rasterized image
 @callback(
     Output('teste_imagem_diferente', 'figure'),
     [Input('frame3_slider', 'value'),
@@ -800,7 +783,7 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
     else:
         return {}
 
-#Gráfico com intensidade
+Line plot
 
 @callback(
     Output('lineplot', 'figure'),
@@ -844,8 +827,6 @@ def display_detector_frame(pickle_file, pathname, clickData, second_clickData, s
 
             time_values_1 = list(range(len(pixel_intensity_over_time_1)))
 
-       
-        print(f"it triggers {trigger_id}")
         fig.add_trace(go.Scatter(x=time_values_1, y=pixel_intensity_over_time_1, mode='lines', name = f'Pixel Intensity of x={x_1}, y={y_1}'))
         fig.add_trace(go.Scatter(x=time_values_2, y=pixel_intensity_over_time_2, mode='lines', name= f'Pixel Intensity of x={x_2}, y={y_2}'))
             
@@ -877,7 +858,7 @@ def display_detector_frame(pickle_file, pathname, clickData, second_clickData, s
         return {}
             
             
-
+#Statistics
 @callback(
     Output('stat_max_p', 'children'),
     Output('stat_min_p', 'children'),
