@@ -18,7 +18,7 @@ from astropy.visualization import MinMaxInterval, ZScaleInterval, PercentileInte
 
 dash.register_page(__name__, path='/commands', suppress_callback_exceptions=True)
 
-#Drag and options style
+
 DRAG_STYLE = {
     'width': '885px',
     'height': '108px',
@@ -63,7 +63,7 @@ layout = html.Div([
 ),
     
 
-# First quadrant: Display properties
+# 1 quadrant: Display properties
     html.Div([
         html.P("Properties", style={'text-align': 'left', 'margin-left': '1vw'}),
         
@@ -111,11 +111,10 @@ layout = html.Div([
 
     ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '6.75vw', 'top': '5vw', 'width': '37vw', 'height': '32vw'}),
 
-# Second quadrant: Display objects
+# 1 quadrante
    html.Div([
             html.P("Objects", style={'text-align': 'left','margin-left': '1vw'}),
-  
-# First block: Telescope object
+
             html.Div([
                 html.P("Telescope", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
@@ -128,7 +127,6 @@ layout = html.Div([
                 ], style={'display': 'flex', 'align-items': 'center', 'margin-left': '1vw'}),
     ], style={'background-color': '#243343', 'color': 'white', 'display': 'flex', 'flex-direction': 'column', 'width':'250px', 'height': '90px','margin-left': '1vw'}),
 
-    # Second block: Wavefront Sensor object
             html.Div([
                 html.P("Wavefront Sensor", style={'text-align': 'left', 'margin-left': '1vw'}),
                 html.Div([
@@ -161,7 +159,7 @@ layout = html.Div([
 
      ], style={'background-color': '#1C2634', 'color': 'white', 'position': 'absolute', 'left': '37vw', 'top': '5vw', 'width': '20vw', 'height': '32vw'}),
 
-    # Second quadrant: rasterized image
+    # 2 quadrante - rasterized image
     html.Div([
      dbc.Select(
         id="aotpy_scale_c",
@@ -240,7 +238,7 @@ layout = html.Div([
     'height': '34vw'
 }),
   
-  # Third quadrant: vectorized image
+  #3 quadrante - vectorized image
   html.Div([
     dcc.Graph(id='imag2D_com', style={'position': 'absolute', 'left': '10px', 'height': '320px', 'width': '500px'}),
     
@@ -253,7 +251,7 @@ layout = html.Div([
     'height': '25vw' 
 }),
  
-    #4 quadrante
+    #4 quadrante - line plot
     html.Div([
         html.Div([  
         dcc.Graph(id='differentplot', style={'position': 'absolute', 'left': '20px', 'height': '330px', 'width': '500px'}),
@@ -272,8 +270,7 @@ layout = html.Div([
 
 ], style={'position': 'relative'})
     
- #Funções
-#WAVEFRONT SENSORS
+ #Functions
 def wavefront_sensors_to_dict(wavefront_sensor):
     return {
         'uid': wavefront_sensor.uid,
@@ -281,8 +278,6 @@ def wavefront_sensors_to_dict(wavefront_sensor):
         'subaperture_size': wavefront_sensor.subaperture_size,
         'wavelength': wavefront_sensor.wavelength,
     }
-
-
 
 def apply_scale(image, scale_type):
     if scale_type == 'Linear':
@@ -362,13 +357,10 @@ def extract_coordinates(clickData):
     return x, y, z
 
 
-#Callbacks
-
-#Name of wavefront sensor
-
 def none_to_string(*args):
     return ['None' if arg is None or (isinstance(arg, list) and not arg) else arg for arg in args]
-    
+
+#Callbacks
 @callback(
     Output('command-dropdown_c', 'options'),
     Output('command-dropdown_c', 'value'),
@@ -433,7 +425,7 @@ def key_properties_comma(pickle_file, pathname, selected_command):
         return ["None"] * 8
     
 
-
+#If it is deformable mirror add extra
 @callback(
     Output('deformmirror', 'children'),
     [Input('pickle_store', 'data'),
@@ -503,7 +495,7 @@ def key_properties_objetcs3(pickle_file, pathname, selected_command):
         return ["None"] * 4
 
 
-#Imagem com slide
+#Rasterized image
 @callback(
     Output('teste2_imagem', 'children'),
     [Input('frame2_slider', 'value'),
@@ -579,6 +571,7 @@ def update_image(slider_value, pickle_file, pathname, selected_command, scale_ty
                     'width': '400px'
                 })
 
+#Properties of the frame
 @callback(
     [Output('frame2_slider', 'max'),
      Output('frame2_slider', 'marks'), 
@@ -606,8 +599,7 @@ def update_slider(pickle_file, pathname, selected_command):
     else:
         return 0, {}, 0,{'display': 'none'}
     
-#Gráfico
-
+#Line plot
 @callback(
     Output('differentplot', 'figure'),
     [Input('pickle_store', 'data'),
@@ -675,7 +667,7 @@ def display_commands_frame(pickle_file, pathname, clickData,selected_command):
         return {}
         
     
-#imagem estatica
+#Vectorized image
 @callback(
     Output('imag2D_com', 'figure'),
     [Input('pickle_store', 'data'),
@@ -695,10 +687,8 @@ def display_detector_frame(pickle_file, pathname, selected_command):
             return {}  
         
         cmd_data = loop.commands.data
-
       
         swapped = np.swapaxes(cmd_data, 0, 1)
-
     
         fig = go.Figure(data=go.Heatmap(z=swapped, colorscale='Viridis',colorbar=dict(tickfont=dict(color='white'))))
 
