@@ -783,7 +783,7 @@ def display_detector_frame(slider_value, pickle_file, pathname, scale_type, colo
     else:
         return {}
 
-Line plot
+#Line plot
 
 @callback(
     Output('lineplot', 'figure'),
