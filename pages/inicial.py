@@ -18,14 +18,14 @@ import pandas as pd
 import gzip
 import base64
 from PIL import Image
-
+import uuid
 
 _sys: aotpy.AOSystem = None
 
 
 dash.register_page(__name__, path='/')
 
-#estilo
+#Style
 DRAG_STYLE = {
     'width': '55vw',
     'height': '7vw',
@@ -44,7 +44,7 @@ layout = html.Div([
     html.H1("Dashboard AOTPY", style={'textAlign': 'left', 'marginLeft': '12vw'}),
     html.Div([
         html.Div(["Upload the FITS File"], style={'textAlign': 'left', 'textDecoration': 'underline', 'textDecorationColor': '#8CE397', 'fontSize':'1.25vw','marginLeft':'20vw', 'marginTop':'5vw'}),
-        #Fazer upload
+        #Doing Upload
         
         dcc.Upload(
             id='upload-data',
@@ -94,10 +94,13 @@ def store_uploaded_file(contents, filename):
                 try:
                     sys = aotpy.read_system_from_fits(io.BytesIO(decoded))
                     
-                    with open('system.pickle', 'wb') as f:
+                    #Unique identifier for this upload
+                    unique_id = str(uuid.uuid4())
+                    unique_filename = f'{unique_id}_system.pickle'
+                    with open(unique_filename, 'wb') as f:
                         pickle.dump(sys, f)
 
-                    return 'system.pickle'
+                    return unique_filename
                 except ValueError as e:
                     print("NOT A AOT:", e)
                     raise PreventUpdate
